@@ -1,0 +1,4 @@
+● The test account I created earlier:                                                                    
+                             
+  - Email: test@example.com                                                                              
+  - Password: TestPass123     

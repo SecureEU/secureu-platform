@@ -1,0 +1,19 @@
+# Core FastAPI and Uvicorn for the API
+fastapi==0.115.8
+uvicorn==0.34.0
+
+# Web scraping and HTTP requests
+requests==2.31.0
+beautifulsoup4==4.12.2
+html5lib==1.1
+soupsieve==2.5
+urllib3==2.0.5
+PySocks==1.7.1
+
+# Progress bars and CLI enhancements
+tqdm==4.66.1
+click==8.1.8
+
+# Required for FastAPI's validation
+pydantic==2.10.6
+starlette==0.45.3

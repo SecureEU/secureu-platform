@@ -1,0 +1,373 @@
+---
+# ═══════════════════════════════════════════════════════════════
+# SECUR-EU Platform — Full Deployment Playbook
+# ═══════════════════════════════════════════════════════════════
+#
+# Deploys the complete SECUR-EU platform to a fresh Ubuntu server.
+# Both frontend (Next.js dashboard) and backend (10 microservices)
+# are installed to /opt/secur-eu and managed via systemd.
+#
+# Usage:
+#   cp inventory.yml.example inventory.yml   # edit with your server
+#   vi vars.yml                               # set secrets
+#   ansible-playbook -i inventory.yml deploy.yml
+#
+# Target: Ubuntu 22.04 / 24.04 LTS
+# ═══════════════════════════════════════════════════════════════
+
+- name: Deploy SECUR-EU Platform
+  hosts: all
+  become: true
+  vars_files:
+    - vars.yml
+
+  tasks:
+
+    # ──────────────────────────────────────────────
+    # 1. System packages
+    # ──────────────────────────────────────────────
+    - name: Update apt cache
+      apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install base packages
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+          - lsb-release
+          - git
+          - openssl
+          - unzip
+          - wget
+          - net-tools
+          - software-properties-common
+          - acl
+          - rsync
+        state: present
+
+    # ──────────────────────────────────────────────
+    # 2. Docker Engine + Compose plugin
+    # ──────────────────────────────────────────────
+    - name: Add Docker GPG key
+      shell: |
+        install -m 0755 -d /etc/apt/keyrings
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+        chmod a+r /etc/apt/keyrings/docker.asc
+      args:
+        creates: /etc/apt/keyrings/docker.asc
+
+    - name: Add Docker repository
+      shell: |
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
+      args:
+        creates: /etc/apt/sources.list.d/docker.list
+
+    - name: Install Docker
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-compose-plugin
+        state: present
+        update_cache: true
+
+    - name: Enable and start Docker
+      systemd:
+        name: docker
+        enabled: true
+        state: started
+
+    # ──────────────────────────────────────────────
+    # 3. Node.js 20
+    # ──────────────────────────────────────────────
+    - name: Add NodeSource repository
+      shell: |
+        curl -fsSL https://deb.nodesource.com/setup_{{ node_major }}.x | bash -
+      args:
+        creates: /etc/apt/sources.list.d/nodesource.list
+
+    - name: Install Node.js
+      apt:
+        name: nodejs
+        state: present
+        update_cache: true
+
+    # ──────────────────────────────────────────────
+    # 4. Go 1.22
+    # ──────────────────────────────────────────────
+    - name: Check if Go is installed
+      stat:
+        path: /usr/local/go/bin/go
+      register: go_binary
+
+    - name: Install Go
+      shell: |
+        curl -fsSL "https://go.dev/dl/go{{ go_version }}.linux-$(dpkg --print-architecture).tar.gz" | tar -C /usr/local -xz
+      when: not go_binary.stat.exists
+
+    - name: Add Go to PATH
+      copy:
+        content: 'export PATH=$PATH:/usr/local/go/bin'
+        dest: /etc/profile.d/go.sh
+        mode: "0644"
+
+    # ──────────────────────────────────────────────
+    # 5. Java 17 (Eclipse Temurin)
+    # ──────────────────────────────────────────────
+    - name: Add Adoptium GPG key
+      shell: |
+        curl -fsSL https://packages.adoptium.net/artifactory/api/gpg/key/public | gpg --dearmor -o /etc/apt/keyrings/adoptium.gpg
+      args:
+        creates: /etc/apt/keyrings/adoptium.gpg
+
+    - name: Add Adoptium repository
+      shell: |
+        echo "deb [signed-by=/etc/apt/keyrings/adoptium.gpg] https://packages.adoptium.net/artifactory/deb $(lsb_release -cs) main" > /etc/apt/sources.list.d/adoptium.list
+      args:
+        creates: /etc/apt/sources.list.d/adoptium.list
+
+    - name: Install Java 17
+      apt:
+        name: "{{ java_package }}"
+        state: present
+        update_cache: true
+
+    # ──────────────────────────────────────────────
+    # 6. App user + directories
+    # ──────────────────────────────────────────────
+    - name: Create secureu user
+      user:
+        name: "{{ app_user }}"
+        system: true
+        shell: /bin/bash
+        create_home: true
+        groups: docker
+        append: true
+
+    - name: Grant passwordless sudo
+      copy:
+        content: "{{ app_user }} ALL=(ALL) NOPASSWD: ALL\n"
+        dest: "/etc/sudoers.d/{{ app_user }}"
+        mode: "0440"
+        validate: "visudo -cf %s"
+
+    - name: Create /opt/secur-eu
+      file:
+        path: "{{ install_dir }}"
+        state: directory
+        owner: "{{ app_user }}"
+        group: "{{ app_user }}"
+        mode: "0755"
+
+    # ──────────────────────────────────────────────
+    # 7. Copy platform files
+    # ──────────────────────────────────────────────
+    - name: Copy frontend to target
+      synchronize:
+        src: frontend/
+        dest: "{{ frontend_dir }}/"
+        delete: true
+        rsync_opts:
+          - "--exclude=node_modules"
+          - "--exclude=.next"
+          - "--exclude=test-results"
+
+    - name: Copy backend to target
+      synchronize:
+        src: backend/
+        dest: "{{ backend_dir }}/"
+        delete: true
+
+    - name: Set ownership on install directory
+      file:
+        path: "{{ install_dir }}"
+        owner: "{{ app_user }}"
+        group: "{{ app_user }}"
+        recurse: true
+
+    # ──────────────────────────────────────────────
+    # 8. Frontend — environment + build
+    # ──────────────────────────────────────────────
+    - name: Detect server IP
+      set_fact:
+        server_ip: "{{ ansible_default_ipv4.address }}"
+
+    - name: Create frontend .env
+      copy:
+        content: |
+          # MongoDB
+          MONGODB_URI={{ mongodb_uri }}
+          MONGODB_DB={{ mongodb_db }}
+
+          # JWT
+          JWT_SECRET={{ jwt_secret }}
+
+          # Backend API URLs (auto-detected IP: {{ server_ip }})
+          NEXT_PUBLIC_DARKWEB_API_URL=http://{{ server_ip }}:8001
+          NEXT_PUBLIC_REDFLAGS_API_URL=http://{{ server_ip }}:8002
+          NEXT_PUBLIC_SSL_API_URL=http://{{ server_ip }}:5000
+          NEXT_PUBLIC_PENTEST_API_URL=http://{{ server_ip }}:3001
+          NEXT_PUBLIC_VSP_API_URL=http://{{ server_ip }}:5002
+          NEXT_PUBLIC_SEUXDR_API_URL=https://{{ server_ip }}:8443
+        dest: "{{ frontend_dir }}/.env"
+        owner: "{{ app_user }}"
+        group: "{{ app_user }}"
+        mode: "0600"
+
+    - name: Install frontend dependencies
+      command: npm ci
+      args:
+        chdir: "{{ frontend_dir }}"
+      become_user: "{{ app_user }}"
+
+    - name: Build Next.js frontend
+      command: npm run build
+      args:
+        chdir: "{{ frontend_dir }}"
+      become_user: "{{ app_user }}"
+
+    # ──────────────────────────────────────────────
+    # 9. Backend — build pentest binary
+    # ──────────────────────────────────────────────
+    - name: Check if pentest Go source exists
+      stat:
+        path: "{{ backend_dir }}/pentest/main.go"
+      register: pentest_source
+
+    - name: Build pentest Go server
+      command: go build -o bin/server .
+      args:
+        chdir: "{{ backend_dir }}/pentest"
+      become_user: "{{ app_user }}"
+      environment:
+        PATH: "/usr/local/go/bin:{{ ansible_env.PATH }}"
+        GOPATH: "/home/{{ app_user }}/go"
+      when: pentest_source.stat.exists
+
+    # ──────────────────────────────────────────────
+    # 10. Backend — make scripts executable
+    # ──────────────────────────────────────────────
+    - name: Make start.sh and stop.sh executable
+      file:
+        path: "{{ backend_dir }}/{{ item }}"
+        mode: "0755"
+      loop:
+        - start.sh
+        - stop.sh
+
+    - name: Make SEUXDR cert script executable
+      file:
+        path: "{{ backend_dir }}/seuxdr/gen-certs.sh"
+        mode: "0755"
+      ignore_errors: true
+
+    # ──────────────────────────────────────────────
+    # 11. Systemd — backend service
+    # ──────────────────────────────────────────────
+    - name: Create backend systemd service
+      copy:
+        content: |
+          [Unit]
+          Description=SECUR-EU Backend Services
+          After=network.target docker.service
+          Wants=docker.service
+
+          [Service]
+          Type=oneshot
+          RemainAfterExit=true
+          User={{ app_user }}
+          WorkingDirectory={{ backend_dir }}
+          ExecStart={{ backend_dir }}/start.sh
+          ExecStop={{ backend_dir }}/stop.sh
+          Environment=PATH=/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+          TimeoutStartSec=600
+
+          [Install]
+          WantedBy=multi-user.target
+        dest: /etc/systemd/system/secureu-backend.service
+        mode: "0644"
+
+    # ──────────────────────────────────────────────
+    # 12. Systemd — frontend service
+    # ──────────────────────────────────────────────
+    - name: Create frontend systemd service
+      copy:
+        content: |
+          [Unit]
+          Description=SECUR-EU Dashboard (Next.js)
+          After=network.target secureu-backend.service
+          Wants=secureu-backend.service
+
+          [Service]
+          Type=simple
+          User={{ app_user }}
+          WorkingDirectory={{ frontend_dir }}
+          ExecStart=/usr/bin/npm start -- -p {{ dashboard_port }}
+          Restart=on-failure
+          RestartSec=10
+          Environment=NODE_ENV=production
+          Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+          [Install]
+          WantedBy=multi-user.target
+        dest: /etc/systemd/system/secureu-frontend.service
+        mode: "0644"
+
+    - name: Reload systemd
+      systemd:
+        daemon_reload: true
+
+    # ──────────────────────────────────────────────
+    # 13. Start services
+    # ──────────────────────────────────────────────
+    - name: Start backend
+      systemd:
+        name: secureu-backend
+        state: started
+        enabled: true
+
+    - name: Wait for SEUXDR API to be ready
+      uri:
+        url: "https://{{ server_ip }}:8443/api/status"
+        validate_certs: false
+        status_code: 200
+      register: seuxdr_health
+      retries: 40
+      delay: 15
+      until: seuxdr_health.status == 200
+      ignore_errors: true
+
+    - name: Start frontend
+      systemd:
+        name: secureu-frontend
+        state: started
+        enabled: true
+
+    # ──────────────────────────────────────────────
+    # 14. Summary
+    # ──────────────────────────────────────────────
+    - name: Deployment complete
+      debug:
+        msg: |
+          ══════════════════════════════════════════
+            SECUR-EU Platform Deployed
+          ══════════════════════════════════════════
+
+          Dashboard:  http://{{ server_ip }}:{{ dashboard_port }}
+          SEUXDR API: https://{{ server_ip }}:8443
+
+          Services:
+            sudo systemctl start|stop|status secureu-backend
+            sudo systemctl start|stop|status secureu-frontend
+
+          Logs:
+            journalctl -u secureu-frontend -f
+            journalctl -u secureu-backend -f
+
+          Files: {{ install_dir }}
+          ══════════════════════════════════════════

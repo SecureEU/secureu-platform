@@ -1,0 +1,78 @@
+{
+  "type": "bundle",
+  "id": "bundle--d017571b-3183-46d5-9181-26e95191947e",
+  "objects": [
+    {
+      "type": "identity",
+      "id": "identity--7a921806-3feb-4012-a0bd-70750265a90b",
+      "spec_version": "2.1",
+      "created": "2021-04-13 04:28:36",
+      "modified": "2021-04-13 04:28:36",
+      "name": "AD"
+    },
+    {
+      "type": "x-sphinx-ad-alert",
+      "id": "x-sphinx-ad-alert--bca3c091-8924-43be-b33a-c062f7d62686",
+      "spec_version": "2.1",
+      "created": "2021-04-13 04:28:36",
+      "modified": "2021-04-13 04:28:36",
+      "details": {
+        "totalFlows": 0,
+        "protocolFlow": {
+          "id": null,
+          "detectedProtocol": null,
+          "lowerPort": 0,
+          "upperPort": 0,
+          "upperIp": "255.255.255.255",
+          "lowerIp": "10.1.1.10",
+          "ipProtocol": 0,
+          "flowDuration": 0,
+          "bytes": 0,
+          "packets": 0,
+          "packetsWithoutPayload": 0,
+          "avgPacketSize": 0,
+          "minPacketSize": 0,
+          "maxPacketSize": 0,
+          "avgInterTime": 0,
+          "packetSize0": 0,
+          "interTime0": 0,
+          "packetSize1": 0,
+          "interTime1": 0,
+          "packetSize2": 0,
+          "interTime2": 0,
+          "packetSize3": 0,
+          "interTime3": 0,
+          "packetSize4": 0,
+          "interTime4": 0,
+          "hostname": null,
+          "dnaType": null,
+          "timeStamp2": null,
+          "malware": false,
+          "flags": 0
+        },
+        "text": "This IP was detected by AD performing an abnormal activity. In what follows, you can see more information.\nAbnormal behaviour: Host is sending too many big UDP packets. May be a DDoS.\nIP: 10.1.1.10\nBytes Up: 1.0MB\nBytes Down: 0 B\nPackets: 896\nConnections: 1\nFlows\n10.1.1.10:19 <?> 192.168.1.5:53  (UDP, L-to-R: 1.0MB, R-to-L: 0 B,896 pkts, duration: 9288s, sampling: 1/1)",
+        "title": "",
+        "flowId": "1618331316342",
+        "coords": null,
+        "username": null,
+        "timestamp": "2021-28-13 07:28:36",
+        "algorithm": {
+          "type": "UDPAmplifier_sflow",
+          "hostname": "10.1.1.10",
+          "bytesUp": "1050112",
+          "bytesDown": "0",
+          "numberPkts": "896",
+          "connections": "1",
+          "stringFlows": "\n10.1.1.10:19 <?> 192.168.1.5:53  (UDP, L-to-R: 1.0MB, R-to-L: 0 B,896 pkts, duration: 9288s, sampling: 1/1)"
+        }
+      }
+    },
+    {
+      "type": "relationship",
+      "id": "relationship--14c0ecff-67e8-4abe-b80e-1ad494dc3835",
+      "spec_version": "2.1",
+      "created": "2021-04-13 04:28:36",
+      "modified": "2021-04-13 04:28:36"
+    }
+  ]
+}

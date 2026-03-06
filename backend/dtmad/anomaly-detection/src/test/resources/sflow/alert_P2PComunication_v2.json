@@ -1,0 +1,78 @@
+{
+  "type": "bundle",
+  "id": "bundle--66af2b8f-6be3-4288-b74e-7a66e5a12d26",
+  "objects": [
+    {
+      "type": "identity",
+      "id": "identity--fa5d6829-a14a-48ba-b05d-0e884162d967",
+      "spec_version": "2.1",
+      "created": "2021-04-19 07:33:04",
+      "modified": "2021-04-19 07:33:04",
+      "name": "AD"
+    },
+    {
+      "type": "x-sphinx-ad-alert",
+      "id": "x-sphinx-ad-alert--0aabfba7-459b-40c2-a2f8-d69cb90b2423",
+      "spec_version": "2.1",
+      "created": "2021-04-19 07:33:04",
+      "modified": "2021-04-19 07:33:04",
+      "details": {
+        "totalFlows": 0,
+        "protocolFlow": {
+          "id": null,
+          "detectedProtocol": null,
+          "lowerPort": 0,
+          "upperPort": 0,
+          "upperIp": "255.255.255.255",
+          "lowerIp": "195.82.130.10",
+          "ipProtocol": 0,
+          "flowDuration": 0,
+          "bytes": 0,
+          "packets": 0,
+          "packetsWithoutPayload": 0,
+          "avgPacketSize": 0,
+          "minPacketSize": 0,
+          "maxPacketSize": 0,
+          "avgInterTime": 0,
+          "packetSize0": 0,
+          "interTime0": 0,
+          "packetSize1": 0,
+          "interTime1": 0,
+          "packetSize2": 0,
+          "interTime2": 0,
+          "packetSize3": 0,
+          "interTime3": 0,
+          "packetSize4": 0,
+          "interTime4": 0,
+          "hostname": null,
+          "dnaType": null,
+          "timeStamp2": null,
+          "malware": false,
+          "flags": 0
+        },
+        "text": "This IP was detected by AD performing an abnormal activity. In what follows, you can see more information.\nAbnormal behaviour: P2P Communication\nMyIP: 195.82.130.10\nBytes Up: 0 B\nBytes Down: 1.2GB\nPackets: 28\nNumber of pairs: 13\nFlows\n195.82.130.10:1120 <?> 192.168.1.5:1120  (UDP, L-to-R: 0 B, R-to-L: 190.7MB,2 pkts, duration: 8s, sampling: 1/1)\n195.82.130.10:2003 <?> 195.82.130.17:2003  (UDP, L-to-R: 0 B, R-to-L: 152.6MB,4 pkts, duration: 274s, sampling: 1/1)\n195.82.130.10:2005 <?> 195.82.130.20:2223  (UDP, L-to-R: 0 B, R-to-L: 76.3MB,2 pkts, duration: 16s, sampling: 1/1)\n195.82.130.10:2004 <?> 195.82.130.18:2003  (UDP, L-to-R: 0 B, R-to-L: 76.3MB,2 pkts, duration: 38s, sampling: 1/1)\n195.82.130.10:2005 <?> 195.82.130.21:2113  (UDP, L-to-R: 0 B, R-to-L: 76.3MB,2 pkts, duration: 13s, sampling: 1/1)\n195.82.130.10:2016 <?> 195.82.130.40:2105  (UDP, L-to-R: 0 B, R-to-L: 76.3MB,2 pkts, duration: 16s, sampling: 1/1)\n195.82.130.10:2015 <?> 195.82.130.32:2205  (UDP, L-to-R: 0 B, R-to-L: 76.3MB,2 pkts, duration: 233s, sampling: 1/1)\n195.82.130.10:2009 <?> 195.82.130.26:2805  (UDP, L-to-R: 0 B, R-to-L: 76.3MB,2 pkts, duration: 56s, sampling: 1/1)\n195.82.130.10:2010 <?> 195.82.130.27:2705  (UDP, L-to-R: 0 B, R-to-L: 76.3MB,2 pkts, duration: 95s, sampling: 1/1)\n195.82.130.10:2004 <?> 195.82.130.19:2003  (UDP, L-to-R: 0 B, R-to-L: 76.3MB,2 pkts, duration: 91s, sampling: 1/1)\n195.82.130.10:2008 <?> 195.82.130.25:2015  (UDP, L-to-R: 0 B, R-to-L: 76.3MB,2 pkts, duration: 16s, sampling: 1/1)\n195.82.130.10:2017 <?> 195.82.130.50:2005  (UDP, L-to-R: 0 B, R-to-L: 76.3MB,2 pkts, duration: 58s, sampling: 1/1)\n195.82.130.10:2011 <?> 195.82.130.28:2505  (UDP, L-to-R: 0 B, R-to-L: 76.3MB,2 pkts, duration: 42s, sampling: 1/1)",
+        "title": "AD: P2P communication",
+        "flowId": "1618860781402",
+        "coords": null,
+        "username": null,
+        "timestamp": "2021-33-19 10:33:04",
+        "algorithm": {
+          "type": "P2PCommunication_sflow",
+          "numberOfPairs": "13",
+          "myIP": "195.82.130.10",
+          "bytesUp": "0",
+          "bytesDown": "1239960816",
+          "numberPkts": "28",
+          "stringFlows": "\n195.82.130.10:1120 <?> 192.168.1.5:1120  (UDP, L-to-R: 0 B, R-to-L: 190.7MB,2 pkts, duration: 8s, sampling: 1/1)\n195.82.130.10:2003 <?> 195.82.130.17:2003  (UDP, L-to-R: 0 B, R-to-L: 152.6MB,4 pkts, duration: 274s, sampling: 1/1)\n195.82.130.10:2005 <?> 195.82.130.20:2223  (UDP, L-to-R: 0 B, R-to-L: 76.3MB,2 pkts, duration: 16s, sampling: 1/1)\n195.82.130.10:2004 <?> 195.82.130.18:2003  (UDP, L-to-R: 0 B, R-to-L: 76.3MB,2 pkts, duration: 38s, sampling: 1/1)\n195.82.130.10:2005 <?> 195.82.130.21:2113  (UDP, L-to-R: 0 B, R-to-L: 76.3MB,2 pkts, duration: 13s, sampling: 1/1)\n195.82.130.10:2016 <?> 195.82.130.40:2105  (UDP, L-to-R: 0 B, R-to-L: 76.3MB,2 pkts, duration: 16s, sampling: 1/1)\n195.82.130.10:2015 <?> 195.82.130.32:2205  (UDP, L-to-R: 0 B, R-to-L: 76.3MB,2 pkts, duration: 233s, sampling: 1/1)\n195.82.130.10:2009 <?> 195.82.130.26:2805  (UDP, L-to-R: 0 B, R-to-L: 76.3MB,2 pkts, duration: 56s, sampling: 1/1)\n195.82.130.10:2010 <?> 195.82.130.27:2705  (UDP, L-to-R: 0 B, R-to-L: 76.3MB,2 pkts, duration: 95s, sampling: 1/1)\n195.82.130.10:2004 <?> 195.82.130.19:2003  (UDP, L-to-R: 0 B, R-to-L: 76.3MB,2 pkts, duration: 91s, sampling: 1/1)\n195.82.130.10:2008 <?> 195.82.130.25:2015  (UDP, L-to-R: 0 B, R-to-L: 76.3MB,2 pkts, duration: 16s, sampling: 1/1)\n195.82.130.10:2017 <?> 195.82.130.50:2005  (UDP, L-to-R: 0 B, R-to-L: 76.3MB,2 pkts, duration: 58s, sampling: 1/1)\n195.82.130.10:2011 <?> 195.82.130.28:2505  (UDP, L-to-R: 0 B, R-to-L: 76.3MB,2 pkts, duration: 42s, sampling: 1/1)"
+        }
+      }
+    },
+    {
+      "type": "relationship",
+      "id": "relationship--215a40c0-c95a-4df4-8e33-64af766fdda6",
+      "spec_version": "2.1",
+      "created": "2021-04-19 07:33:04",
+      "modified": "2021-04-19 07:33:04"
+    }
+  ]
+}

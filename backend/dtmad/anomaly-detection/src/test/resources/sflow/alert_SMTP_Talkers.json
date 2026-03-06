@@ -1,0 +1,78 @@
+{
+   "type": "bundle",
+   "id": "bundle--1179fa4df67c46e9953b85208662b150",
+   "objects": [
+      {
+         "type": "identity",
+         "id": "identity--f676f2b36c484c01ad1abf85d0d34b31",
+         "spec_version": "2.1",
+         "created": "1618231598",
+         "modified": "1618231598",
+         "name": "AD"
+      },
+      {
+         "type": "x-sphinx-ad-alert",
+         "id": "x-sphinx-ad-alert--7f100d577ed64c7dbbacb5b37273d58f",
+         "spec_version": "2.1",
+         "created": "1618231598",
+         "modified": "1618231598",
+         "details": {
+            "totalFlows": 0,
+            "protocolFlow": {
+               "id": null,
+               "detectedProtocol": null,
+               "lowerPort": 0,
+               "upperPort": 0,
+               "upperIp": "255.255.255.255",
+               "lowerIp": "195.82.130.6",
+               "ipProtocol": 0,
+               "flowDuration": 0,
+               "bytes": 0,
+               "packets": 0,
+               "packetsWithoutPayload": 0,
+               "avgPacketSize": 0,
+               "minPacketSize": 0,
+               "maxPacketSize": 0,
+               "avgInterTime": 0,
+               "packetSize0": 0,
+               "interTime0": 0,
+               "packetSize1": 0,
+               "interTime1": 0,
+               "packetSize2": 0,
+               "interTime2": 0,
+               "packetSize3": 0,
+               "interTime3": 0,
+               "packetSize4": 0,
+               "interTime4": 0,
+               "hostname": null,
+               "dnaType": null,
+               "timeStamp2": null,
+               "malware": false,
+               "flags": 0
+            },
+            "text": "This IP was detected by AD performing an abnormal activity. In what follows, you can see more information.\nAbnormal behaviour: SMTP communication\nIP: 195.82.130.6\nBytes Up: 0 B\nBytes Down: 2.3GB\nPackets: 61\nConnections: 3\nFlows\n195.82.130.6:25 <?> 192.168.1.5:25  (UDP, L-to-R: 0 B, R-to-L: 1.8GB,47 pkts, duration: 2825s, sampling: 1/1)\n195.82.130.6:25 <?> 195.82.130.6:25  (UDP, L-to-R: 0 B, R-to-L: 381.5MB,10 pkts, duration: 2443s, sampling: 1/1)\n195.82.130.6:25 <?> 195.182.130.7:25  (UDP, L-to-R: 0 B, R-to-L: 152.6MB,4 pkts, duration: 1280s, sampling: 1/1)",
+            "title": "AD: SMTP talker identified (3 flows, 0 B)",
+            "flowId": "1618220663064",
+            "coords": null,
+            "username": null,
+            "timestamp": "2021-44-12 12:44:23",
+            "algorithm": {
+               "type": "SMTPTalker_sflow",
+               "hostname": "195.82.130.6",
+               "bytesUp": "0",
+               "bytesDown": "2439949492",
+               "numberPkts": "61",
+               "connections": "3",
+               "stringFlows": "\n195.82.130.6:25 <?> 192.168.1.5:25  (UDP, L-to-R: 0 B, R-to-L: 1.8GB,47 pkts, duration: 2825s, sampling: 1/1)\n195.82.130.6:25 <?> 195.82.130.6:25  (UDP, L-to-R: 0 B, R-to-L: 381.5MB,10 pkts, duration: 2443s, sampling: 1/1)\n195.82.130.6:25 <?> 195.182.130.7:25  (UDP, L-to-R: 0 B, R-to-L: 152.6MB,4 pkts, duration: 1280s, sampling: 1/1)"
+            }
+         }
+      },
+      {
+         "type": "relationship",
+         "id": "x-sphinx-ad-alert--ec1614fd330d4feeaf86d5f4e00f763c",
+         "spec_version": "2.1",
+         "created": "1618231598",
+         "modified": "1618231598"
+      }
+   ]
+}

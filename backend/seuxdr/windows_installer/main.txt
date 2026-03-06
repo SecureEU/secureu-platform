@@ -1,0 +1,55 @@
+package main
+
+import (
+	"embed"
+	"fmt"
+	"log"
+	"os"
+	"os/exec"
+	"path/filepath"
+)
+
+//go:embed install_seuxdr.ps1 %s
+var embeddedFiles embed.FS
+
+func main() {
+	// Create temp dir to hold both the script and the binary
+	tempDir, err := os.MkdirTemp("", "seuxdr_install_*")
+	if err != nil {
+		log.Fatal("Error creating temp directory: ", err)
+	}
+	defer os.RemoveAll(tempDir) // clean up after execution
+
+	// Extract PowerShell script
+	psScript, err := embeddedFiles.ReadFile("install_seuxdr.ps1")
+	if err != nil {
+		log.Fatal("could not read PowerShell script:", err)
+	}
+
+	psFilePath := filepath.Join(tempDir, "install_seuxdr.ps1")
+	if err := os.WriteFile(psFilePath, psScript, 0644); err != nil {
+		log.Fatal("Error writing PowerShell script to disk: ", err)
+	}
+
+	// Extract binary
+	binaryData, err := embeddedFiles.ReadFile("%s")
+	if err != nil {
+		log.Fatal("could not read binary:", err)
+	}
+
+	binaryName := "seuxdr.exe"
+	binaryPath := filepath.Join(tempDir, binaryName)
+	if err := os.WriteFile(binaryPath, binaryData, 0755); err != nil {
+		log.Fatal("Error writing binary to disk: ", err)
+	}
+
+	// Run PowerShell script, passing binary name as arg
+	cmd := exec.Command("powershell", "-ExecutionPolicy", "Bypass", "-File", psFilePath, binaryName)
+	cmd.Dir = tempDir
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	if err := cmd.Run(); err != nil {
+		fmt.Println("Error executing PowerShell script:", err)
+	}
+}

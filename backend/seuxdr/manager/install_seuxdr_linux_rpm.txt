@@ -1,0 +1,88 @@
+#!/bin/bash
+
+# Variables
+SEUXDR_DIR="/var/%s"
+SEUXDR_BINARY="%s"
+SERVICE_NAME="%s"
+SEUXDR_BINARY_DIR="/opt/$SERVICE_NAME"
+SEUXDR_BINARY_LOC="$SEUXDR_BINARY_DIR/$SEUXDR_BINARY"
+SERVICE_FILE="/etc/systemd/system/${SERVICE_NAME}.service"
+
+# Check if the script is run as root
+if [ "$(id -u)" -ne 0 ]; then
+  echo "Please run as root"
+  exit 1
+fi
+
+echo "Installing SEUXDR agent..."
+
+# Create the SEUXDR directory if it doesn't exist
+if [ ! -d "$SEUXDR_DIR" ]; then
+  echo "Creating directory $SEUXDR_DIR"
+  mkdir -p $SEUXDR_DIR
+fi
+
+# Create the SEUXDR temporary directory if it doesn't exist
+if [ ! -d "$SEUXDR_BINARY_DIR" ]; then
+  echo "Creating directory $SEUXDR_BINARY_DIR"
+  mkdir -p $SEUXDR_BINARY_DIR
+fi
+
+# Copy the SEUXDR binary to the target directory
+if [ -f "$SEUXDR_BINARY_LOC" ]; then
+  echo "Copying $SEUXDR_BINARY to $SEUXDR_DIR"
+  cp "$SEUXDR_BINARY_LOC" "$SEUXDR_DIR/"
+  chmod +x "$SEUXDR_DIR/$SEUXDR_BINARY"
+else
+  echo "Binary file $SEUXDR_BINARY not found!"
+  exit 1
+fi
+
+# Set correct SELinux context to allow execution
+echo "Configuring SELinux policies for SEUXDR..."
+
+# Ensure semanage is available
+if ! command -v semanage &> /dev/null; then
+  echo "Installing policycoreutils-python-utils for SELinux management..."
+  dnf install -y policycoreutils-python-utils
+fi
+
+# Set the correct SELinux context
+chcon -t bin_t "$SEUXDR_DIR/$SEUXDR_BINARY"
+semanage fcontext -a -t bin_t "$SEUXDR_DIR/$SEUXDR_BINARY"
+restorecon -v "$SEUXDR_DIR/$SEUXDR_BINARY"
+
+# Set up a systemd service for SEUXDR
+echo "Creating systemd service file for SEUXDR..."
+
+cat << EOF > $SERVICE_FILE
+[Unit]
+Description=%s
+
+[Service]
+ExecStart=$SEUXDR_DIR/$SEUXDR_BINARY
+Restart=always
+User=root
+WorkingDirectory=$SEUXDR_DIR
+RestartSec=10
+
+KillMode=process
+SendSIGKILL=no
+TimeoutStopSec=30
+
+SELinuxContext=system_u:system_r:unconfined_t:s0
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# Reload systemd to acknowledge the new service
+echo "Reloading systemd..."
+systemctl daemon-reload
+
+# Enable and start the SEUXDR service
+echo "Enabling and starting SEUXDR service..."
+systemctl enable "$SERVICE_NAME"
+systemctl start "$SERVICE_NAME"
+
+echo "SEUXDR agent installed and running!"

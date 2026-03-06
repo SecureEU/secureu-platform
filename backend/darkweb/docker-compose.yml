@@ -1,0 +1,7 @@
+services:
+  dark-web-backend:
+    build: .
+    container_name: dark-web-backend
+    ports:
+      - "8001:8000"
+    restart: unless-stopped

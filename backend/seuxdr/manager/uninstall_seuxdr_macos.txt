@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# Variables
+APP_NAME="%s"
+SEUXDR_DIR="/var/$APP_NAME"
+LAUNCHD_FILE="/Library/LaunchDaemons/com.$APP_NAME.agent.plist"
+
+# Check if the script is run as root
+if [ "$EUID" -ne 0 ]; then
+  echo "Please run as root"
+  exit 1
+fi
+
+# Unload the SEUXDR service
+echo "Unloading $APP_NAME service with launchctl..."
+launchctl unload $LAUNCHD_FILE
+
+# Remove the SEUXDR directory and binary
+echo "Removing $APP_NAME files..."
+rm -rf $SEUXDR_DIR
+
+# Remove the launchd plist file
+echo "Removing launchd plist file..."
+rm -f $LAUNCHD_FILE
+
+echo "$APP_NAME agent uninstalled successfully!"

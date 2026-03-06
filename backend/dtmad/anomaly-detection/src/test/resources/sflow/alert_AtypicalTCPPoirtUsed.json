@@ -1,0 +1,78 @@
+{
+  "type": "bundle",
+  "id": "bundle--e4a1c974-3f0b-4c70-84e2-e4888a5d383d",
+  "objects": [
+    {
+      "type": "identity",
+      "id": "identity--08eba70f-2fd9-472e-b505-c84937c8a10a",
+      "spec_version": "2.1",
+      "created": "2021-05-04 04:24:56",
+      "modified": "2021-05-04 04:24:56",
+      "name": "AD"
+    },
+    {
+      "type": "x-sphinx-ad-alert",
+      "id": "x-sphinx-ad-alert--91e5283f-db7c-4eb4-9ace-a9784eafdf81",
+      "spec_version": "2.1",
+      "created": "2021-05-04 04:24:56",
+      "modified": "2021-05-04 04:24:56",
+      "details": {
+        "totalFlows": 0,
+        "protocolFlow": {
+          "id": null,
+          "detectedProtocol": null,
+          "lowerPort": 0,
+          "upperPort": 0,
+          "upperIp": "255.255.255.255",
+          "lowerIp": "10.1.1.500",
+          "ipProtocol": 0,
+          "flowDuration": 0,
+          "bytes": 0,
+          "packets": 0,
+          "packetsWithoutPayload": 0,
+          "avgPacketSize": 0,
+          "minPacketSize": 0,
+          "maxPacketSize": 0,
+          "avgInterTime": 0,
+          "packetSize0": 0,
+          "interTime0": 0,
+          "packetSize1": 0,
+          "interTime1": 0,
+          "packetSize2": 0,
+          "interTime2": 0,
+          "packetSize3": 0,
+          "interTime3": 0,
+          "packetSize4": 0,
+          "interTime4": 0,
+          "hostname": null,
+          "dnaType": null,
+          "timeStamp2": null,
+          "malware": false,
+          "flags": 0
+        },
+        "text": "This IP was detected by AD performing an abnormal activity. In what follows, you can see more information.\nAbnormal behaviour: Atypical TCP port used (1159)\nIP: 10.1.1.500\nBytes Up: 1.1GB\nBytes Down: 4.6GB\nPackets: 24\nFlows\n10.1.1.500:1159 <?> 104.143.5.161:700 [!] (TCP, L-to-R: 103.0MB, R-to-L: 396.7MB,2 pkts, duration: 60s, sampling: 1/1)\n10.1.1.500:1159 <?> 104.143.5.160:700 [!] (TCP, L-to-R: 102.0MB, R-to-L: 395.8MB,2 pkts, duration: 59s, sampling: 1/1)\n10.1.1.500:1159 <?> 104.143.5.159:700 [!] (TCP, L-to-R: 101.1MB, R-to-L: 394.8MB,2 pkts, duration: 57s, sampling: 1/1)\n10.1.1.500:1159 <?> 104.143.5.158:1791 [!] (TCP, L-to-R: 100.1MB, R-to-L: 393.9MB,2 pkts, duration: 57s, sampling: 1/1)\n10.1.1.500:1159 <?> 104.143.5.157:1791 [!] (TCP, L-to-R: 99.2MB, R-to-L: 392.9MB,2 pkts, duration: 56s, sampling: 1/1)\n10.1.1.500:1159 <?> 104.143.5.156:1791 [!] (TCP, L-to-R: 98.2MB, R-to-L: 392.0MB,2 pkts, duration: 56s, sampling: 1/1)\n10.1.1.500:1159 <?> 104.143.5.154:700 [!] (TCP, L-to-R: 96.3MB, R-to-L: 390.0MB,2 pkts, duration: 55s, sampling: 1/1)\n10.1.1.500:1159 <?> 104.143.5.153:700 [!] (TCP, L-to-R: 95.4MB, R-to-L: 389.1MB,2 pkts, duration: 56s, sampling: 1/1)\n10.1.1.500:1159 <?> 104.143.5.151:1705 [!] (TCP, L-to-R: 93.5MB, R-to-L: 387.2MB,2 pkts, duration: 56s, sampling: 1/1)\n10.1.1.500:1159 <?> 104.143.5.150:1705 [!] (TCP, L-to-R: 92.5MB, R-to-L: 386.2MB,2 pkts, duration: 55s, sampling: 1/1)\n10.1.1.500:1159 <?> 104.143.5.148:1704 [!] (TCP, L-to-R: 90.6MB, R-to-L: 384.3MB,2 pkts, duration: 56s, sampling: 1/1)\n10.1.1.500:1159 <?> 104.143.5.147:1704 [!] (TCP, L-to-R: 89.6MB, R-to-L: 383.4MB,2 pkts, duration: 57s, sampling: 1/1)",
+        "title": "AD: Atypical TCP port used (1159)",
+        "flowId": "1620145485518",
+        "coords": null,
+        "username": null,
+        "timestamp": "2021-24-04 07:24:56",
+        "algorithm": {
+          "type": "AtypicalTCPPortUsed_sflow",
+          "tcpport": "1159",
+          "bytesUp": "1217894064",
+          "bytesDown": "4913894064",
+          "numberPkts": "24",
+          "myIP": "10.1.1.500",
+          "stringFlows": "\n10.1.1.500:1159 <?> 104.143.5.161:700 [!] (TCP, L-to-R: 103.0MB, R-to-L: 396.7MB,2 pkts, duration: 60s, sampling: 1/1)\n10.1.1.500:1159 <?> 104.143.5.160:700 [!] (TCP, L-to-R: 102.0MB, R-to-L: 395.8MB,2 pkts, duration: 59s, sampling: 1/1)\n10.1.1.500:1159 <?> 104.143.5.159:700 [!] (TCP, L-to-R: 101.1MB, R-to-L: 394.8MB,2 pkts, duration: 57s, sampling: 1/1)\n10.1.1.500:1159 <?> 104.143.5.158:1791 [!] (TCP, L-to-R: 100.1MB, R-to-L: 393.9MB,2 pkts, duration: 57s, sampling: 1/1)\n10.1.1.500:1159 <?> 104.143.5.157:1791 [!] (TCP, L-to-R: 99.2MB, R-to-L: 392.9MB,2 pkts, duration: 56s, sampling: 1/1)\n10.1.1.500:1159 <?> 104.143.5.156:1791 [!] (TCP, L-to-R: 98.2MB, R-to-L: 392.0MB,2 pkts, duration: 56s, sampling: 1/1)\n10.1.1.500:1159 <?> 104.143.5.154:700 [!] (TCP, L-to-R: 96.3MB, R-to-L: 390.0MB,2 pkts, duration: 55s, sampling: 1/1)\n10.1.1.500:1159 <?> 104.143.5.153:700 [!] (TCP, L-to-R: 95.4MB, R-to-L: 389.1MB,2 pkts, duration: 56s, sampling: 1/1)\n10.1.1.500:1159 <?> 104.143.5.151:1705 [!] (TCP, L-to-R: 93.5MB, R-to-L: 387.2MB,2 pkts, duration: 56s, sampling: 1/1)\n10.1.1.500:1159 <?> 104.143.5.150:1705 [!] (TCP, L-to-R: 92.5MB, R-to-L: 386.2MB,2 pkts, duration: 55s, sampling: 1/1)\n10.1.1.500:1159 <?> 104.143.5.148:1704 [!] (TCP, L-to-R: 90.6MB, R-to-L: 384.3MB,2 pkts, duration: 56s, sampling: 1/1)\n10.1.1.500:1159 <?> 104.143.5.147:1704 [!] (TCP, L-to-R: 89.6MB, R-to-L: 383.4MB,2 pkts, duration: 57s, sampling: 1/1)"
+        }
+      }
+    },
+    {
+      "type": "relationship",
+      "id": "relationship--5103dae5-6f76-460a-aeb8-f447da74fd7c",
+      "spec_version": "2.1",
+      "created": "2021-05-04 04:24:56",
+      "modified": "2021-05-04 04:24:56"
+    }
+  ]
+}

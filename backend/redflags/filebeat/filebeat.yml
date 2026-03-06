@@ -1,0 +1,41 @@
+filebeat.inputs:
+- type: filestream
+  id: system_logs
+  enabled: ${SYSTEM_LOGS_ENABLED:true}
+  paths:
+    - ${SYSTEM_LOG_PATH:/sample_logs/system.log}
+  fields:
+    log_type: system
+    source_host: ${SYSTEM_SOURCE_HOST:test-system}
+  fields_under_root: false
+
+- type: filestream
+  id: apache_logs
+  enabled: ${WEB_LOGS_ENABLED:true}
+  paths:
+   - ${WEB_LOG_PATH:/sample_logs/apache-access.log}
+  fields:
+    log_type: web
+    source_host: ${WEB_SOURCE_HOST:test-apache}
+  fields_under_root: false
+
+  multiline.pattern: '^[[:space:]]'
+  multiline.negate: false
+  multiline.match: after
+
+output.file:
+  path: "/aggregated_logs"
+  filename: aggregated
+  rotate_every_kb: 10240  # Rotate when file reaches 10MB
+  number_of_files: 5       # Keep 5 rotated files
+  
+  # Permissions
+  permissions: 0644
+  
+  # Format: JSON lines (easier to parse)
+  codec.json:
+    pretty: false
+    escape_html: false
+
+
+name: log-aggregator

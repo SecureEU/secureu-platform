@@ -1,0 +1,30 @@
+# ──────────────────────────────────────────────
+# SECUR-EU Platform Variables
+# ──────────────────────────────────────────────
+
+# Installation path (platform root on target server)
+install_dir: /opt/secur-eu
+frontend_dir: /opt/secur-eu/frontend
+backend_dir: /opt/secur-eu/backend
+
+# System user that will own and run the platform
+app_user: secureu
+
+# ──────────────────────────────────────────────
+# Versions
+# ──────────────────────────────────────────────
+node_major: 20
+go_version: "1.22.4"
+java_package: temurin-17-jdk
+
+# ──────────────────────────────────────────────
+# Dashboard config
+# ──────────────────────────────────────────────
+dashboard_port: 3000
+
+# MongoDB (dashboard auth database)
+mongodb_uri: "mongodb://admin:password@localhost:27017/intersoc-dashboard?authSource=admin"
+mongodb_db: "intersoc-dashboard"
+
+# JWT secret — CHANGE THIS IN PRODUCTION
+jwt_secret: "change-me-in-production"

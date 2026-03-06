@@ -1,0 +1,50 @@
+services:
+  suricata:
+    image: jasonish/suricata:latest
+    container_name: dtm-suricata
+    network_mode: host
+    cap_add:
+      - NET_RAW
+      - NET_ADMIN
+      - SYS_NICE
+    volumes:
+      - suricata-logs:/var/log/suricata
+      - ./suricata/suricata.yaml:/etc/suricata/suricata.yaml:ro
+      - ./suricata/rules:/var/lib/suricata/rules:ro
+    command: >
+      suricata -c /etc/suricata/suricata.yaml
+      -i ${CAPTURE_INTERFACE:-wlo1}
+      --set outputs.1.eve-log.filename=/var/log/suricata/eve.json
+    restart: unless-stopped
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash-oss:8.12.0
+    container_name: dtm-logstash
+    network_mode: host
+    volumes:
+      - suricata-logs:/var/log/suricata:ro
+      - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
+      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
+    environment:
+      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+    depends_on:
+      - suricata
+    restart: unless-stopped
+
+  tshark:
+    build: ./tshark
+    container_name: dtm-tshark
+    network_mode: host
+    cap_add:
+      - NET_RAW
+      - NET_ADMIN
+    volumes:
+      - ./tshark/capture.sh:/capture.sh:ro
+    environment:
+      CAPTURE_INTERFACE: ${CAPTURE_INTERFACE:-wlo1}
+      KAFKA_BROKER: ${KAFKA_BROKER:-localhost:9092}
+      KAFKA_TOPIC: ${KAFKA_TOPIC_PACKAGE:-dtm-package}
+    restart: unless-stopped
+
+volumes:
+  suricata-logs:

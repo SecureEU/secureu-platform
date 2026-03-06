@@ -1,0 +1,52 @@
+# License Here
+SEUXDR
+MIT License
+(C) Clone Systems INc., 2025
+<Include your full license text here>
+
+---
+
+# Third-Party Licenses
+
+## Libraries under the MIT License
+The following libraries are licensed under the MIT License:
+
+1. Glebarez sqlite gorm driver - Copyright (c) 2013-NOW  Jinzhu <wosmvp@gmail.com> (MIT License) - github.com/glebarez/sqlite
+2. Logrus - Copyright (c) 2014 Simon Eskildsen (MIT License) - github.com/sirupsen/logrus
+3. GORM - Copyright (c) 2013-present  Jinzhu <wosmvp@gmail.com> (MIT License) - gorm.io/gorm 
+4. Lumberjack log rolling package - Copyright (c) 2014 Nate Finch - gopkg.in/natefinch/lumberjack.v2
+5. Tail pkg - Copyright 2015 Hewlett Packard Enterprise Development LP, Copyright (c) 2014 ActiveState - github.com/nxadm/tail
+6. Yaml pkg - Copyright (c) 2006 Kirill Simonov - github.com/go-yaml/yaml/tree/v2.4.0
+7. Gonfig - Copyright (c) 2018 Felipe Dutra Tine e Silva - github.com/tkanos/gonfig
+8. Mattn sqlite - Copyright (c) 2014 Yasuhiro Matsumoto - github.com/mattn/go-sqlite3
+9. Golang migrate - Copyright (c) 2016 Matthias Kadenbach. Copyright (c) 2018 Dale Hui - github.com/mattes/migrate
+10. Go Cache - Copyright (c) 2012-2019 Patrick Mylund Nielsen and the go-cache contributors - github.com/patrickmn/go-cache
+11. Gin contrib cors - Copyright (c) 2016 Gin-Gonic - github.com/gin-contrib
+12. Gin gonic framework - Copyright (c) 2016 Gin-Gonic - github.com/gin-gonic/gin
+13. Go Cron - Copyright (C) 2012 Rob Figueiredo - github.com/robfig/cron
+
+## Libraries under the BSD License
+The following libraries are licensed under the BSD 3-Clause License:
+
+1. Pure-go sqlite version - Copyright (c) 2017 The Sqlite Authors - github.com/rledisez/modernc.org-sqlite
+2. Windows api for go - Copyright 2009 The Go Authors - golang.org/x/sys/windows
+3. fsnotify - Copyright © 2012 The Go Authors, Copyright © fsnotify Authors. All rights reserved. - github.com/fsnotify/fsnotify
+
+## Libraries under the BSD-2 License
+The following libraries are licensed under the BSD 3-Clause License:
+
+1. Errors package - Copyright (c) 2015, Dave Cheney <dave@cheney.net> - github.com/pkg/errors
+2. Gorilla Websockets - Copyright (c) 2013 The Gorilla WebSocket Authors - github.com/gorilla/websocket
+
+## Libraries under the Apache license 2.0:
+
+1. Winlogbeat - Copyright (C) Elastic, 2024 (Apache License 2.0) - github.com/elastic/beats/v7/winlogbeat 
+2. GoUber mock (Apache License 2.0) - github.com/uber-go/mock
+
+## Libraries under the Zlib license:
+
+1. Run as a Service manager - Copyright (c) 2015 Daniel Theophanes - github.com/kardianos/service
+
+## Libraries under Google's own licenses
+
+1. Google UUID Copyright (c) 2009,2014 Google Inc - github.com/google/uuid

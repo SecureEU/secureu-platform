@@ -1,0 +1,78 @@
+{
+  "type": "bundle",
+  "id": "bundle--80432431-fb33-436f-8e93-c35239f7955d",
+  "objects": [
+    {
+      "type": "identity",
+      "id": "identity--d8bddc6c-82d8-4197-9df2-abc4e1283cec",
+      "spec_version": "2.1",
+      "created": "2021-05-01 07:38:43",
+      "modified": "2021-05-01 07:38:43",
+      "name": "AD"
+    },
+    {
+      "type": "x-sphinx-ad-alert",
+      "id": "x-sphinx-ad-alert--f2e4bd05-3f7c-44b7-b84a-d848ada34d27",
+      "spec_version": "2.1",
+      "created": "2021-05-01 07:38:43",
+      "modified": "2021-05-01 07:38:43",
+      "details": {
+        "totalFlows": 0,
+        "protocolFlow": {
+          "id": null,
+          "detectedProtocol": null,
+          "lowerPort": 0,
+          "upperPort": 0,
+          "upperIp": "255.255.255.255",
+          "lowerIp": "10.1.1.43",
+          "ipProtocol": 0,
+          "flowDuration": 0,
+          "bytes": 0,
+          "packets": 0,
+          "packetsWithoutPayload": 0,
+          "avgPacketSize": 0,
+          "minPacketSize": 0,
+          "maxPacketSize": 0,
+          "avgInterTime": 0,
+          "packetSize0": 0,
+          "interTime0": 0,
+          "packetSize1": 0,
+          "interTime1": 0,
+          "packetSize2": 0,
+          "interTime2": 0,
+          "packetSize3": 0,
+          "interTime3": 0,
+          "packetSize4": 0,
+          "interTime4": 0,
+          "hostname": null,
+          "dnaType": null,
+          "timeStamp2": null,
+          "malware": false,
+          "flags": 0
+        },
+        "text": "This IP was detected by AD performing an abnormal activity. In what follows, you can see more information.\nAbnormal behaviour: Appears to be a media streaming client.\nIP: null\nBytes Up: 0 B\nBytes Down: 190.7MB\nPackets: 2\nConnections: 1\nFlows\n10.1.1.43:1153 => 104.143.5.177:1153 [!] (TCP, Up: 0 B, Down: 190.7MB,2 pkts, duration: 7001s, sampling: 1/1)",
+        "title": "",
+        "flowId": "1619854723766",
+        "coords": null,
+        "username": null,
+        "timestamp": "2021-38-01 10:38:43",
+        "algorithm": {
+          "type": "MediaStreamingClient_sflow",
+          "hostname": null,
+          "bytesUp": "0",
+          "bytesDown": "199982344",
+          "numberPkts": "2",
+          "connections": "1",
+          "stringFlows": "\n10.1.1.43:1153 => 104.143.5.177:1153 [!] (TCP, Up: 0 B, Down: 190.7MB,2 pkts, duration: 7001s, sampling: 1/1)"
+        }
+      }
+    },
+    {
+      "type": "relationship",
+      "id": "relationship--a7be8abe-0e13-4960-872e-aade7e9f718d",
+      "spec_version": "2.1",
+      "created": "2021-05-01 07:38:43",
+      "modified": "2021-05-01 07:38:43"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+version: '3.9'
+
+services:
+  manager:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      platforms:
+        - linux/amd64
+    container_name: seuxdr-manager
+    platform: linux/amd64
+    hostname: Mac.home
+    privileged: true  # Required for systemd to work properly
+    ports:
+      - "8443:8443"
+      - "8082:8081"
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
+    volumes:
+      - ./manager/certs:/seuxdr/manager/certs

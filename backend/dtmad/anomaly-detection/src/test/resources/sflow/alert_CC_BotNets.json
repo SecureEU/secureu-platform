@@ -1,0 +1,79 @@
+{
+  "type": "bundle",
+  "id": "bundle--941d3f13-701a-4883-b5a9-f8d643a91392",
+  "objects": [
+    {
+      "type": "identity",
+      "id": "identity--402c05e7-1197-45b7-8647-98c67d7bcbb4",
+      "spec_version": "2.1",
+      "created": "2021-04-13 06:14:10",
+      "modified": "2021-04-13 06:14:10",
+      "name": "AD"
+    },
+    {
+      "type": "x-sphinx-ad-alert",
+      "id": "x-sphinx-ad-alert--19d446dc-08bc-41bf-8d57-e217b2965476",
+      "spec_version": "2.1",
+      "created": "2021-04-13 06:14:10",
+      "modified": "2021-04-13 06:14:10",
+      "details": {
+        "totalFlows": 0,
+        "protocolFlow": {
+          "id": null,
+          "detectedProtocol": null,
+          "lowerPort": 0,
+          "upperPort": 0,
+          "upperIp": "255.255.255.255",
+          "lowerIp": "10.1.1.10",
+          "ipProtocol": 0,
+          "flowDuration": 0,
+          "bytes": 0,
+          "packets": 0,
+          "packetsWithoutPayload": 0,
+          "avgPacketSize": 0,
+          "minPacketSize": 0,
+          "maxPacketSize": 0,
+          "avgInterTime": 0,
+          "packetSize0": 0,
+          "interTime0": 0,
+          "packetSize1": 0,
+          "interTime1": 0,
+          "packetSize2": 0,
+          "interTime2": 0,
+          "packetSize3": 0,
+          "interTime3": 0,
+          "packetSize4": 0,
+          "interTime4": 0,
+          "hostname": null,
+          "dnaType": null,
+          "timeStamp2": null,
+          "malware": false,
+          "flags": 0
+        },
+        "text": "This IP was detected by AD performing an abnormal activity. In what follows, you can see more information.\nAbnormal behaviour: Host C&C BotNet communication. \nIP: 10.1.1.10\nBlacklisted aliens: 192.168.1.5\nBytes Up: 83.4GB\nBytes Down: 0 B\nPackets: 896\nConnections: 1\nVirusTotal ref.: https://www.virustotal.com/en/ip-address/192.168.1.5\n",
+        "title": "A: C&C BotNet communication - 10.1.1.10 <?> 192.168.1.5",
+        "flowId": "1618337650484",
+        "coords": null,
+        "username": null,
+        "timestamp": "2021-14-13 09:14:10",
+        "algorithm": {
+          "type": "CCBotNet_sflow",
+          "hostname": "10.1.1.10",
+          "bytesUp": "89592090112",
+          "bytesDown": "0",
+          "numberPkts": "896",
+          "connections": "1",
+          "stringFlows": "\n10.1.1.10:1158 <?> 192.168.1.5:1153  (TCP, L-to-R: 83.4GB, R-to-L: 0 B,896 pkts, duration: 8349s, sampling: 1/1)",
+          "aliens": "192.168.1.5"
+        }
+      }
+    },
+    {
+      "type": "relationship",
+      "id": "relationship--b74bb9a9-d873-4a13-abbe-66b69e50e2c1",
+      "spec_version": "2.1",
+      "created": "2021-04-13 06:14:10",
+      "modified": "2021-04-13 06:14:10"
+    }
+  ]
+}

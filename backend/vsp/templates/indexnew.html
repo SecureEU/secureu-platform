@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CVE Vulnerability Prediction</title>
+    <style>
+        body { font-family: "Palatino-Linotype-normal"; margin: 0; padding: 0; }
+        h1 { text-align: center; }
+        .container { display: flex; justify-content: space-around; margin-top: 20px; }
+        table { border-collapse: collapse; width: 45%; }
+        th, td { padding: 10px; text-align: center; border: 1px solid #ddd; }
+        th { background-color: #f4f4f4; }
+        textarea { display: block; margin: 0 auto 10px; }
+        button { display: block; margin: 0 auto; padding: 10px 20px; background-color: #4CAF50; color: white; border: none; cursor: pointer; }
+        button:hover { background-color: #45a049; }
+        .description-container { margin-bottom: 20px; text-align: center; }
+        .description { font-size: 1.1em; text-align: left; max-width: 800px; margin: 0 auto; padding: 10px; line-height: 1.5; }
+        .severity-box { display: inline-block; padding: 10px; font-size: 1.1em; font-weight: bold; border-radius: 5px; margin-left: 20px; color: white; text-align: center; }
+        .history-table { margin-top: 40px; width: 90%; margin-left: auto; margin-right: auto; }
+        .low { background-color: #28a745; }
+        .medium { background-color: #ffc107; color: #000; }
+        .high { background-color: #fd7e14; }
+        .critical { background-color: #dc3545; }
+
+        select, input[type="number"] { width: 90%; padding: 6px; }
+        .action-row { margin-top: 20px; text-align: center; }
+    </style>
+</head>
+<body>
+    <h1>CVE Vulnerability Prediction</h1>
+
+    <form method="POST" action="{{ url_for('index') }}">
+        <textarea name="description" rows="6" cols="80" placeholder="Enter vulnerability description...">{{ description }}</textarea><br><br>
+        <button type="submit">Predict</button>
+    </form>
+
+    {% if results %}
+        <form method="POST" action="{{ url_for('save') }}">
+            <div class="description-container">
+                <h2>Prediction Results (Draft) for:</h2>
+                <div class="description">
+                    <p>"{{ description }}"</p>
+                </div>
+                <div id="severityBox"
+                    class="severity-box {% if results['Severity'] == 'LOW' %}low{% elif results['Severity'] == 'MEDIUM' %}medium{% elif results['Severity'] == 'HIGH' %}high{% else %}critical{% endif %}">
+                <span id="badgeScore">{{ results['CVSS Score'] }}</span> -
+                <span id="badgeSeverity">{{ results['Severity'] }}</span>
+                </div>
+            </div>
+
+            <div class="container">
+                <table>
+                    <tr>
+                        <th>Base Metrics</th>
+                        <th>Estimated Value (Editable)</th>
+                    </tr>
+
+                    <tr>
+                        <td>Attack Vector (AV)</td>
+                        <td>
+                            <select name="AV">
+                                {% for opt in ["NETWORK","ADJACENT","LOCAL","PHYSICAL"] %}
+                                    <option value="{{ opt }}" {% if results['AV']==opt %}selected{% endif %}>{{ opt }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>Attack Complexity (AC)</td>
+                        <td>
+                            <select name="AC">
+                                {% for opt in ["LOW","HIGH"] %}
+                                    <option value="{{ opt }}" {% if results['AC']==opt %}selected{% endif %}>{{ opt }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>Privileges Required (PR)</td>
+                        <td>
+                            <select name="PR">
+                                {% for opt in ["NONE","LOW","HIGH"] %}
+                                    <option value="{{ opt }}" {% if results['PR']==opt %}selected{% endif %}>{{ opt }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>User Interaction (UI)</td>
+                        <td>
+                            <select name="UI">
+                                {% for opt in ["NONE","REQUIRED"] %}
+                                    <option value="{{ opt }}" {% if results['UI']==opt %}selected{% endif %}>{{ opt }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>Scope (S)</td>
+                        <td>
+                            <select name="S">
+                                {% for opt in ["UNCHANGED","CHANGED"] %}
+                                    <option value="{{ opt }}" {% if results['S']==opt %}selected{% endif %}>{{ opt }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>Confidentiality (C)</td>
+                        <td>
+                            <select name="C">
+                                {% for opt in ["NONE","LOW","HIGH"] %}
+                                    <option value="{{ opt }}" {% if results['C']==opt %}selected{% endif %}>{{ opt }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>Integrity (I)</td>
+                        <td>
+                            <select name="I">
+                                {% for opt in ["NONE","LOW","HIGH"] %}
+                                    <option value="{{ opt }}" {% if results['I']==opt %}selected{% endif %}>{{ opt }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>Availability (A)</td>
+                        <td>
+                            <select name="A">
+                                {% for opt in ["NONE","LOW","HIGH"] %}
+                                    <option value="{{ opt }}" {% if results['A']==opt %}selected{% endif %}>{{ opt }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+
+                <table>
+                    <tr>
+                        <th>Scores</th>
+                        <th>Estimation (Editable)</th>
+                    </tr>
+
+                    <tr>
+                        <td>Base Score</td>
+                        <td>
+                            <input type="number" name="CVSS Score" value="{{ results['CVSS Score'] }}" readonly>
+                        </td>
+                    </tr>
+
+                    <tr>
+                    <td>Severity</td>
+                    <td>
+                        <span id="severityText">{{ results['Severity'] }}</span>
+                        <input type="hidden" name="Severity" id="severityHidden" value="{{ results['Severity'] }}">
+                    </td>
+                    </tr>
+
+                    <tr>
+                        <td>Exploitability Score</td>
+                        <td>
+                            <input type="number" name="Exploitability Score" value="{{ results['Exploitability Score'] }}" readonly>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>Impact Score</td>
+                        <td>
+                            <input type="number" name="Impact Score" value="{{ results['Impact Score'] }}" readonly>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="action-row">
+                <button type="submit">Save to Previous Predictions</button>
+            </div>
+        </form>
+        <script>
+        (function () {
+        const av = document.querySelector('select[name="AV"]');
+        if (!av) return;
+
+        const metricNames = ["AV","AC","PR","UI","S","C","I","A"];
+
+        const els = Object.fromEntries(metricNames.map(n => [n, document.querySelector(`select[name="${n}"]`)]));
+        const cvssInput = document.querySelector('input[name="CVSS Score"]');
+        const expInput  = document.querySelector('input[name="Exploitability Score"]');
+        const impInput  = document.querySelector('input[name="Impact Score"]');
+
+        const severityText = document.getElementById("severityText");
+        const severityHidden = document.getElementById("severityHidden");
+
+        const severityBox = document.getElementById("severityBox");
+        const badgeScore = document.getElementById("badgeScore");
+        const badgeSeverity = document.getElementById("badgeSeverity");
+
+        function severityClass(label) {
+        const x = (label || "").toUpperCase();
+        if (x === "LOW") return "low";
+        if (x === "MEDIUM") return "medium";
+        if (x === "HIGH") return "high";
+        return "critical";
+        }
+
+        // Optional: also update the top badge text if you want (see next section)
+
+        let inFlight = 0;
+
+        async function recalc() {
+            const payload = {};
+            for (const n of metricNames) payload[n] = els[n].value;
+
+            const myReq = ++inFlight;
+
+            const r = await fetch("/recalculate", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(payload)
+            });
+
+            if (!r.ok) return;
+            const data = await r.json();
+            if (myReq !== inFlight) return;
+
+            // Update locked numeric outputs
+            cvssInput.value = data["CVSS Score"];
+            expInput.value  = data["Exploitability Score"];
+            impInput.value  = data["Impact Score"];
+
+            // Update severity display + hidden input for save
+            severityText.textContent = data["Severity"];
+            severityHidden.value = data["Severity"];
+            badgeScore.textContent = data["CVSS Score"];
+            badgeSeverity.textContent = data["Severity"];
+            severityBox.classList.remove("low","medium","high","critical");
+            severityBox.classList.add(severityClass(data["Severity"]));
+        }
+
+        for (const n of metricNames) {
+            els[n].addEventListener("change", recalc);
+        }
+        })();
+        </script>
+    {% endif %}
+
+    <h2>Previous Predictions</h2>
+    <table class="history-table">
+        <tr>
+            <th>Description</th>
+            <th>CVSS Vector</th>
+            <th>Base Score</th>
+            <th>Exploitability Score</th>
+            <th>Impact Score</th>
+        </tr>
+        {% for result in history %}
+        <tr>
+            <td>{{ result['description'] }}</td>
+            <td>{{ result['CVSS Vector'] }}</td>
+            <td>{{ result['CVSS Score'] }}</td>
+            <td>{{ result['Exploitability Score'] }}</td>
+            <td>{{ result['Impact Score'] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <div class="pagination" style="text-align: center;">
+        {% if current_page > 1 %}
+            <a href="{{ url_for('index', page=current_page-1) }}">Previous</a>
+        {% endif %}
+
+        <span>Page {{ current_page }} of {{ total_pages }}</span>
+
+        {% if current_page < total_pages %}
+            <a href="{{ url_for('index', page=current_page+1) }}">Next</a>
+        {% endif %}
+    </div>
+
+    <form method="POST" action="{{ url_for('clear_history') }}">
+        <button type="submit">Clear Results</button>
+    </form>
+
+    <form method="POST" action="{{ url_for('clear_last') }}">
+        <button type="submit">Clear Last Result</button>
+    </form>
+
+    <a href="{{ url_for('download_history') }}">
+        <button>Download History as JSON</button>
+    </a>
+
+</body>
+</html>

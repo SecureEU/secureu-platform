@@ -1,0 +1,14 @@
+FROM python:3.11-slim
+
+# Set working directory
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY postgre_store.py .
+COPY analyzer.py .
+COPY config.py .
+
+# Run analyzer
+CMD ["python", "-u", "analyzer.py"]

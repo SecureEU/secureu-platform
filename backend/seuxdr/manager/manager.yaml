@@ -1,0 +1,173 @@
+# server info
+tls_server: "0.0.0.0"
+mtls_server: "0.0.0.0"
+domain: "192.168.1.173"
+tls_port: 8443
+mtls_port: 8081
+frontend_port: 8080
+
+use_system_ca: false
+
+# environment info
+env: PROD
+
+# agent version management
+latest_agent_version: "1.0.1"
+
+wazuh:
+  url: "https://127.0.0.1:9200/_search/?size=10000"
+
+# active response configuration
+active_response:
+  enabled: true                    # Enable/disable active response system
+  polling_interval: 30             # Alert polling interval in seconds
+  min_rule_level: 10               # Minimum Wazuh rule level to trigger response
+  max_alerts_batch: 100            # Maximum alerts to process per batch
+  cooldown_period: 300             # Cooldown between same commands in seconds (5 minutes)
+  command_timeout: 30              # Command execution timeout in seconds
+  cleanup_interval: 60             # Cleanup interval for expired commands in seconds
+
+# database info
+database:
+  database_folder: "storage"
+  database_path: "./storage/manager.db"
+  migrations_path: "database/migrations"
+
+log_deposit: "/var/seuxdr/manager/queue"
+cleanup_schedule: "0 2 * * *"
+
+# cert locations
+certs:
+  cert_folder: "certs"
+  # mtls certificates
+  mtls:
+    server_key: "server-cert-key"
+    server_crt: "server-cert"
+    server_ca_crt: "server-ca-crt"
+    server_ca_key: "server-ca-key"
+    cert_extension: ".pem"
+    ca_settings:
+      cn: "www.seuxdr.com"
+      org: "Clone Systems"
+      country: "CY"
+      address: "Makariou III, 22, MAKARIA CENTER, Floor 4, Flat/Office 403"
+      locality: "Larnaka"
+      postal_code: "6016"
+      DNSNAMES:
+        - "localhost"
+      IP_ADDRESSES:
+        - "0.0.0.0"
+        - "192.168.1.173"
+      expiration_date:
+        years: 10
+        months: 0
+        days: 0
+      refresh_period:
+        years: 0
+        months: -2
+        days: 0
+
+    server_settings:
+      cn: "www.seuxdr.com"
+      org: "Clone Systems"
+      country: "CY"
+      address: "Makariou III, 22, MAKARIA CENTER, Floor 4, Flat/Office 403"
+      locality: "Larnaka"
+      postal_code: "6016"
+      DNSNAMES:
+        - "localhost"
+      IP_ADDRESSES:
+        - "0.0.0.0"
+        - "192.168.1.173"
+      expiration_date:
+        years: 1
+        months: 0
+        days: 0
+      refresh_period:
+        years: 0
+        months: -1
+        days: 0
+    client_settings:
+      cn: "www.seuxdr.com"
+      org: "Clone Systems"
+      country: "CY"
+      address: "Makariou III, 22, MAKARIA CENTER, Floor 4, Flat/Office 403"
+      locality: "Larnaka"
+      postal_code: "6016"
+      DNSNAMES:
+        - "localhost"
+      IP_ADDRESSES:
+        - "0.0.0.0"
+        - "192.168.1.173"
+      expiration_date:
+        years: 0
+        months: 1
+        days: 0
+      refresh_period:
+        years: 0
+        months: 0
+        days: 7
+
+  # tls certificates
+  tls:
+    server_crt: "certs/server.crt"
+    server_key: "certs/server.key"
+    server_ca_crt: "certs/server-ca.crt"
+  # used to encrypt aes keys before storing to db
+  keks:
+    private_key: "certs/encryption_key.pem"
+    public_key: "certs/encryption_pubkey.pem"
+
+  jwt:
+    private_key: "certs/jwt_private.key"
+    public_key: "certs/jwt_public.key"
+
+client_config:
+  app_name: "seuxdr"
+  maintainer: "SecurEU Team"
+  repo: "github.com/SecureEU/seuxdr"
+  license: "MIT"
+  service_name_windows: "SEUXDR"
+  service_name_linux: "seuxdr"
+  service_name_macos: "com.seuxdr.agent"
+  display_name: "SEUXDR Agent Service"
+  description: "SEUXDR agent service is a security agent daemon that monitors logs to protect users."
+  executable_paths:
+    mtls_server_ca_crt: "server-ca-crt.pem"
+    tls_server_ca_crt: "server-ca.crt" # TLS certificate that needs to be set to actual cert in production
+    client_key: "client-key.pem"
+    client_crt: "client.pem"
+    keys: "keys.json"
+    keks:
+      private_key: "encryption_key.pem"
+      public_key: "encryption_pubkey.pem"
+    base_config: "agent_base_config.yml"
+
+  installation_scripts:
+    windows_install_template: "install_seuxdr_windows.txt"
+    windows_install_script: "install_seuxdr.ps1"
+    windows_uninstall_template: "uninstall_seuxdr_windows.txt"
+    windows_uninstall_script: "uninstall_seuxdr_windows.ps1"
+    windows_installer: "windows_installer/main.txt"
+    windows_uninstaller: "windows_uninstaller/main.go"
+    windows_install_executable: "install_seuxdr_windows.exe"
+    windows_uninstall_executable: "uninstall_seuxdr_windows.exe"
+    windows_readme: "windows_readme.txt"
+
+    macos_install_template: "install_seuxdr_macos.txt"
+    macos_install_script: "install_seuxdr.sh"
+    macos_uninstall_template: uninstall_seuxdr_macos.txt
+    macos_uninstall_script: "uninstall_seuxdr_macos.sh"
+    macos_install_launcher_template: "install_launcher_macos.txt"
+    macos_install_plist: "macos_install_plist.txt"
+    macos_uninstall_launcher_template: "uninstall_launcher_macos.txt"
+    macos_uninstall_plist: "macos_uninstall_plist.txt"
+    macos_readme: "macos_readme.txt"
+
+    linux_install_rpm_template: "install_seuxdr_linux_rpm.txt"
+    linux_install_template: "install_seuxdr_linux.txt"
+    linux_install_script: "install_seuxdr.sh"
+    linux_uninstall_template: "uninstall_seuxdr_linux.txt"
+    linux_uninstall_script: "uninstall_seuxdr_linux.sh"
+    linux_readme_deb: "linux_readme_deb.txt"
+    linux_readme_rpm: "linux_readme_rpm.txt"

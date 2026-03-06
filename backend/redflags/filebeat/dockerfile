@@ -1,0 +1,16 @@
+FROM docker.elastic.co/beats/filebeat:8.11.0
+
+USER root
+
+COPY filebeat.yml /usr/share/filebeat/filebeat.yml
+RUN chmod 644 /usr/share/filebeat/filebeat.yml
+
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+  CMD filebeat test config || exit 1
+
+USER filebeat
+
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint"]
+
+CMD ["-e", "-strict.perms=false"]

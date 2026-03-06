@@ -1,0 +1,116 @@
+
+
+.charts-container {
+  display: flex;
+  justify-content: space-between; /* Aligns charts side by side */
+  width: 100%;
+  height: 400px; /* Set a fixed height for the charts */
+}
+
+.charts-flex {
+  display: flex;
+  width: 100%;
+}
+
+.stacked-bar-container {
+  width: 70%; /* Bar chart takes 70% of the width */
+  height: 100%; /* Ensure the height matches the parent container */
+}
+
+.pie-chart-container {
+  width: 30%; /* Pie chart takes 30% of the width */
+  height: 100%; /* Ensure the height matches the parent container */
+}
+
+/* Optional: Make sure both charts are responsive and adapt to small screens */
+@media (max-width: 768px) {
+  .charts-container {
+    flex-direction: column; /* Stack the charts vertically on smaller screens */
+  }
+
+  .stacked-bar-container, .pie-chart-container {
+    width: 100%; /* Full width for both charts */
+    height: 400px; /* Adjust height as needed */
+  }
+}
+
+.headerbar-parent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  background-color: #001529; /* Adjust as needed */
+  color: white;
+}
+
+/* Container for "NEXT GEN SIEM" and Logo */
+.headerbar-logo-container {
+  display: flex;
+  align-items: center;
+}
+
+/* Title Style */
+.headerbar-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-left: 15px; /* Space between text and logo */
+}
+
+/* Logo Style */
+.headerbar-logo {
+  height: 50px; /* Adjust as needed */
+}
+
+.login-logo {
+  height: 100px; /* Adjust as needed */
+}
+
+/* User Info Section */
+.headerbar-user {
+  display: flex;
+  align-items: center;
+}
+
+/* Logout Button */
+.headerbar-logout-button {
+  background: #1677ff;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+
+.alerts-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centers content horizontally */
+  justify-content: center; /* Ensures vertical alignment */
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.alerts-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.button-space {
+  margin-right: 10px; /* Adjust this value as needed */
+}
+
+.centered-form-item {
+  display: flex;
+  justify-content: center;
+}
+
+.centered-input {
+  display: flex;
+  justify-content: center;
+}
+
+/* .centered-input .ant-input,
+.centered-input .ant-input-password {
+  width: 80%;
+} */

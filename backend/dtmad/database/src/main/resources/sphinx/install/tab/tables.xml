@@ -1,0 +1,3055 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.10.xsd"
+                   objectQuotingStrategy="QUOTE_ALL_OBJECTS"
+                   logicalFilePath="sphinx/install/tab/tables.xml">
+
+	<changeSet author="mirceav" id="tab-2005181025">
+
+        <!--<preConditions onFail="MARK_RAN">-->
+            <!--<not>-->
+                <!--<tableExists tableName="ASSETS"/>-->
+            <!--</not>-->
+        <!--</preConditions>-->
+
+        <createTable tableName="assets">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_assets"/>
+            </column>
+            <column name="jpa_version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="group_id" type="BIGINT"/>
+            <column name="physical_address" type="VARCHAR(255${varchar.type})"/>
+            <column name="type_id" type="BIGINT"/>
+            <column name="asset_name" type="VARCHAR(255${varchar.type})"/>
+            <column name="asset_desc" type="VARCHAR(255${varchar.type})"/>
+            
+        </createTable>
+    </changeSet>
+
+	<changeSet author="mirceav" id="tab-2005181029">
+
+        <!--<preConditions onFail="MARK_RAN">-->
+            <!--<not>-->
+                <!--<tableExists tableName="asset_details"/>-->
+            <!--</not>-->
+        <!--</preConditions>-->
+
+        <createTable tableName="asset_details">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_asset_details"/>
+            </column>
+            <column name="jpa_version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="asset_id" type="BIGINT"/>
+            <column name="attribute_id" type="BIGINT"/>
+            <column name="attribute_value" type="VARCHAR(255${varchar.type})"/>
+            <column name="comments" type="VARCHAR(255${varchar.type})"/>
+            
+            
+        </createTable>
+    </changeSet>
+	<changeSet author="mirceav" id="tab-2005181042">
+
+        <!--<preConditions onFail="MARK_RAN">-->
+            <!--<not>-->
+                <!--<tableExists tableName="asset_attributes"/>-->
+            <!--</not>-->
+        <!--</preConditions>-->
+
+        <createTable tableName="asset_attributes">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_asset_attributes"/>
+            </column>
+            <column name="jpa_version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="attribute_name" type="VARCHAR(255${varchar.type})"/>
+            <column name="attribute_desc" type="VARCHAR(255${varchar.type})"/>
+
+        </createTable>
+    </changeSet>
+
+    <changeSet author="iulianb" id="tab-05062020-001">
+
+        <!--<preConditions onFail="MARK_RAN">-->
+            <!--<not>-->
+                <!--<tableExists tableName="tshark_interface"/>-->
+            <!--</not>-->
+            <!--<not>-->
+                <!--<tableExists tableName="tshark_process"/>-->
+            <!--</not>-->
+            <!--<not>-->
+                <!--<tableExists tableName="dtm_process"/>-->
+            <!--</not>-->
+        <!--</preConditions>-->
+
+        <createTable tableName="tshark_interface">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_tshark_interface"/>
+            </column>
+            <column name="jpa_version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="name" type="VARCHAR(255${varchar.type})"/>
+            <column name="full_name" type="VARCHAR(255${varchar.type})"/>
+            <column name="description" type="VARCHAR(255${varchar.type})"/>
+            <column name="enabled" type="BOOLEAN"/>
+            <column name="active" type="BOOLEAN"/>
+            <column name="filter_id" type="BIGINT"/>
+        </createTable>
+
+    </changeSet>
+
+    <changeSet  author="iulianb"  id="tab-05062020-002">
+        <!--<preConditions onFail="MARK_RAN">-->
+            <!--<not>-->
+                <!--<tableExists tableName="tshark_process"/>-->
+            <!--</not>-->
+            <!--<not>-->
+                <!--<tableExists tableName="dtm_process"/>-->
+            <!--</not>-->
+        <!--</preConditions>-->
+        <renameTable newTableName="tshark_process" oldTableName="tshark_interface"/>
+    </changeSet>
+
+    <changeSet author="iulianb" id="tab-05062020-003">
+
+        <!--<preConditions onFail="MARK_RAN">-->
+            <!--<not>-->
+                <!--<tableExists tableName="tshark_filter"/>-->
+            <!--</not>-->
+            <!--<not>-->
+                <!--<tableExists tableName="dtm_process_filter"/>-->
+            <!--</not>-->
+        <!--</preConditions>-->
+
+        <createTable tableName="tshark_filter">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_tshark_filter"/>
+            </column>
+            <column name="jpa_version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="name" type="VARCHAR(255${varchar.type})"/>
+            <column name="description" type="TEXT"/>
+            <column name="command" type="TEXT"/>
+        </createTable>
+
+    </changeSet>
+
+    <changeSet author="iulianb" id="tab-29062020-002">
+        <!--<preConditions onFail="MARK_RAN">-->
+            <!--<not>-->
+                <!--<tableExists tableName="tshark_process"/>-->
+            <!--</not>-->
+            <!--<not>-->
+                <!--<tableExists tableName="dtm_process"/>-->
+            <!--</not>-->
+        <!--</preConditions>-->
+
+        <addColumn tableName="tshark_process" >
+            <column name="instance_key"
+                    type="VARCHAR(255${varchar.type})" >
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="iulianb" id="tab-30062020-001">
+
+        <!--<preConditions onFail="MARK_RAN">-->
+            <!--<not>-->
+                <!--<tableExists tableName="tshark_instance"/>-->
+            <!--</not>-->
+            <!--<not>-->
+                <!--<tableExists tableName="dtm_instance"/>-->
+            <!--</not>-->
+        <!--</preConditions>-->
+
+        <createTable tableName="tshark_instance">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_tshark_instance"/>
+            </column>
+            <column name="jpa_version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="name" type="VARCHAR(255${varchar.type})"/>
+            <column name="description" type="TEXT"/>
+            <column name="key" type="VARCHAR(255${varchar.type})"/>
+        </createTable>
+
+    </changeSet>
+
+    <changeSet author="iulianb" id="tab-30062020-002">
+
+        <!--<preConditions onFail="MARK_RAN">-->
+            <!--<tableExists tableName="tshark_instance"/>-->
+        <!--</preConditions>-->
+
+        <addColumn tableName="tshark_instance" >
+            <column name="enabled" type="BOOLEAN" >
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="iulianb" id="tab-01072020-001">
+        <!--<preConditions onFail="MARK_RAN">-->
+            <!--<tableExists tableName="tshark_instance"/>-->
+        <!--</preConditions>-->
+
+        <addColumn tableName="tshark_instance" >
+            <column name="url" type="VARCHAR(255${varchar.type})" >
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="iulianb" id="tab-02072020-001">
+        <!--<preConditions onFail="MARK_RAN">-->
+            <!--<tableExists tableName="tshark_process"/>-->
+        <!--</preConditions>-->
+
+        <addColumn tableName="tshark_process" >
+            <column name="instance_id" type="BIGINT" >
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet  author="iulianb"  id="tab-02072020-002">
+        <!--<preConditions onFail="MARK_RAN">-->
+                <!--<tableExists tableName="tshark_process"/>-->
+        <!--</preConditions>-->
+
+        <dropColumn columnName="instance_key" tableName="tshark_process"/>
+    </changeSet>
+
+    <changeSet author="iulianb" id="tab-06072020-001">
+
+        <!--<preConditions onFail="MARK_RAN">-->
+            <!--<not>-->
+                <!--<tableExists tableName="ad_component"/>-->
+            <!--</not>-->
+        <!--</preConditions>-->
+
+        <createTable tableName="ad_component">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_ad_component"/>
+            </column>
+            <column name="jpa_version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="name" type="VARCHAR(255${varchar.type})"/>
+            <column name="description" type="TEXT"/>
+
+            <column name="enabled" type="BOOLEAN" ></column>
+
+        </createTable>
+
+    </changeSet>
+
+    <changeSet author="iulianb" id="tab-06072020-002">
+
+        <!--<preConditions onFail="MARK_RAN">-->
+            <!--<not>-->
+                <!--<tableExists tableName="ad_config"/>-->
+            <!--</not>-->
+        <!--</preConditions>-->
+
+        <createTable tableName="ad_config">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_ad_config"/>
+            </column>
+            <column name="jpa_version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="name" type="VARCHAR(255${varchar.type})"/>
+            <column name="value" type="TEXT"/>
+
+        </createTable>
+
+    </changeSet>
+
+    <changeSet author="iulianb" id="tab-07072020-001">
+
+        <!--<preConditions onFail="MARK_RAN">-->
+            <!--<not>-->
+                <!--<columnExists columnName="CODE" tableName="ad_component"/>-->
+            <!--</not>-->
+        <!--</preConditions>-->
+
+        <addColumn tableName="ad_component" >
+            <column name="code"
+                    type="VARCHAR(255${varchar.type})" >
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="iulianb" id="tab-07072020-002">
+        <!--<preConditions onFail="MARK_RAN">-->
+            <!--<not>-->
+                <!--<columnExists columnName="CONFIGURABLE" tableName="ad_component"/>-->
+            <!--</not>-->
+        <!--</preConditions>-->
+
+        <addColumn tableName="ad_component" >
+            <column name="configurable"
+                    type="BOOLEAN" >
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="iulianb" id="tab-07072020-003">
+
+        <!--<preConditions onFail="MARK_RAN">-->
+            <!--<not>-->
+                <!--<columnExists columnName="id_component" tableName="ad_config"/>-->
+            <!--</not>-->
+        <!--</preConditions>-->
+
+        <addColumn tableName="ad_config" >
+            <column name="id_component"
+                    type="BIGINT" >
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="iulianb" id="tab-07072020-004">
+
+        <!--<preConditions onFail="MARK_RAN">-->
+            <!--<not>-->
+                <!--<columnExists columnName="DESCRIPTION" tableName="ad_config"/>-->
+            <!--</not>-->
+        <!--</preConditions>-->
+
+        <addColumn tableName="ad_config" >
+            <column name="description"
+                    type="VARCHAR(255${varchar.type})" >
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="iulianb" id="tab-10072020-001">
+
+        <!--<preConditions onFail="MARK_RAN">-->
+            <!--<not>-->
+                <!--<tableExists tableName="blackweb_category"/>-->
+            <!--</not>-->
+        <!--</preConditions>-->
+
+        <createTable tableName="blackweb_category">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_blackweb_category"/>
+            </column>
+            <column name="jpa_version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="name" type="VARCHAR(255${varchar.type})"/>
+            <column name="description" type="VARCHAR(255${varchar.type})"/>
+
+        </createTable>
+
+    </changeSet>
+
+    <changeSet author="iulianb" id="tab-10072020-002">
+
+        <!--<preConditions onFail="MARK_RAN">-->
+            <!--<not>-->
+                <!--<tableExists tableName="BLACKWEB"/>-->
+            <!--</not>-->
+        <!--</preConditions>-->
+
+        <createTable tableName="blackweb">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_blackweb"/>
+            </column>
+            <column name="jpa_version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="domain" type="VARCHAR(255${varchar.type})"/>
+            <column name="blackweb_category_id" type="BIGINT"/>
+
+        </createTable>
+
+    </changeSet>
+
+
+    <changeSet author="catalind" id="tab-17072020-001">
+
+        <!--<preConditions onFail="MARK_RAN">-->
+            <!--<not>-->
+                <!--<tableExists tableName="worldmap_latlng"/>-->
+            <!--</not>-->
+        <!--</preConditions>-->
+
+        <createTable tableName="worldmap_latlng">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_worldmap"/>
+            </column>
+            <column name="lat" type="FLOAT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lng" type="FLOAT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255${varchar.type})"/>
+            <column name="value" type="FLOAT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="timestap" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+    </changeSet>
+
+
+    <changeSet author="iulianb" id="tab-27072020-001">
+
+        <!--<preConditions onFail="MARK_RAN">-->
+            <!--<not>-->
+                <!--<tableExists tableName="port_catalogue"/>-->
+            <!--</not>-->
+        <!--</preConditions>-->
+
+        <createTable tableName="port_catalogue">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_port_catalogue"/>
+            </column>
+            <column name="jpa_version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="port" type="VARCHAR(255${varchar.type})"/>
+            <column name="name" type="VARCHAR(255${varchar.type})"/>
+            <column name="description" type="VARCHAR(255${varchar.type})"/>
+
+        </createTable>
+    </changeSet>
+
+    <changeSet author="iulianb" id="tab-28072020-001">
+
+        <!--<preConditions onFail="MARK_RAN">-->
+            <!--<columnExists columnName="port" tableName="port_catalogue"/>-->
+            <!--<not>-->
+                <!--<columnExists columnName="end_port_interval" tableName="port_catalogue"/>-->
+            <!--</not>-->
+            <!--<not>-->
+                <!--<columnExists columnName="start_port_interval" tableName="port_catalogue"/>-->
+            <!--</not>-->
+        <!--</preConditions>-->
+
+        <dropColumn columnName="port" tableName="port_catalogue"/>
+
+        <addColumn tableName="port_catalogue" >
+            <column name="end_port_interval"
+                    type="BIGINT" >
+            </column>
+        </addColumn>
+
+        <addColumn tableName="port_catalogue" >
+            <column name="start_port_interval"
+                    type="BIGINT" >
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="iulianb" id="tab-28072020-002">
+        <!--<preConditions onFail="MARK_RAN">-->
+            <!--<tableExists tableName="tshark_filter"></tableExists>-->
+            <!--<not>-->
+                <!--<columnExists columnName="CODE" tableName="tshark_filter"/>-->
+            <!--</not>-->
+            <!--<not>-->
+                <!--<columnExists columnName="can_delete" tableName="tshark_filter"/>-->
+            <!--</not>-->
+        <!--</preConditions>-->
+
+        <addColumn tableName="tshark_filter" >
+            <column name="code"
+                    type="VARCHAR(255${varchar.type})" >
+            </column>
+        </addColumn>
+
+        <addColumn tableName="tshark_filter" >
+            <column name="can_delete"
+                    type="BOOLEAN" >
+            </column>
+        </addColumn>
+
+    </changeSet>
+
+    <changeSet author="PCAP_SESSION"  id="tab-11082020-002">
+
+        <!--<preConditions onFail="MARK_RAN">-->
+            <!--<not>-->
+                <!--<tableExists tableName="tshark_instance"></tableExists>-->
+            <!--</not>-->
+            <!--<not>-->
+                <!--<tableExists tableName="dtm_instance"></tableExists>-->
+            <!--</not>-->
+        <!--</preConditions>-->
+
+        <renameTable newTableName="dtm_instance"
+                      oldTableName="tshark_instance"
+                     />
+    </changeSet>
+
+    <changeSet author="iulianb" id="tab-11082020-003">
+
+        <!--<preConditions onFail="MARK_RAN">-->
+            <!--<not>-->
+                <!--<columnExists columnName="is_master" tableName="dtm_instance"/>-->
+            <!--</not>-->
+            <!--<not>-->
+                <!--<columnExists columnName="has_tshark" tableName="dtm_instance"/>-->
+            <!--</not>-->
+            <!--<not>-->
+                <!--<columnExists columnName="has_suricata" tableName="dtm_instance"/>-->
+            <!--</not>-->
+        <!--</preConditions>-->
+
+        <addColumn tableName="dtm_instance" >
+            <column name="is_master"
+                    type="BOOLEAN" >
+            </column>
+        </addColumn>
+
+        <addColumn tableName="dtm_instance" >
+            <column name="has_tshark"
+                    type="BOOLEAN" >
+            </column>
+        </addColumn>
+
+        <addColumn tableName="dtm_instance" >
+            <column name="has_suricata"
+                    type="BOOLEAN" >
+            </column>
+        </addColumn>
+
+    </changeSet>
+
+    <changeSet author="iulianb" id="tab-20082020-001">
+
+        <!--<preConditions onFail="MARK_RAN">-->
+            <!--<not>-->
+                <!--<tableExists tableName="dtm_config"/>-->
+            <!--</not>-->
+        <!--</preConditions>-->
+
+        <createTable tableName="dtm_config">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_dtm_config"/>
+            </column>
+            <column name="jpa_version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="code" type="VARCHAR(255${varchar.type})"/>
+
+            <column name="name" type="VARCHAR(255${varchar.type})"/>
+            <column name="value" type="VARCHAR(255${varchar.type})"/>
+            <column name="description" type="VARCHAR(255${varchar.type})"/>
+
+        </createTable>
+    </changeSet>
+
+    <changeSet author="iulianb" id="tab-20082020-002">
+
+        <!--<preConditions onFail="MARK_RAN">-->
+            <!--<not>-->
+                <!--<columnExists columnName="TYPE" tableName="dtm_config"/>-->
+            <!--</not>-->
+        <!--</preConditions>-->
+
+        <addColumn tableName="dtm_config" >
+            <column name="type"
+                    type="BIGINT" >
+            </column>
+        </addColumn>
+
+    </changeSet>
+
+    <changeSet author="iulianb" id="tab-13082020-001">
+
+        <!--<preConditions onFail="MARK_RAN">-->
+            <!--<not>-->
+                <!--<tableExists tableName="dtm_process"/>-->
+            <!--</not>-->
+            <!--<not>-->
+                <!--<columnExists columnName="TYPE" tableName="dtm_process"/>-->
+            <!--</not>-->
+        <!--</preConditions>-->
+
+        <renameTable newTableName="dtm_process"
+                     oldTableName="tshark_process"
+        />
+
+        <addColumn tableName="dtm_process" >
+            <column name="type"
+                    type="BIGINT" >
+            </column>
+        </addColumn>
+
+
+    </changeSet>
+
+    <changeSet author="iulianb" id="tab-13082020-002">
+
+        <!--<preConditions onFail="MARK_RAN">-->
+            <!--<not>-->
+                <!--<tableExists tableName="dtm_process_filter"/>-->
+            <!--</not>-->
+        <!--</preConditions>-->
+
+        <renameTable newTableName="dtm_process_filter"
+                     oldTableName="tshark_filter"
+        />
+
+    </changeSet>
+
+    <changeSet author="iulianb" id="tab-02092020-001">
+
+        <!--<preConditions onFail="MARK_RAN">-->
+            <!--<not>-->
+                <!--<columnExists columnName="interface_name" tableName="dtm_process"/>-->
+            <!--</not>-->
+        <!--</preConditions>-->
+
+        <addColumn tableName="dtm_process" >
+            <column name="interface_name"
+                    type="VARCHAR(255${varchar.type})" >
+            </column>
+        </addColumn>
+
+        <renameColumn columnDataType="VARCHAR(255${varchar.type})"
+                       newColumnName="interface_short_name"
+                       oldColumnName="name"
+                       tableName="dtm_process"/>
+
+        <renameColumn columnDataType="VARCHAR(255${varchar.type})"
+                      newColumnName="interface_full_name"
+                      oldColumnName="full_name"
+                      tableName="dtm_process"/>
+
+    </changeSet>
+
+    <changeSet author="iulianb" id="tab-02092020-002">
+
+        <!--<preConditions onFail="MARK_RAN">-->
+            <!--<columnExists columnName="interface_short_name" tableName="dtm_process"/>-->
+        <!--</preConditions>-->
+
+        <renameColumn columnDataType="VARCHAR(255${varchar.type})"
+                      newColumnName="interface_display_name"
+                      oldColumnName="interface_short_name"
+                      tableName="dtm_process"/>
+
+    </changeSet>
+
+    <changeSet author="iulianb" id="tab-10012020-001">
+
+        <!--<preConditions onFail="MARK_RAN">-->
+            <!--<not>-->
+                <!--<columnExists columnName="IP" tableName="ASSETS"/>-->
+            <!--</not>-->
+            <!--<not>-->
+                <!--<columnExists columnName="last_touch_date" tableName="ASSETS"/>-->
+            <!--</not>-->
+        <!--</preConditions>-->
+
+        <addColumn tableName="assets" >
+            <column name="ip"
+                    type="VARCHAR(255${varchar.type})" >
+            </column>
+        </addColumn>
+
+        <addColumn tableName="assets" >
+            <column name="last_touch_date"
+                    type="TIMESTAMP" >
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet  author="iulianb"  id="tab-24112020-0001">
+
+        <!--<preConditions onFail="MARK_RAN">-->
+            <!--<not>-->
+                <!--<tableExists tableName="component_config"/>-->
+            <!--</not>-->
+        <!--</preConditions>-->
+
+        <renameTable newTableName="component_config" oldTableName="dtm_config"/>
+    </changeSet>
+
+    <changeSet author="iulianb" id="tab-10012020-010">
+
+        <!--<preConditions onFail="MARK_RAN">-->
+            <!--<not>-->
+                <!--<columnExists columnName="component_type_id" tableName="component_config"/>-->
+            <!--</not>-->
+        <!--</preConditions>-->
+
+
+        <addColumn tableName="component_config" >
+            <column name="component_type_id"
+                    type="TINYINT(1)" >
+            </column>
+        </addColumn>
+
+    </changeSet>
+
+    <changeSet author="iulianb" id="truncate-COMPONENT_CONFIG">
+        <delete tableName="component_config">
+        </delete>
+    </changeSet>
+
+    <changeSet author="iulianb" id="tab-13052021-01">
+        <!--<preConditions onFail="MARK_RAN">-->
+            <!--<not>-->
+                <!--<columnExists columnName="default_value" tableName="component_config"/>-->
+            <!--</not>-->
+        <!--</preConditions>-->
+
+        <addColumn tableName="component_config" >
+            <column name="default_value"
+                    type="VARCHAR(255${varchar.type})" >
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-13052021-02">
+
+        <!--<preConditions onFail="MARK_RAN">-->
+            <!--<not>-->
+                <!--<columnExists columnName="default_value" tableName="component_config"/>-->
+            <!--</not>-->
+        <!--</preConditions>-->
+
+        <modifyDataType
+                columnName="default_value"
+                newDataType="VARCHAR(2400${varchar.type})"
+                tableName="component_config"/>
+    </changeSet>
+
+    <changeSet author="iulianb" id="data-14052021-03">
+
+        <!--<preConditions onFail="MARK_RAN">-->
+            <!--<not>-->
+                <!--<columnExists columnName="last_delay" tableName="ASSETS"/>-->
+            <!--</not>-->
+        <!--</preConditions>-->
+
+        <addColumn tableName="assets" >
+            <column name="last_delay"
+                    type="BIGINT" >
+            </column>
+        </addColumn>
+
+    </changeSet>
+
+    <changeSet author="danielaco" id="tab-03062021-08">
+
+        <createTable tableName="alert">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_alert"/>
+            </column>
+            <column name="jpa_version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="time" type="TIMESTAMP"/>
+            <column name="flow_id" type="VARCHAR(255${varchar.type})"/>
+            <column name="community_id" type="VARCHAR(255${varchar.type})"/>
+            <column name="count" type="BIGINT"/>
+            <column name="protocol" type="VARCHAR(255${varchar.type})"/>
+            <column name="host" type="VARCHAR(255${varchar.type})"/>
+            <column name="alert_type_id"
+                    type="BIGINT" >
+            </column>
+            <column name="src_ip" type="VARCHAR(255${varchar.type})"/>
+            <column name="src_port" type="VARCHAR(255${varchar.type})"/>
+            <column name="dest_ip" type="VARCHAR(255${varchar.type})"/>
+            <column name="dest_port" type="VARCHAR(255${varchar.type})"/>
+            <column name="event_type" type="VARCHAR(255${varchar.type})"/>
+            <column name="signature" type="VARCHAR(255${varchar.type})"/>
+            <column name="severity" type="VARCHAR(255${varchar.type})"/>
+            <column name="category" type="VARCHAR(255${varchar.type})"/>
+            <column name="action" type="VARCHAR(255${varchar.type})"/>
+            <column name="signature_severity" type="VARCHAR(255${varchar.type})"/>
+            <column name="affected_product" type="VARCHAR(255${varchar.type})"/>
+            <column name="src_mac" type="VARCHAR(255${varchar.type})"/>
+            <column name="dest_mac" type="VARCHAR(255${varchar.type})"/>
+            <column name="eth_source" type="VARCHAR(255${varchar.type})"/>
+            <column name="http_host" type="VARCHAR(255${varchar.type})"/>
+            <column name="dns_qry" type="VARCHAR(255${varchar.type})"/>
+            <column name="dns_type" type="VARCHAR(255${varchar.type})"/>
+            <column name="bytes" type="VARCHAR(255${varchar.type})"/>
+            <column name="packets" type="VARCHAR(255${varchar.type})"/>
+            <column name="lenght" type="VARCHAR(255${varchar.type})"/>
+            <column name="time_silent" type="VARCHAR(255${varchar.type})"/>
+            <column name="last_delay" type="VARCHAR(255${varchar.type})"/>
+            <column name="physical_address" type="VARCHAR(255${varchar.type})"/>
+            <column name="name" type="VARCHAR(255${varchar.type})"/>
+            <column name="info" type="VARCHAR(255${varchar.type})"/>
+        </createTable>
+
+    </changeSet>
+
+    <changeSet author="danielaco" id="tab-07062021-001">
+        <addColumn tableName="alert" >
+            <column name="tool"
+                    type="VARCHAR(255${varchar.type})" />
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="danielaco" id="tab-08062021-001">
+
+        <createTable tableName="ad_alert">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_ad_alert"/>
+            </column>
+            <column name="jpa_version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="timestamp" type="TIMESTAMP"/>
+            <column name="source_ref" type="VARCHAR(255${varchar.type})"/>
+            <column name="relationship_type" type="VARCHAR(255${varchar.type})"/>
+            <column name="target_ref" type="VARCHAR(255${varchar.type})"/>
+            <column name="details" type="VARCHAR(255${varchar.type})"/>
+            <column name="type" type="VARCHAR(255${varchar.type})"/>
+            <column name="number_of_clusters" type="VARCHAR(255${varchar.type})"/>
+            <column name="min_dirty_proportion" type="VARCHAR(255${varchar.type})"/>
+            <column name="max_anomalous_cluster_proportion" type="VARCHAR(255${varchar.type})"/>
+            <column name="number_of_pairs" type="VARCHAR(255${varchar.type})"/>
+            <column name="alien_ip" type="VARCHAR(255${varchar.type})"/>
+            <column name="byte_sup" type="VARCHAR(255${varchar.type})"/>
+            <column name="bytes_down" type="VARCHAR(255${varchar.type})"/>
+            <column name="number_pkts" type="VARCHAR(255${varchar.type})"/>
+            <column name="ports" type="VARCHAR(255${varchar.type})"/>
+            <column name="my_ip" type="VARCHAR(255${varchar.type})"/>
+            <column name="hostname" type="VARCHAR(255${varchar.type})"/>
+            <column name="connections" type="VARCHAR(255${varchar.type})"/>
+            <column name="tcp_port" type="VARCHAR(255${varchar.type})"/>
+            <column name="data_mean" type="VARCHAR(255${varchar.type})"/>
+            <column name="data_stdev" type="VARCHAR(255${varchar.type})"/>
+            <column name="pairs_mean" type="VARCHAR(255${varchar.type})"/>
+            <column name="pairs_stdev" type="VARCHAR(255${varchar.type})"/>
+            <column name="aliens" type="VARCHAR(255${varchar.type})"/>
+            <column name="number_of_flows" type="VARCHAR(255${varchar.type})"/>
+            <column name="number_of_flows_per_port" type="VARCHAR(255${varchar.type})"/>
+            <column name="flows_mean" type="VARCHAR(255${varchar.type})"/>
+            <column name="flows_stdev" type="VARCHAR(255${varchar.type})"/>
+            <column name="number_of_flows_alien_port" type="VARCHAR(255${varchar.type})"/>
+            <column name="ports_mean" type="VARCHAR(255${varchar.type})"/>
+            <column name="ports_stdev" type="VARCHAR(255${varchar.type})"/>
+        </createTable>
+
+    </changeSet>
+    <changeSet author="danielaco" id="tab-08062021-00">
+        <addColumn tableName="ad_alert" >
+            <column name="tool"
+                    type="VARCHAR(255${varchar.type})" />
+        </addColumn>
+    </changeSet>
+
+    <changeSet  author="danielaco"  id="tab-15062021-001">
+        <preConditions onFail="MARK_RAN">
+            <tableExists schemaName="sphinx" tableName="alert"/>
+        </preConditions>
+
+        <dropTable  cascadeConstraints="true"
+                    catalogName="cat"
+                    schemaName="sphinx"
+                    tableName="alert"/>
+        </changeSet>
+
+    <changeSet author="danielaco" id="tab-15062021-002">
+
+    <createTable tableName="alert">
+        <column name="id" type="BIGINT">
+            <constraints nullable="false" primaryKey="true" primaryKeyName="pk_alert"/>
+        </column>
+        <column name="jpa_version" type="BIGINT">
+            <constraints nullable="false"/>
+        </column>
+        <column name="created_date" type="TIMESTAMP">
+            <constraints nullable="false"/>
+        </column>
+        <column name="updated_date" type="TIMESTAMP">
+            <constraints nullable="false"/>
+        </column>
+        <column name="timestamp" type="TIMESTAMP"/>
+        <column name="count" type="BIGINT"/>
+        <column name="protocol" type="VARCHAR(255${varchar.type})"/>
+        <column name="host" type="VARCHAR(255${varchar.type})"/>
+        <column name="alert_type_id"
+                type="BIGINT" >
+        </column>
+        <column name="src_ip" type="VARCHAR(255${varchar.type})"/>
+        <column name="src_port" type="VARCHAR(255${varchar.type})"/>
+        <column name="dest_ip" type="VARCHAR(255${varchar.type})"/>
+        <column name="dest_port" type="VARCHAR(255${varchar.type})"/>
+        <column name="event_type" type="VARCHAR(255${varchar.type})"/>
+        <column name="signature" type="VARCHAR(255${varchar.type})"/>
+        <column name="severity" type="VARCHAR(255${varchar.type})"/>
+        <column name="category" type="VARCHAR(255${varchar.type})"/>
+        <column name="action" type="VARCHAR(255${varchar.type})"/>
+        <column name="signature_severity" type="VARCHAR(255${varchar.type})"/>
+        <column name="location" type="VARCHAR(255${varchar.type})" />
+        <column name="sphinx_tool" type="VARCHAR(255${varchar.type})" />
+        <column name="source_ref" type="VARCHAR(255${varchar.type})"/>
+        <column name="relationship_type" type="VARCHAR(255${varchar.type})"/>
+        <column name="target_ref" type="VARCHAR(255${varchar.type})"/>
+        <column name="details" type="VARCHAR(255${varchar.type})"/>
+    </createTable>
+    </changeSet>
+
+    <changeSet  author="danielaco"  id="tab-17062021-001">
+        <dropTable  cascadeConstraints="true"
+                    catalogName="cat"
+                    schemaName="sphinx"
+                    tableName="ad_alert"/>
+    </changeSet>
+
+
+    <changeSet author="iulianb" id="tab-06072021-001">
+
+        <createTable tableName="dtm_cmd">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_dtm_cmd"/>
+            </column>
+            <column name="jpa_version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="url" type="VARCHAR(2400${varchar.type})"/>
+            <column name="method" type="VARCHAR(255${varchar.type})"/>
+            <column name="instance_key" type="VARCHAR(255${varchar.type})"/>
+
+        </createTable>
+    </changeSet>
+
+    <changeSet author="iulianb" id="tab-06072021-002">
+        <addColumn tableName="dtm_cmd" >
+            <column name="username"
+                    type="VARCHAR(255${varchar.type})" />
+        </addColumn>
+
+        <addColumn tableName="dtm_cmd" >
+            <column name="hostname"
+                    type="VARCHAR(255${varchar.type})" />
+        </addColumn>
+    </changeSet>
+
+
+    <changeSet author="catalinda" id="tab-09072021-001">
+
+        <createTable tableName="contact_list">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_contact_list"/>
+            </column>
+            <column name="email" type="VARCHAR(2400${varchar.type})">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="name" type="VARCHAR(255${varchar.type})">
+                <constraints nullable="false"/>
+            </column>
+            <column name="phone" type="VARCHAR(255${varchar.type})"/>
+
+        </createTable>
+    </changeSet>
+
+
+    <changeSet author="catalinda" id="tab-14072021-001">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="suggestions_applied"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="suggestions_applied">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_suggestions_applied"/>
+            </column>
+            <column name="alert_src_id" type="VARCHAR(2400${varchar.type})">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="dss_alert_id" type="VARCHAR(255${varchar.type})">
+                <constraints nullable="false"/>
+            </column>
+            <column name="suggestion_applied" type="VARCHAR(255${varchar.type})"/>
+
+        </createTable>
+    </changeSet>
+
+    <changeSet author="danielacp" id="tab-06092021-002">
+        <addColumn tableName="suggestions_applied" >
+            <column name="timestamp"
+                    type="VARCHAR(255${varchar.type})" />
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="danielaco" id="tab-28092021-001">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="kafka_AD_ALERT_AVRO"/>
+            </not>
+        </preConditions>
+
+        <sql>
+            CREATE TABLE sphinx."kafka_AD_ALERT_AVRO" (
+            "ALERTID" text,
+            "TOTALFLOWS" text,
+            "PROTOCOLFLOWID" text,
+            "PROTOCOLFLOWDETECTEDPROTOCOL" text,
+            "PROTOCOLFLOWLOWERPORT" text,
+            "PROTOCOLFLOWUPPERPORT" text,
+            "PROTOCOLFLOWUPPERIP" text,
+            "PROTOCOLFLOWLOWERIP" text,
+            "PROTOCOLFLOWIPPROTOCOL" text,
+            "PROTOCOLFLOWFLOWDURATION" text,
+            "PROTOCOLFLOWBYTES" text,
+            "PROTOCOLFLOWPACKETS" text,
+            "PROTOCOLFLOWPACKETSWITHOUTPAYLOAD" text,
+            "PROTOCOLFLOWAVGPACKETSIZE" text,
+            "PROTOCOLFLOWMINPACKETSIZE" text,
+            "PROTOCOLFLOWMAXPACKETSIZE" text,
+            "PROTOCOLFLOWAVGINTERTIME" text,
+            "PROTOCOLFLOWPACKETSIZE0" text,
+            "PROTOCOLFLOWINNERTIME0" text,
+            "PROTOCOLFLOWPACKETSIZE1" text,
+            "PROTOCOLFLOWINNERTIME1" text,
+            "PROTOCOLFLOWPACKETSIZE2" text,
+            "PROTOCOLFLOWINNERTIME2" text,
+            "PROTOCOLFLOWPACKETSIZE3" text,
+            "PROTOCOLFLOWINNERTIME3" text,
+            "PROTOCOLFLOWPACKETSIZE4" text,
+            "PROTOCOLFLOWINNERTIME4" text,
+            "PROTOCOLFLOWHOSTNAME" text,
+            "PROTOCOLFLOWDNATYPE" text,
+            "PROTOCOLFLOWTIMESTAMP2" text,
+            "PROTOCOLFLOWMALWARE" text,
+            "PROTOCOLFLOWFLAGS" text,
+            "TEXT" text,
+            "TITLE" text,
+            "FLOWID" text,
+            "COORDS" text,
+            "USERNAME" text,
+            "TIMESTAMP" text,
+            "ALGORITHMTYPE" text,
+            "ALGORITHMHOSTNAME" text,
+            "ALGORITHMNUMBEROFPAIRS" text,
+            "ALGORITHMTCPPORT" text,
+            "ALGORITHMBYTESUP" text,
+            "ALGORITHMBYTESDOWN" text,
+            "ALGORITHMNUMBERPKTS" text,
+            "ALGORITHMCONNECTIONS" text,
+            "ALGORITHMPORTS" text,
+            "ALGORITHMMYIP" text,
+            "ALGORITHMSTRINGFLOWS" text,
+            "ALGORITHMDATAMEAN" text,
+            "ALGORITHMDATASTDEV" text,
+            "ALGORITHMPAIRSMEAN" text,
+            "ALGORITHMPAIRSSTDEV" text,
+            "ALGORITHMALIENS" text,
+            "ALGORITHMNUMBEROFFLOWS" text,
+            "ALGORITHMNUMBEROFFLOWSPERPORT" text,
+            "ALGORITHMFLOWSMEAN" text,
+            "ALGORITHMFLOWSSTDEV" text,
+            "ALGORITHMNUMBEROFFLOWSALIENPORT" text,
+            "ALGORITHMNUMBEROFPORTS" text,
+            "ALGORITHMPORTSMEAN" text,
+            "ALGORITHMPORTSSTDEV" text
+            );
+            ALTER TABLE sphinx."kafka_AD_ALERT_AVRO" OWNER TO sphinx;
+        </sql>
+    </changeSet>
+
+    <changeSet author="danielaco" id="tab-28092021-002">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="kafka_DTM_ALERTS_AVRO"/>
+            </not>
+        </preConditions>
+
+        <sql>
+            CREATE TABLE sphinx."kafka_DTM_ALERTS_AVRO" (
+            "ALERT_ID" text,
+            "EVENT_KIND" text,
+            "SIGNATURE_SEVERITY" text,
+            "AFFECTED_PRODUCT" text,
+            "SIGNATURE" text,
+            "ACTION" text,
+            "SEVERITY" text,
+            "CATEGORY" text,
+            "TAGS" text,
+            "COMMUNITY_ID" text,
+            "TIMESTAMP" text,
+            "SRC_IP" text,
+            "COUNT" text,
+            "SRC_PORT" text,
+            "DNSQRY" text,
+            "VERSION" text,
+            "DEST_IP_RDNS" text,
+            "HTTPHOST" text,
+            "DEST_GEOIP" text,
+            "ETHER" text,
+            "TYPE" text,
+            "ETHSOURCE" text,
+            "TOOL" text,
+            "USERNAME" text,
+            "ISTANCEKEY" text,
+            "COMPONENT" text,
+            "HOSTNAME" text,
+            "PATH" text,
+            "DEST_IP" text,
+            "SRC_GEOIP" text,
+            "FLOW_ID" text,
+            "DEST_PORT" text,
+            "EVENT_TYPE" text,
+            "PROTO" text,
+            "SRC_IP_RDNS" text,
+            "HOST" text,
+            "ALERT_TYPE" text
+            );
+            ALTER TABLE sphinx."kafka_DTM_ALERTS_AVRO" OWNER TO sphinx;
+        </sql>
+    </changeSet>
+
+    <changeSet author="danielaco" id="tab-28092021-003">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="kafka_HP_CURRENTLY_CONNECTED_IPS_AVRO"/>
+            </not>
+        </preConditions>
+
+      <sql>
+          CREATE TABLE sphinx."kafka_HP_CURRENTLY_CONNECTED_IPS_AVRO" (
+          "NAME" text,
+          "IP" text,
+          "SERVICE" text,
+          "TS" text
+          );
+          ALTER TABLE sphinx."kafka_HP_CURRENTLY_CONNECTED_IPS_AVRO" OWNER TO sphinx;
+      </sql>
+    </changeSet>
+
+    <changeSet author="danielaco" id="tab-28092021-004">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="kafka_HP_INTERVAL_INFO_AVRO"/>
+            </not>
+        </preConditions>
+
+        <sql>
+            CREATE TABLE sphinx."kafka_HP_INTERVAL_INFO_AVRO" (
+            "HPID" text,
+            "NAME" text,
+            "CPUACTIVITYVAL" text,
+            "CPUACTIVITYUNIT" text,
+            "MEMORYUSAGEVAL" text,
+            "MEMORYUSAGEUNIT" text,
+            "UPLOADVAL" text,
+            "UPLOADUNIT" text,
+            "DOWNLOADVAL" text,
+            "DOWNLOADUNIT" text,
+            "DBUSAGE" text,
+            "TS" text
+            );
+            ALTER TABLE sphinx."kafka_HP_INTERVAL_INFO_AVRO" OWNER TO sphinx;
+        </sql>
+    </changeSet>
+
+    <changeSet author="danielaco" id="tab-28092021-005">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="kafka_HP_MOST_USED_AVRO"/>
+            </not>
+        </preConditions>
+
+        <sql>
+            CREATE TABLE sphinx."kafka_HP_MOST_USED_AVRO" (
+            "HONEYNAME" text,
+            "HONEYID" text,
+            "USERNAME" text,
+            "UTIMES" text,
+            "PASSWORD" text,
+            "PTIMES" text,
+            "TS" text
+            );
+            ALTER TABLE sphinx."kafka_HP_MOST_USED_AVRO" OWNER TO sphinx;
+        </sql>
+    </changeSet>
+
+    <changeSet author="danielaco" id="tab-28092021-006">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="kafka_HP_SERVICE_COUNTERS_AVRO"/>
+            </not>
+        </preConditions>
+
+        <sql>
+            CREATE TABLE sphinx."kafka_HP_SERVICE_COUNTERS_AVRO" (
+            "NAME" text,
+            "STAT" text,
+            "TS" text
+            );
+            ALTER TABLE sphinx."kafka_HP_SERVICE_COUNTERS_AVRO" OWNER TO sphinx;
+        </sql>
+    </changeSet>
+
+    <changeSet author="danielaco" id="tab-28092021-007">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="kafka_HP_STATIC_INFO_AVRO"/>
+            </not>
+        </preConditions>
+
+        <sql>
+            CREATE TABLE sphinx."kafka_HP_STATIC_INFO_AVRO" (
+            "NAME" text,
+            "ISACTIVE" text,
+            "HPID" text,
+            "SSH" text,
+            "FTP" text,
+            "SMTP" text,
+            "HTTP" text,
+            "FLAVOUR" text,
+            "GENERALINFO" text,
+            "TS" text
+            );
+            ALTER TABLE sphinx."kafka_HP_STATIC_INFO_AVRO" OWNER TO sphinx;
+        </sql>
+    </changeSet>
+
+    <changeSet author="danielaco" id="tab-28092021-008">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="kafka_ID_ALERTS"/>
+            </not>
+        </preConditions>
+
+        <sql>
+            CREATE TABLE sphinx."kafka_ID_ALERTS" (
+            "ALERTID" text,
+            "DESCRIPTION" text,
+            "CLASSIFICATION" text,
+            "TIMESTAMP" text,
+            "LOCATION" text,
+            "INDICATION" text,
+            "TOOL" text,
+            "STATUS" text,
+            "ACTION" text,
+            "DETAILS" text,
+            "SENT" text
+            );
+            ALTER TABLE sphinx."kafka_ID_ALERTS" OWNER TO sphinx;
+        </sql>
+    </changeSet>
+
+    <changeSet author="danielaco" id="tab-28092021-009">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="kafka_VAAAS_REPORT_AVRO"/>
+            </not>
+        </preConditions>
+
+        <sql>
+            CREATE TABLE sphinx."kafka_VAAAS_REPORT_AVRO" (
+            "DATA" text
+            );
+            ALTER TABLE sphinx."kafka_VAAAS_REPORT_AVRO" OWNER TO sphinx;
+        </sql>
+    </changeSet>
+
+    <changeSet author="danielaco" id="tab-28092021-010">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="geoip_blocks"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="geoip_blocks">
+            <column name="network" type="CIDR"/>
+            <column name="geoname_id" type="BIGINT"/>
+            <column name="registered_country_geoname_id" type="BIGINT"/>
+            <column name="represented_country_geoname_id" type="BIGINT"/>
+            <column name="is_anonymous_proxy" type="BOOLEAN"/>
+            <column name="is_satellite_provider" type="BOOLEAN"/>
+            <column name="postal_code" type="VARCHAR(255${varchar.type})"/>
+            <column name="latitude" type="DECIMAL(9, 6)"/>
+            <column name="longitude" type="DECIMAL(9, 6)"/>
+            <column name="accuracy_radius" type="SMALLINT"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="danielaco" id="tab-28092021-011">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="geoip_locations"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="geoip_locations">
+            <column name="geoname_id" type="BIGINT"/>
+            <column name="locale_code" type="VARCHAR(2400${varchar.type})"/>
+            <column name="continent_code" type="VARCHAR(2400${varchar.type})"/>
+            <column name="continent_name" type="VARCHAR(2400${varchar.type})"/>
+            <column name="country_iso_code" type="VARCHAR(2400${varchar.type})"/>
+            <column name="country_name" type="VARCHAR(2400${varchar.type})"/>
+            <column name="subdivision_1_iso_code" type="VARCHAR(2400${varchar.type})"/>
+            <column name="subdivision_1_name" type="VARCHAR(2400${varchar.type})"/>
+            <column name="subdivision_2_iso_code" type="VARCHAR(2400${varchar.type})"/>
+            <column name="subdivision_2_name" type="VARCHAR(2400${varchar.type})"/>
+            <column name="city_name" type="VARCHAR(2400${varchar.type})"/>
+            <column name="metro_code" type="VARCHAR(2400${varchar.type})"/>
+            <column name="time_zone" type="VARCHAR(2400${varchar.type})"/>
+            <column name="is_in_european_union" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="danielaco" id="tab-28092021-012">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="vaaas_reports"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="vaaas_reports">
+            <column name="id" type="BIGINT"/>
+            <column name="type" type="VARCHAR(2400${varchar.type})"/>
+            <column name="assessment_date" type="VARCHAR(2400${varchar.type})"/>
+            <column name="cvss_score" type="VARCHAR(2400${varchar.type})"/>
+            <column name="start" type="VARCHAR(2400${varchar.type})"/>
+            <column name="stop" type="VARCHAR(2400${varchar.type})"/>
+            <column name="task_name" type="VARCHAR(2400${varchar.type})"/>
+            <column name="total_services" type="VARCHAR(2400${varchar.type})"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="danielaco" id="tab-28092021-013">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="hp_geoip"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="hp_geoip">
+            <column name="ip_address" type="VARCHAR(255${varchar.type})"/>
+            <column name="ip_country" type="VARCHAR(255${varchar.type})"/>
+            <column name="lat" type="FLOAT"/>
+            <column name="long" type="FLOAT"/>
+            <column name="timestamp" type="VARCHAR(255${varchar.type})"/>
+        </createTable>
+    </changeSet>
+
+
+    <changeSet author="danielco" id="tab-30092021-001">
+        <createProcedure>
+            CREATE or REPLACE FUNCTION hp_filter_ip_to_location()
+            RETURNS TRIGGER
+            AS
+            $$
+            BEGIN
+            INSERT INTO hp_geoip
+            (ip_address, ip_country, lat, long, timestamp)
+            SELECT
+            t1."IP" as ip_address,
+            t3.country_iso_code AS ip_country,
+            t2.latitude as latitude,
+            t2.longitude as longitude,
+            t1."TS" as timestamp
+            FROM
+            "kafka_HP_CURRENTLY_CONNECTED_IPS_AVRO" t1,
+            geoip_blocks t2
+            INNER JOIN geoip_locations t3 ON t2.geoname_id = t3.geoname_id
+            WHERE
+            t2.network >>= t1."IP"::inet
+            AND NOT EXISTS (
+            SELECT 1
+            FROM hp_geoip t4
+            WHERE t4.timestamp LIKE (t1."TS")::TEXT
+            AND t4.ip_address LIKE t1."IP"
+            );
+            RETURN NULL;
+            END
+            $$
+            LANGUAGE plpgsql;
+        </createProcedure>
+
+    </changeSet>
+
+<!--    <changeSet author="danielco" id="tab-30092021-002">-->
+<!--        <sql>-->
+<!--            CREATE TRIGGER hp_ip_to_location AFTER INSERT ON "kafka_HP_CURRENTLY_CONNECTED_IPS_AVRO"-->
+<!--            FOR EACH ROW-->
+<!--            EXECUTE PROCEDURE hp_filter_ip_to_location();-->
+<!--        </sql>-->
+<!--    </changeSet>-->
+
+    <changeSet author="danielco" id="tab-30092021-003">
+        <createProcedure>
+            CREATE or REPLACE FUNCTION filter_vaaas()
+            RETURNS TRIGGER
+            AS
+            $$
+            BEGIN
+            INSERT INTO vaaas_reports 
+            SELECT 
+              id, 
+              type, 
+              assessment_date, 
+              cvss_score, 
+              start, 
+              stop, 
+              task_name, 
+              total_services, 
+              ip, 
+              mac, 
+              port, 
+              protocol, 
+              state, 
+              service_name, 
+              service_product, 
+              service_product_version, 
+              service_cpe_list, 
+              json_array_elements(interiorofscriptsthree)-> 'id' AS vulnerability_id, 
+              json_array_elements(interiorofscriptsthree)-> 'cvss' AS vulnerability_cvss, 
+              json_array_elements(interiorofscriptsthree)-> 'type' AS vulnerability_type, 
+              json_array_elements(interiorofscriptsthree)-> 'is_exploit' AS vulnerability_exploit 
+            FROM 
+              (
+                SELECT 
+                  id, 
+                  type, 
+                  assessment_date, 
+                  cvss_score, 
+                  start, 
+                  stop, 
+                  task_name, 
+                  total_services, 
+                  ip, 
+                  mac, 
+                  discovered, 
+                  port, 
+                  protocol, 
+                  state, 
+                  service_name, 
+                  service_product, 
+                  service_product_version, 
+                  service_cpe_list, 
+                  tempvalue, 
+                  interiorofscriptstwo -> json_object_keys(interiorofscriptstwo) as interiorofscriptsthree 
+                FROM 
+                  (
+                    SELECT 
+                      id, 
+                      type, 
+                      assessment_date, 
+                      cvss_score, 
+                      start, 
+                      stop, 
+                      task_name, 
+                      total_services, 
+                      ip, 
+                      mac, 
+                      discovered, 
+                      port, 
+                      protocol, 
+                      state, 
+                      service_name, 
+                      service_product, 
+                      service_product_version, 
+                      service_cpe_list, 
+                      tempvalue, 
+                      to_json(
+                        interiorofscripts -> json_object_keys(interiorofscripts)
+                      ) as interiorofscriptstwo 
+                    FROM 
+                      (
+                        SELECT 
+                          id, 
+                          type, 
+                          assessment_date, 
+                          cvss_score, 
+                          start, 
+                          stop, 
+                          task_name, 
+                          total_services, 
+                          ip, 
+                          mac, 
+                          discovered, 
+                          port, 
+                          protocol, 
+                          state, 
+                          service_name, 
+                          service_product, 
+                          service_product_version, 
+                          service_cpe_list, 
+                          to_json(scripts_list -> 0 -> 'elements') as interiorofscripts, 
+                          tempvalue 
+                        FROM 
+                          (
+                            SELECT 
+                              "DATA" :: json -> json_object_keys("DATA" :: json)-> 'id' AS id, 
+                              "DATA" :: json -> json_object_keys("DATA" :: json)-> 'type' AS type, 
+                              "DATA" :: json -> json_object_keys("DATA" :: json)-> 'assessment_date' AS assessment_date, 
+                              "DATA" :: json -> json_object_keys("DATA" :: json)-> 'cvss_score' AS cvss_score, 
+                              "DATA" :: json -> json_object_keys("DATA" :: json)-> 'start' AS start, 
+                              "DATA" :: json -> json_object_keys("DATA" :: json)-> 'stop' AS stop, 
+                              "DATA" :: json -> json_object_keys("DATA" :: json)-> 'task_name' AS task_name, 
+                              "DATA" :: json -> json_object_keys("DATA" :: json)-> 'total_services' AS total_services, 
+                              "DATA" :: json -> json_object_keys("DATA" :: json)-> 'objects' -> 0 -> 'value' AS ip, 
+                              "DATA" :: json -> json_object_keys("DATA" :: json)-> 'objects' -> 1 -> 'value' AS mac, 
+                              jsonb_path_query(
+                                "DATA" :: jsonb -> json_object_keys("DATA" :: json)-> 'objects', 
+                                '$[$.size() - $.size() + 3 to $.size()]'
+                              )-> 'id' AS discovered, 
+                              jsonb_path_query(
+                                "DATA" :: jsonb -> json_object_keys("DATA" :: json)-> 'objects', 
+                                '$[$.size() - $.size() + 3 to $.size()]'
+                              )-> 'port' AS port, 
+                              jsonb_path_query(
+                                "DATA" :: jsonb -> json_object_keys("DATA" :: json)-> 'objects', 
+                                '$[$.size() - $.size() + 3 to $.size()]'
+                              )-> 'protocol' AS protocol, 
+                              jsonb_path_query(
+                                "DATA" :: jsonb -> json_object_keys("DATA" :: json)-> 'objects', 
+                                '$[$.size() - $.size() + 3 to $.size()]'
+                              )-> 'state' AS state, 
+                              jsonb_path_query(
+                                "DATA" :: jsonb -> json_object_keys("DATA" :: json)-> 'objects', 
+                                '$[$.size() - $.size() + 3 to $.size()]'
+                              )-> 'service_name' AS service_name, 
+                              jsonb_path_query(
+                                "DATA" :: jsonb -> json_object_keys("DATA" :: json)-> 'objects', 
+                                '$[$.size() - $.size() + 3 to $.size()]'
+                              )-> 'service_product' AS service_product, 
+                              jsonb_path_query(
+                                "DATA" :: jsonb -> json_object_keys("DATA" :: json)-> 'objects', 
+                                '$[$.size() - $.size() + 3 to $.size()]'
+                              )-> 'service_product_version' AS service_product_version, 
+                              jsonb_path_query(
+                                "DATA" :: jsonb -> json_object_keys("DATA" :: json)-> 'objects', 
+                                '$[$.size() - $.size() + 3 to $.size()]'
+                              )-> 'service_cpe_list' AS service_cpe_list, 
+                              jsonb_path_query(
+                                "DATA" :: jsonb -> json_object_keys("DATA" :: json)-> 'objects', 
+                                '$[$.size() - $.size() + 3 to $.size()]'
+                              )-> 'scripts_list' AS scripts_list, 
+                              (
+                                jsonb_path_query(
+                                  "DATA" :: jsonb -> json_object_keys("DATA" :: json)-> 'objects', 
+                                  '$[$.size() - $.size() + 3 to $.size()]'
+                                )-> 'scripts_list' -> 0 -> 'id'
+                              ):: TEXT as tempvalue 
+                            FROM 
+                              "kafka_VAAAS_REPORT_AVRO"
+                          ) as firstTable 
+                        WHERE 
+                          tempvalue LIKE '"vulners"'
+                      ) as secondTable
+                  ) as thirdTable
+              ) as fourthTable 
+            WHERE 
+              NOT EXISTS (
+                SELECT 
+                  1 
+                FROM 
+                  vaaas_reports t2 
+                WHERE 
+                  t2.id :: TEXT LIKE fourthTable.id :: TEXT
+              );
+            RETURN NULL;
+            END
+            $$
+            LANGUAGE plpgsql;
+        </createProcedure>
+    </changeSet>
+
+<!--    <changeSet author="danielco" id="tab-30092021-004">-->
+<!--        <sql>-->
+<!--            CREATE TRIGGER vaaas_json_to_columns AFTER INSERT ON "kafka_VAAAS_REPORT_AVRO"-->
+<!--            FOR EACH ROW-->
+<!--            EXECUTE PROCEDURE filter_vaaas();-->
+<!--        </sql>-->
+<!--    </changeSet>-->
+
+    <changeSet author="danielaco" id="tab-20102021-03">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="alerts_status_history"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="alerts_status_history">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_alerts_status_history"/>
+            </column>
+            <column name="email" type="VARCHAR(255${varchar.type})">
+                <constraints nullable="false"/>
+            </column>
+            <column name="alert_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lastvalue" type="VARCHAR(255${varchar.type})">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updatedvalue" type="VARCHAR(255${varchar.type})">
+                <constraints nullable="false"/>
+            </column>
+            <column name="timestamp" type="VARCHAR(255${varchar.type})"/>
+
+        </createTable>
+    </changeSet>
+
+<!--    <changeSet  author="catalind"  id="tab-11112021-001">-->
+<!--        <dropTable  cascadeConstraints="true"-->
+<!--                catalogName="cat"-->
+<!--                schemaName="sphinx"-->
+<!--                tableName="worldmap_latlng"/>-->
+<!--    </changeSet>-->
+
+    <!--<changeSet  author="catalind"  id="tab-11112021-002">-->
+        <!--<preConditions onFail="MARK_RAN">-->
+                <!--<tableExists tableName="kafka_ID_ALERTS"/>-->
+        <!--</preConditions>-->
+
+        <!--<dropColumn columnName="id" tableName="kafka_ID_ALERTS"/>-->
+    <!--</changeSet>-->
+
+    <changeSet  author="catalind"  id="tab-11112021-003">
+        <preConditions onFail="MARK_RAN">
+                <tableExists tableName="kafka_ID_ALERTS"/>
+        </preConditions>
+
+        <sql>
+            ALTER TABLE "kafka_ID_ALERTS" ADD id serial not null primary key;
+        </sql>
+    </changeSet>
+
+    <changeSet  author="catalind"  id="tab-11112021-004">
+        <sql>
+            drop trigger IF EXISTS vaaas_json_to_columns on "kafka_VAAAS_REPORT_AVRO";
+            drop function IF EXISTS filter_vaaas;
+            drop table IF EXISTS vaaas_reports;
+        </sql>
+    </changeSet>
+        
+    <changeSet  author="catalind"  id="tab-11112021-005">
+        <sql>
+            CREATE TABLE IF NOT EXISTS sphinx.vaaas_reports (
+                id character varying,
+                type character varying,
+                assessment_date character varying,
+                cvss_score character varying,
+                start character varying,
+                stop character varying,
+                task_name character varying,
+                total_services character varying,
+            	ip character varying,
+            	mac character varying,
+            	port character varying,
+            	protocol character varying,
+            	state character varying,
+            	service_name character varying,
+            	service_product character varying,
+            	service_product_version character varying,
+            	service_cpe_list character varying,
+            	vulnerability_id character varying,
+            	vulnerability_cvss character varying,
+            	vulnerability_type character varying,
+            	vulnerability_exploit character varying
+            );
+            ALTER TABLE sphinx.vaaas_reports OWNER TO sphinx;
+        </sql>
+    </changeSet>
+
+    <changeSet author="catalind"  id="tab-11112021-006">
+        <createProcedure>
+            CREATE or REPLACE FUNCTION filter_vaaas()
+            RETURNS TRIGGER
+            AS
+            $$
+            BEGIN
+            INSERT INTO vaaas_reports 
+            SELECT 
+              id, 
+              type, 
+              assessment_date, 
+              cvss_score, 
+              start, 
+              stop, 
+              task_name, 
+              total_services, 
+              ip, 
+              mac, 
+              port, 
+              protocol, 
+              state, 
+              service_name, 
+              service_product, 
+              service_product_version, 
+              service_cpe_list, 
+              json_array_elements(interiorofscriptsthree)-> 'id' AS vulnerability_id, 
+              json_array_elements(interiorofscriptsthree)-> 'cvss' AS vulnerability_cvss, 
+              json_array_elements(interiorofscriptsthree)-> 'type' AS vulnerability_type, 
+              json_array_elements(interiorofscriptsthree)-> 'is_exploit' AS vulnerability_exploit 
+            FROM 
+              (
+                SELECT 
+                  id, 
+                  type, 
+                  assessment_date, 
+                  cvss_score, 
+                  start, 
+                  stop, 
+                  task_name, 
+                  total_services, 
+                  ip, 
+                  mac, 
+                  discovered, 
+                  port, 
+                  protocol, 
+                  state, 
+                  service_name, 
+                  service_product, 
+                  service_product_version, 
+                  service_cpe_list, 
+                  tempvalue, 
+                  interiorofscriptstwo -> json_object_keys(interiorofscriptstwo) as interiorofscriptsthree 
+                FROM 
+                  (
+                    SELECT 
+                      id, 
+                      type, 
+                      assessment_date, 
+                      cvss_score, 
+                      start,
+                      stop, 
+                      task_name, 
+                      total_services, 
+                      ip, 
+                      mac, 
+                      discovered, 
+                      port, 
+                      protocol, 
+                      state, 
+                      service_name, 
+                      service_product, 
+                      service_product_version, 
+                      service_cpe_list, 
+                      tempvalue, 
+                      to_json(
+                        interiorofscripts -> json_object_keys(interiorofscripts)
+                      ) as interiorofscriptstwo 
+                    FROM 
+                      (
+                        SELECT 
+                          id, 
+                          type, 
+                          assessment_date, 
+                          cvss_score, 
+                          start, 
+                          stop, 
+                          task_name, 
+                          total_services, 
+                          ip, 
+                          mac, 
+                          discovered, 
+                          port, 
+                          protocol, 
+                          state, 
+                          service_name, 
+                          service_product, 
+                          service_product_version, 
+                          service_cpe_list, 
+                          to_json(scripts_list -> 0 -> 'elements') as interiorofscripts, 
+                          tempvalue 
+                        FROM 
+                          (
+                            SELECT 
+                              "DATA" :: json -> json_object_keys("DATA" :: json)-> 'id' AS id, 
+                              "DATA" :: json -> json_object_keys("DATA" :: json)-> 'type' AS type, 
+                              "DATA" :: json -> json_object_keys("DATA" :: json)-> 'assessment_date' AS assessment_date, 
+                              "DATA" :: json -> json_object_keys("DATA" :: json)-> 'cvss_score' AS cvss_score, 
+                              "DATA" :: json -> json_object_keys("DATA" :: json)-> 'start' AS start, 
+                              "DATA" :: json -> json_object_keys("DATA" :: json)-> 'stop' AS stop, 
+                              "DATA" :: json -> json_object_keys("DATA" :: json)-> 'task_name' AS task_name, 
+                              "DATA" :: json -> json_object_keys("DATA" :: json)-> 'total_services' AS total_services, 
+                              "DATA" :: json -> json_object_keys("DATA" :: json)-> 'objects' -> 0 -> 'value' AS ip, 
+                              "DATA" :: json -> json_object_keys("DATA" :: json)-> 'objects' -> 1 -> 'value' AS mac, 
+                              jsonb_path_query(
+                                "DATA" :: jsonb -> json_object_keys("DATA" :: json)-> 'objects', 
+                                '$[$.size() - $.size() + 3 to $.size()]'
+                              )-> 'id' AS discovered, 
+                              jsonb_path_query(
+                                "DATA" :: jsonb -> json_object_keys("DATA" :: json)-> 'objects', 
+                                '$[$.size() - $.size() + 3 to $.size()]'
+                              )-> 'port' AS port, 
+                              jsonb_path_query(
+                                "DATA" :: jsonb -> json_object_keys("DATA" :: json)-> 'objects', 
+                                '$[$.size() - $.size() + 3 to $.size()]'
+                              )-> 'protocol' AS protocol, 
+                              jsonb_path_query(
+                                "DATA" :: jsonb -> json_object_keys("DATA" :: json)-> 'objects', 
+                                '$[$.size() - $.size() + 3 to $.size()]'
+                              )-> 'state' AS state, 
+                              jsonb_path_query(
+                                "DATA" :: jsonb -> json_object_keys("DATA" :: json)-> 'objects', 
+                                '$[$.size() - $.size() + 3 to $.size()]'
+                              )-> 'service_name' AS service_name, 
+                              jsonb_path_query(
+                                "DATA" :: jsonb -> json_object_keys("DATA" :: json)-> 'objects', 
+                                '$[$.size() - $.size() + 3 to $.size()]'
+                              )-> 'service_product' AS service_product, 
+                              jsonb_path_query(
+                                "DATA" :: jsonb -> json_object_keys("DATA" :: json)-> 'objects', 
+                                '$[$.size() - $.size() + 3 to $.size()]'
+                              )-> 'service_product_version' AS service_product_version, 
+                              jsonb_path_query(
+                                "DATA" :: jsonb -> json_object_keys("DATA" :: json)-> 'objects', 
+                                '$[$.size() - $.size() + 3 to $.size()]'
+                              )-> 'service_cpe_list' AS service_cpe_list, 
+                              jsonb_path_query(
+                                "DATA" :: jsonb -> json_object_keys("DATA" :: json)-> 'objects', 
+                                '$[$.size() - $.size() + 3 to $.size()]'
+                              )-> 'scripts_list' AS scripts_list, 
+                              (
+                                jsonb_path_query(
+                                  "DATA" :: jsonb -> json_object_keys("DATA" :: json)-> 'objects', 
+                                  '$[$.size() - $.size() + 3 to $.size()]'
+                                )-> 'scripts_list' -> 0 -> 'id'
+                              ):: TEXT as tempvalue 
+                            FROM 
+                              "kafka_VAAAS_REPORT_AVRO"
+                          ) as firstTable 
+                        WHERE 
+                          tempvalue LIKE '"vulners"'
+                      ) as secondTable
+                  ) as thirdTable
+              ) as fourthTable 
+            WHERE 
+              NOT EXISTS (
+                SELECT 
+                  1 
+                FROM 
+                  vaaas_reports t2 
+                WHERE 
+                  t2.id :: TEXT LIKE fourthTable.id :: TEXT
+              );
+            RETURN NULL;
+			EXCEPTION
+				WHEN others THEN RETURN null;
+            END
+            $$
+            LANGUAGE plpgsql;
+            
+--             CREATE TRIGGER vaaas_json_to_columns AFTER INSERT ON "kafka_VAAAS_REPORT_AVRO"
+--             FOR EACH ROW
+--             EXECUTE PROCEDURE filter_vaaas();
+        </createProcedure>
+    </changeSet>
+
+    <changeSet  author="catalind"  id="tab-11112021-007">
+        <sql>
+            CREATE TABLE IF NOT EXISTS sphinx."kafka_CERTIFICATIONS_AVRO" (
+            	"ALERTID" text,
+            	"NAME" text,
+            	"ATTACK_TYPE" text,
+            	"START_TIME" text,
+            	"END_TIME" text,
+            	"QUERY_USED" text,
+            	"TAG" text,
+            	"RISK_SCORE" text,
+            	"SEVERITY" text,
+            	"UUID" text,
+            	"AGENT_NAME" text,
+            	"AGENT_IP" text,
+            	"RULE_DESCRIPTION" text,
+            	"RULE_LEVEL" text,
+            	"CVSS3" text,
+            	"TIMESTAMP" text,
+            	"COUNT" text,
+            	"LAST_SEEN" text,
+            	"RULE_GROUPS" text,
+            	"DATA_SCA_PASSED" text,
+            	"DATA_SCA_SCORE" text,
+            	"DATA_SCA_FAILED" text,
+            	"CVSS3_BASE_SCORE" text
+            );
+            ALTER TABLE sphinx."kafka_CERTIFICATIONS_AVRO" OWNER TO sphinx;
+        </sql>
+    </changeSet>
+
+
+	<changeSet author="catalind" id="tab-11112021-008">
+        <sql>
+--             copy geoip_blocks from '/home/geoip/GeoLite2-City-Blocks-IPv4.csv' delimiter ',' csv header;
+--             copy geoip_blocks from '/home/geoip/GeoLite2-City-Blocks-IPv6.csv' delimiter ',' csv header;
+--             copy geoip_locations from '/home/geoip/GeoLite2-City-Locations-en.csv' delimiter ',' csv header encoding 'UTF8';
+        </sql>
+    </changeSet>
+
+
+    <!--<changeSet author="catalind"  id="tab-11112021-009">
+        <sql>
+            drop trigger if exists vaaas_to_id_alerts on vaaas_reports;
+            drop function if exists add_vaaas_to_id_alerts;
+        </sql>
+    </changeSet>
+            
+            
+    <changeSet author="catalind"  id="tab-11112021-010">
+        <sql>
+            CREATE or REPLACE FUNCTION add_vaaas_to_id_alerts()
+            RETURNS TRIGGER
+            AS
+            $$
+            BEGIN
+            INSERT INTO "kafka_ID_ALERTS" 
+            SELECT 
+            	REPLACE(id, '"', ''),
+            	'Vulnerability detected',
+            	CASE 
+            	WHEN CAST(REPLACE(vulnerability_cvss, '"', '') AS DOUBLE PRECISION) BETWEEN 0 AND 6 THEN 'low severity'
+            	WHEN CAST(REPLACE(vulnerability_cvss, '"', '') AS DOUBLE PRECISION) BETWEEN 6 AND 7.5 THEN 'medium severity'
+            	ELSE 'high severity'
+            	END AS "CLASSIFICATION",
+            	REPLACE(assessment_date, '"', '')::timestamp,
+            	'-',
+            	REPLACE(ip, '"', '') || ':' || REPLACE(port, '"', ''),
+            	'VAaaS',
+            	'OPEN',
+            	'-',
+            	json_build_object('severity', CASE 
+            	WHEN CAST(REPLACE(vulnerability_cvss, '"', '') AS DOUBLE PRECISION) BETWEEN 0 AND 6 THEN 'low'
+            	WHEN CAST(REPLACE(vulnerability_cvss, '"', '') AS DOUBLE PRECISION) BETWEEN 6 AND 7.5 THEN 'medium'
+            	ELSE 'high'
+            	END ,'cvss_score:', REPLACE(cvss_score, '"', ''), 'mac_address', REPLACE(mac, '"', ''), 'protocol', REPLACE(protocol, '"', ''), 'service_cpe_list', REPLACE(service_cpe_list, '"', ''), 'vulnerability_id', REPLACE(vulnerability_id, '"', ''), 'vulnerability_cvss', REPLACE(vulnerability_cvss, '"', ''), 'vulnerability_type', REPLACE(vulnerability_type, '"', ''), 'vulnerability_exploit', REPLACE(vulnerability_exploit, '"', '')) AS data,
+            	'false' as SENT
+            FROM vaaas_reports t1
+            WHERE 
+              NOT EXISTS (
+                SELECT 
+                  "ALERTID", "DETAILS" 
+                FROM 
+                  "kafka_ID_ALERTS" t2,
+            	  vaaas_reports t1
+                WHERE
+                  t2."ALERTID" :: TEXT LIKE REPLACE(t1.id, '"', '') :: TEXT
+            	  AND
+            	  t2."DETAILS" :: TEXT LIKE '%'||t1.vulnerability_id::TEXT||'%'
+              );
+            RETURN NULL;
+            END;
+            $$
+            LANGUAGE plpgsql;
+            
+            CREATE TRIGGER vaaas_to_id_alerts AFTER INSERT ON vaaas_reports
+            FOR EACH ROW
+            EXECUTE PROCEDURE add_vaaas_to_id_alerts();
+        </sql>
+    </changeSet>-->
+
+<!--    <changeSet author="catalind"  id="tab-16112021-002">-->
+<!--        <createProcedure>-->
+<!--            CREATE or REPLACE FUNCTION add_vaaas_to_id_alerts()-->
+<!--            RETURNS TRIGGER-->
+<!--            AS-->
+<!--            $$-->
+<!--            BEGIN-->
+<!--            INSERT INTO "kafka_ID_ALERTS"-->
+<!--            SELECT-->
+<!--                REPLACE(id, '"', ''),-->
+<!--                'Vulnerability detected',-->
+<!--                CASE-->
+<!--                    WHEN CAST(REPLACE(vulnerability_cvss, '"', '') AS DOUBLE PRECISION) BETWEEN 0 AND 6 THEN 'low'-->
+<!--                    WHEN CAST(REPLACE(vulnerability_cvss, '"', '') AS DOUBLE PRECISION) BETWEEN 6 AND 7.5 THEN 'medium'-->
+<!--                    ELSE 'high'-->
+<!--                    END AS "CLASSIFICATION",-->
+<!--                REPLACE(assessment_date, '"', '')::timestamp,-->
+<!--                    '-',-->
+<!--                REPLACE(ip, '"', '') || ':' || REPLACE(port, '"', ''),-->
+<!--                'VAaaS',-->
+<!--                'OPEN',-->
+<!--                '-',-->
+<!--                json_build_object('severity', CASE-->
+<!--                                                  WHEN CAST(REPLACE(vulnerability_cvss, '"', '') AS DOUBLE PRECISION) BETWEEN 0 AND 6 THEN 'low'-->
+<!--                                                  WHEN CAST(REPLACE(vulnerability_cvss, '"', '') AS DOUBLE PRECISION) BETWEEN 6 AND 7.5 THEN 'medium'-->
+<!--                                                  ELSE 'high'-->
+<!--                    END ,'cvss_score:', REPLACE(cvss_score, '"', ''), 'mac_address', REPLACE(mac, '"', ''), 'protocol', REPLACE(protocol, '"', ''), 'service_cpe_list', REPLACE(service_cpe_list, '"', ''), 'vulnerability_id', REPLACE(vulnerability_id, '"', ''), 'vulnerability_cvss', REPLACE(vulnerability_cvss, '"', ''), 'vulnerability_type', REPLACE(vulnerability_type, '"', ''), 'vulnerability_exploit', REPLACE(vulnerability_exploit, '"', '')) AS data,-->
+<!--                'false' as SENT-->
+<!--            FROM vaaas_reports t1-->
+<!--            WHERE-->
+<!--                NOT EXISTS (-->
+<!--                    SELECT-->
+<!--                        "ALERTID", "DETAILS"-->
+<!--                    FROM-->
+<!--                        "kafka_ID_ALERTS" t2,-->
+<!--                        vaaas_reports t1-->
+<!--                    WHERE-->
+<!--                        t2."ALERTID" :: TEXT LIKE REPLACE(t1.id, '"', '') :: TEXT-->
+<!--                        AND-->
+<!--                                                                          t2."DETAILS" :: TEXT LIKE '%'||t1.vulnerability_id::TEXT||'%'-->
+<!--                );-->
+<!--            RETURN NULL;-->
+<!--            EXCEPTION-->
+<!--				WHEN others THEN RETURN null;-->
+<!--            END-->
+<!--            $$-->
+<!--            LANGUAGE plpgsql;-->
+
+<!--            CREATE TRIGGER vaaas_to_id_alerts AFTER INSERT ON vaaas_reports-->
+<!--                FOR EACH ROW-->
+<!--                EXECUTE PROCEDURE add_vaaas_to_id_alerts();-->
+<!--        </createProcedure>-->
+<!--    </changeSet>-->
+
+
+   <!-- <changeSet author="catalind"  id="tab-12112021-002">
+        <sql>
+            drop trigger if exists siem_to_id_alerts on "kafka_SIEM_ALERTS_AVRO";
+            drop function if exists add_siem_to_id_alerts;
+        </sql>
+    </changeSet>
+            
+            
+    <changeSet author="catalind"  id="tab-12112021-003">
+        <sql>
+            CREATE or REPLACE FUNCTION add_siem_to_id_alerts()
+            RETURNS TRIGGER
+            AS
+            $$
+            BEGIN
+            INSERT INTO "kafka_ID_ALERTS" 
+            SELECT 
+            	REPLACE("ALERTID", '"', ''),
+            	REPLACE("NAME", '"', ''),
+            	REPLACE("SEVERITY", '"', ''),
+            	REPLACE("START", '"', '')::timestamp,
+            	'-',
+            	REPLACE("ASSETIP", '"', ''),
+            	'SIEM',
+            	'OPEN',
+            	'-',
+            	json_build_object('action', REPLACE("ACTION", '"', ''), 'severity', REPLACE("SEVERITY", '"', ''), 'attackType:', REPLACE("ATTACKTYPE", '"', ''), 'agg', REPLACE("AGG", '"', ''), 'tag', REPLACE("TAG", '"', ''), 'riskScore', REPLACE("RISKSCORE", '"', ''), 'uuid', REPLACE("UUID", '"', '')) AS data,
+            	'false' as SENT
+            FROM "kafka_SIEM_ALERTS_AVRO" t1
+            WHERE 
+              NOT EXISTS (
+                SELECT 
+                  "ALERTID", "DETAILS" 
+                FROM 
+                  "kafka_ID_ALERTS" t2
+                WHERE
+                  t2."ALERTID" :: TEXT LIKE REPLACE(t1."ALERTID", '"', '') :: TEXT
+            	  AND
+            	  t2."DETAILS" :: TEXT LIKE '%'||t1."UUID"::TEXT||'%'
+              );
+            RETURN NULL;
+            END
+            $$
+            LANGUAGE plpgsql;
+            
+            CREATE TRIGGER siem_to_id_alerts AFTER INSERT ON "kafka_SIEM_ALERTS_AVRO"
+            FOR EACH ROW
+            EXECUTE PROCEDURE add_siem_to_id_alerts();
+        </sql>
+    </changeSet>-->
+
+    <changeSet  author="catalind"  id="tab-12112021-001">
+        <sql>
+            CREATE TABLE IF NOT EXISTS sphinx."kafka_SIEM_ALERTS_AVRO" (
+            	"ALERTID" text,
+                "NAME" text,
+                "ATTACKTYPE" text,
+                "START" text,
+                "ENDQUERY" text,
+                "EVENTSCOUNT" text,
+                "ASSETIP" text,
+                "ACTION" text,
+                "AGG" text,
+                "QUERY_SQL" text,
+                "TAG" text,
+                "RISKSCORE" text,
+                "SEVERITY" text,
+                "UUID" text
+            );
+            ALTER TABLE sphinx."kafka_SIEM_ALERTS_AVRO" OWNER TO sphinx;
+        </sql>
+    </changeSet>
+
+            
+    <changeSet author="catalind"  id="tab-16112021-001">
+        <sql>
+            drop trigger if exists vaaas_to_id_alerts on vaaas_reports;
+            drop function if exists add_vaaas_to_id_alerts;
+        </sql>
+    </changeSet>
+
+
+    <changeSet author="catalind"  id="tab-16112021-003">
+        <sql>
+            drop trigger if exists siem_to_id_alerts on "kafka_SIEM_ALERTS_AVRO";
+            drop function if exists add_siem_to_id_alerts;
+        </sql>
+    </changeSet>
+            
+            
+<!--    <changeSet author="catalind"  id="tab-16112021-004">-->
+<!--        <createProcedure>-->
+<!--            CREATE or REPLACE FUNCTION add_siem_to_id_alerts()-->
+<!--            RETURNS TRIGGER-->
+<!--            AS-->
+<!--            $$-->
+<!--            BEGIN-->
+<!--            INSERT INTO "kafka_ID_ALERTS" -->
+<!--            SELECT -->
+<!--            	REPLACE("ALERTID", '"', ''),-->
+<!--            	REPLACE("NAME", '"', ''),-->
+<!--            	REPLACE("SEVERITY", '"', ''),-->
+<!--            	REPLACE("START", '"', '')::timestamp,-->
+<!--            	'-',-->
+<!--            	REPLACE("ASSETIP", '"', ''),-->
+<!--            	'SIEM',-->
+<!--            	'OPEN',-->
+<!--            	'-',-->
+<!--            	json_build_object('action', REPLACE("ACTION", '"', ''), 'attackType:', REPLACE("ATTACKTYPE", '"', ''), 'agg', REPLACE("AGG", '"', ''), 'tag', REPLACE("TAG", '"', ''), 'riskScore', REPLACE("RISKSCORE", '"', ''), 'uuid', REPLACE("UUID", '"', '')) AS data,-->
+<!--            	'false' as SENT-->
+<!--            FROM "kafka_SIEM_ALERTS_AVRO" t1-->
+<!--            WHERE -->
+<!--              NOT EXISTS (-->
+<!--                SELECT -->
+<!--                  "ALERTID", "DETAILS" -->
+<!--                FROM -->
+<!--                  "kafka_ID_ALERTS" t2-->
+<!--                WHERE-->
+<!--                  t2."ALERTID" :: TEXT LIKE REPLACE(t1."ALERTID", '"', '') :: TEXT-->
+<!--            	  AND-->
+<!--            	  t2."DETAILS" :: TEXT LIKE '%'||t1."UUID"::TEXT||'%'-->
+<!--              );-->
+<!--            RETURN NULL;-->
+<!--			EXCEPTION-->
+<!--				WHEN others THEN RETURN null;-->
+<!--            END-->
+<!--            $$-->
+<!--            LANGUAGE plpgsql;-->
+<!--            -->
+<!--            CREATE TRIGGER siem_to_id_alerts AFTER INSERT ON "kafka_SIEM_ALERTS_AVRO"-->
+<!--            FOR EACH ROW-->
+<!--            EXECUTE PROCEDURE add_siem_to_id_alerts();-->
+<!--        </createProcedure>-->
+<!--    </changeSet>-->
+
+    <changeSet author="catalind" id="tab-22112021-001">
+        <createProcedure>
+            CREATE or REPLACE FUNCTION hp_filter_ip_to_location()
+            RETURNS TRIGGER
+            AS
+            $$
+            BEGIN
+                INSERT INTO hp_geoip (ip_address, ip_country, lat, long, timestamp)
+                    SELECT
+                        t6.ip_address, t6.ip_country, t6.latitude, t6.longitude, t6.timestamp
+                    FROM
+                        (
+                            SELECT
+                                t3.ip_address as ip_address,
+                                t5.country_iso_code AS ip_country,
+                                t4.latitude as latitude,
+                                t4.longitude as longitude,
+                                t3.timestamp as timestamp
+                            FROM
+                            (
+                                SELECT
+                                    t1."NAME" as name,
+                                    t1."IP" as ip_address,
+                                    t1."SERVICE" as service,
+                                    t1."TS" as timestamp
+                                FROM
+                                    "kafka_HP_CURRENTLY_CONNECTED_IPS_AVRO" t1
+                                WHERE NOT EXISTS (
+                                    SELECT 1
+                                    FROM hp_geoip t2
+                                    WHERE t2.timestamp LIKE (t1."TS")::TEXT
+                                    AND t2.ip_address LIKE t1."IP"
+                                )
+                            ) as t3,
+                            geoip_blocks t4
+                            INNER JOIN geoip_locations t5 ON t4.geoname_id = t5.geoname_id
+                            WHERE
+                            t4.network >>= t3.ip_address::inet
+                        ) as t6;
+            RETURN NULL;
+			EXCEPTION
+				WHEN others THEN RETURN null;
+            END
+            $$
+            LANGUAGE plpgsql;
+        </createProcedure>
+    </changeSet>
+
+    <changeSet author="danielacp" id="tab-16112021-001">
+        <addColumn tableName="assets" >
+            <column name="id_alert"
+                    type="VARCHAR(255${varchar.type})" />
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-23112021-01">
+
+        <modifyDataType
+                columnName="source_ref"
+                newDataType="VARCHAR(2400${varchar.type})"
+                tableName="alert"/>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-23112021-02">
+
+        <modifyDataType
+                columnName="relationship_type"
+                newDataType="VARCHAR(2400${varchar.type})"
+                tableName="alert"/>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-23112021-03">
+
+        <modifyDataType
+                columnName="target_ref"
+                newDataType="VARCHAR(2400${varchar.type})"
+                tableName="alert"/>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-23112021-04">
+
+        <modifyDataType
+                columnName="details"
+                newDataType="VARCHAR(2400${varchar.type})"
+                tableName="alert"/>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-23112021-05">
+
+        <modifyDataType
+                columnName="location"
+                newDataType="VARCHAR(2400${varchar.type})"
+                tableName="alert"/>
+    </changeSet>
+
+    <changeSet author="catalind" id="tab-21122021-001">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="kafka_DSS_SUGGESTIONS_AVRO"/>
+            </not>
+        </preConditions>
+
+        <sql>
+            CREATE TABLE sphinx."kafka_DSS_SUGGESTIONS_AVRO" (
+			"TIMESTAMP" text,
+			"EVENT" text,
+			"ASSET" text,
+			"TYPE" text,
+			"CONFIDENCE" text,
+			"SUGGESTIONS" text,
+			"ALERTID" text,
+			"ALERTCOMPONENT" text,
+			"VULNERABILITIES" text,
+			"RISKLEVEL" text,
+			"EXTERNALREFERENCES" text
+            );
+            ALTER TABLE sphinx."kafka_DSS_SUGGESTIONS_AVRO" OWNER TO sphinx;
+        </sql>
+    </changeSet>
+
+    <changeSet id="danielaco" author="tab-10022022-002">
+        <createIndex catalogName="catalog"
+                     indexName="geoip_locations_iso_index"
+                     tableName="geoip_locations">
+            <column name="country_iso_code"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet  id="danielaco" author="tab-10022022-003">
+        <createIndex catalogName="catalog"
+                     indexName="hp_network_index"
+                     tableName="geoip_blocks">
+            <column name="network"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="catalind" id="tab-03012022-001">
+        <createIndex catalogName="catalog"
+                     indexName="hp_geoname_index"
+                     tableName="geoip_blocks">
+            <column name="geoname_id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="danielaco" author="tab-10022022-001">
+        <createIndex catalogName="catalog"
+                     indexName="geoip_locations_id_index"
+                     tableName="geoip_locations">
+            <column name="geoname_id"/>
+        </createIndex>
+    </changeSet>
+
+	<changeSet author="catalind" id="tab-11012022-001">
+        <createProcedure>
+            CREATE or REPLACE FUNCTION hp_filter_ip_to_location()
+            RETURNS TRIGGER
+            AS
+            $$
+            BEGIN
+                INSERT INTO hp_geoip (ip_address, ip_country, lat, long, timestamp)
+                    SELECT
+                        t6.ip_address, t6.ip_country, t6.latitude, t6.longitude, t6.timestamp
+                    FROM
+                        (
+                            SELECT
+                                t3.ip_address as ip_address,
+                                t5.country_iso_code AS ip_country,
+                                t4.latitude as latitude,
+                                t4.longitude as longitude,
+                                t3.timestamp as timestamp
+                            FROM
+                            (
+                                SELECT
+                                    t1."NAME" as name,
+                                    t1."IP" as ip_address,
+                                    t1."SERVICE" as service,
+                                    t1."TS" as timestamp
+                                FROM
+                                    "kafka_HP_CURRENTLY_CONNECTED_IPS_AVRO" t1
+                                WHERE NOT EXISTS (
+                                    SELECT 1
+                                    FROM hp_geoip t2
+                                    WHERE t2.timestamp LIKE (t1."TS")::TEXT
+                                    AND t2.ip_address LIKE t1."IP"
+                                )
+                            ) as t3,
+                            geoip_blocks t4
+                            INNER JOIN geoip_locations t5 ON t4.geoname_id = t5.geoname_id
+                            WHERE
+                            t4.network >>= t3.ip_address::inet
+                        ) as t6;
+            RETURN NULL;
+			EXCEPTION
+				WHEN others THEN RETURN null;
+            END
+            $$
+            LANGUAGE plpgsql;
+        </createProcedure>
+    </changeSet>
+	
+	<changeSet author="catalind" id="tab-07022022-001">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="kafka_RCRA_REPORT_TOPIC_AVRO"/>
+            </not>
+        </preConditions>
+		
+		<sql>
+			CREATE TABLE sphinx."kafka_RCRA_REPORT_TTOPIC_AVRO" ( 
+				"REPORT_DATE_TIME" TEXT, 
+				"REPORT_TYPE" TEXT, 
+				"ASSET_ID" TEXT, 
+				"ASSET_NAME" TEXT, 
+				"ASSET_IP" TEXT, 
+				"ASSET_MAC" TEXT,
+				"ASSET_LAST_TOUCHED" TEXT, 
+				"ASSET_VULNERABILITIES" TEXT, 
+				"THREAT_NAME" TEXT, 
+				"THREAT_CAPEC_ID" TEXT, 
+				"THREAT_CAPEC_NAME" TEXT, 
+				"THREAT_CAPEC_ABSTRACTION" TEXT, 
+				"THREAT_CAPEC_LIKELIHOOD" TEXT, 
+				"THREAT_CAPEC_SEVERITY" TEXT, 
+				"THREAT_ASSET_SKILL" TEXT, 
+				"THREAT_ASSET_MOTIVE" TEXT, 
+				"THREAT_ASSET_SOURCE" TEXT, 
+				"THREAT_ASSET_ACTOR" TEXT, 
+				"THREAT_ASSET_OPPORTUNITY" TEXT, 
+				"RISK_SERVICE_INSURANCE_CHECK" TEXT, 
+				"RISK_THREAT_OCCURANCE" TEXT, 
+				"RISK_MATERIALISATION" TEXT, 
+				"RISK_UNAUTH_MODIFICATIONS" TEXT, 
+				"RISK_UNDER_MAINTENANCE" TEXT, 
+				"RISK_EXPOSURE_THREAT_OCCURENCE" TEXT, 
+				"RISK_OBJECTIVE_CONFIDENTIALITY_LOW" TEXT, 
+				"RISK_OBJECTIVE_CONFIDENTIALITY_MEDIUM" TEXT, 
+				"RISK_OBJECTIVE_CONFIDENTIALITY_HIGH" TEXT, 
+				"RISK_OBJECTIVE_INTEGRITY_LOW" TEXT, 
+				"RISK_OBJECTIVE_INTEGRITY_MEDIUM" TEXT, 
+				"RISK_OBJECTIVE_INTEGRITY_HIGH" TEXT, 
+				"RISK_OBJECTIVE_AVAILABILITY_LOW" TEXT, 
+				"RISK_OBJECTIVE_AVAILABILITY_MEDIUM" TEXT, 
+				"RISK_OBJECTIVE_AVAILABILITY_HIGH" TEXT, 
+				"RISK_OBJECTIVE_MONETARY_LOW" TEXT, 
+				"RISK_OBJECTIVE_MONETARY_MEDIUM" TEXT, 
+				"RISK_OBJECTIVE_MONETARY_HIGH" TEXT, 
+				"RISK_OBJECTIVE_SAFETY_LOW" TEXT, 
+				"RISK_OBJECTIVE_SAFETY_MEDIUM" TEXT, 
+				"RISK_OBJECTIVE_SAFETY_HIGH" TEXT, 
+				"RISK_OBJECTIVE_CIA_MOST_PROBABLE_SCENARIOS" TEXT, 
+				"RISK_OBJECTIVE_EVALUATION_MOST_PROBABLE_SCENARIOS" TEXT, 
+				"RISK_ALERT_CONFIDENTIALITY_LEVEL" TEXT, 
+				"RISK_ALERT_CONFIDENTIALITY_THRESHOLD" TEXT
+			);
+			ALTER TABLE sphinx."kafka_RCRA_REPORT_TTOPIC_AVRO" OWNER TO sphinx;
+		</sql>
+		
+	</changeSet>
+	
+<!--	<changeSet author="catalind" id="tab-07022022-002">-->
+
+<!--		<preConditions onFail="MARK_RAN">-->
+<!--            <not>-->
+<!--                <tableExists tableName="kafka_FDCE_ALERTS_AVRO"/>-->
+<!--            </not>-->
+<!--        </preConditions>-->
+<!--		-->
+<!--		<sql>-->
+<!--			CREATE TABLE "kafka_FDCE_ALERTS_AVRO" (-->
+<!--				"REPORT_NAME" TEXT, -->
+<!--				"DATE_TIME" TEXT, -->
+<!--				"DESCRIPTION" TEXT, -->
+<!--				"STATUS" TEXT-->
+<!--			);-->
+<!--			ALTER TABLE sphinx."kafka_FDCE_ALERTS_AVRO" OWNER TO sphinx;-->
+<!--		</sql>-->
+<!--		-->
+<!--	</changeSet>-->
+
+<!--	<changeSet author="catalind" id="tab-14022022-001">-->
+<!--		-->
+<!--		<createProcedure>-->
+<!--			CREATE -->
+<!--			OR REPLACE FUNCTION dss_to_id_alerts() RETURNS trigger AS $$ BEGIN -->
+<!--			UPDATE -->
+<!--			  "kafka_ID_ALERTS" t1 -->
+<!--			SET -->
+<!--			  "ACTION" = NEW."SUGGESTIONS"-->
+<!--			WHERE -->
+<!--			  NEW."ALERTID" = t1."ALERTID";-->
+<!--			RETURN NULL;-->
+<!--			END;-->
+<!--			$$ LANGUAGE 'plpgsql';-->
+
+
+<!--			CREATE TRIGGER suggestions_to_id_alerts AFTER INSERT ON "kafka_DSS_SUGGESTIONS_AVRO"-->
+<!--            FOR EACH ROW-->
+<!--            EXECUTE PROCEDURE dss_to_id_alerts();-->
+<!--		</createProcedure>-->
+<!--	</changeSet>-->
+		
+<!--	<changeSet author="catalind" id="tab-18022022-001">		-->
+<!--		<sql>-->
+<!--			CREATE INDEX kafka_id_alerts_index ON "kafka_ID_ALERTS" ("ALERTID", "TIMESTAMP", "STATUS");-->
+<!--		</sql>-->
+<!--	</changeSet>-->
+
+<!--    <changeSet id="danielaco" author="tab-22022022-001">-->
+<!--        <createIndex catalogName="catalog"-->
+<!--                     indexName="kafka_id_alerts_index"-->
+<!--                     tableName="kafka_ID_ALERTS">-->
+<!--            <column name="ALERTID"/>-->
+<!--            <column name="TIMESTAMP"/>-->
+<!--            <column name="STATUS"/>-->
+<!--        </createIndex>-->
+<!--    </changeSet>-->
+	
+<!--	<changeSet author="catalind" id="tab-23022022-001">		-->
+<!--		<sql>-->
+<!--			CREATE INDEX kafka_certification_index ON "kafka_CERTIFICATIONS_AVRO" ("ALERTID", "START_TIME", "RULE_LEVEL");-->
+<!--		</sql>-->
+<!--	</changeSet>-->
+	
+<!--	<changeSet author="catalind" id="tab-28022022-001">-->
+
+<!--		<preConditions onFail="MARK_RAN">-->
+<!--            <not>-->
+<!--                <tableExists tableName="kafka_FDCE_REPORT_TOPIC_AVRO"/>-->
+<!--            </not>-->
+<!--        </preConditions>-->
+<!--		-->
+<!--		<sql>-->
+<!--			CREATE TABLE "kafka_FDCE_REPORT_TOPIC_AVRO" (-->
+<!--				"CASE_ID" TEXT, -->
+<!--				"DATETIME" TEXT, -->
+<!--				"MESSAGE" TEXT, -->
+<!--				"DETAILS" TEXT-->
+<!--			);-->
+<!--			ALTER TABLE sphinx."kafka_FDCE_REPORT_TOPIC_AVRO" OWNER TO sphinx;-->
+<!--		</sql>-->
+<!--		-->
+<!--	</changeSet>-->
+	
+	<changeSet author="catalind" id="tab-01032022-001">
+
+		<preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="kafka_HP_CAPTURED_IPS_AVRO"/>
+            </not>
+        </preConditions>
+		
+		<sql>
+			CREATE TABLE "kafka_HP_CAPTURED_IPS_AVRO" (
+				"IP" TEXT, 
+				"TS" TEXT
+			);
+			ALTER TABLE sphinx."kafka_HP_CAPTURED_IPS_AVRO" OWNER TO sphinx;
+		</sql>
+		
+	</changeSet>
+	
+	<changeSet author="catalind" id="tab-08032022-001">
+
+        <createTable tableName="certifications_counter">
+            <column name="id" type="BIGINT">
+            </column>
+            <column name="low" type="BIGINT">
+            </column>
+            <column name="medium" type="BIGINT">
+            </column>
+            <column name="high" type="BIGINT">
+            </column>
+        </createTable>
+
+	</changeSet>
+<!--	-->
+<!--	<changeSet author="catalind" id="tab-08032022-002">-->
+<!--		-->
+<!--		<createProcedure>-->
+<!--			CREATE OR REPLACE FUNCTION update_counter_certification() RETURNS TRIGGER AS $$-->
+<!--			BEGIN-->
+<!--				IF (TG_OP = 'DELETE') THEN-->
+<!--					CASE-->
+<!--				WHEN (cast(OLD."RULE_LEVEL" AS int) BETWEEN 0 AND 7) THEN-->
+<!--					UPDATE certifications_counter SET low=low-1 WHERE id=1;-->
+<!--				WHEN (cast(OLD."RULE_LEVEL" AS int) BETWEEN 8 AND 10) THEN-->
+<!--					UPDATE certifications_counter SET medium=medium-1 WHERE id=1;-->
+<!--				WHEN (cast(OLD."RULE_LEVEL" AS int) > 10) THEN-->
+<!--					UPDATE certifications_counter SET high=high-1 WHERE id=1;-->
+<!--				END CASE;-->
+<!--				ELSIF (TG_OP = 'INSERT') THEN-->
+<!--					CASE-->
+<!--				WHEN (cast(NEW."RULE_LEVEL" AS int) BETWEEN 0 AND 7) THEN-->
+<!--					UPDATE certifications_counter SET low=low+1 WHERE id=1;-->
+<!--				WHEN (cast(NEW."RULE_LEVEL" AS int) BETWEEN 8 AND 10) THEN-->
+<!--					UPDATE certifications_counter SET medium=medium+1 WHERE id=1;-->
+<!--				WHEN (cast(NEW."RULE_LEVEL" AS int) > 10) THEN-->
+<!--					UPDATE certifications_counter SET high=high+1 WHERE id=1;-->
+<!--				END CASE;-->
+<!--				END IF;-->
+<!--				RETURN NULL;-->
+<!--			END;-->
+<!--			$$ LANGUAGE plpgsql;-->
+<!--			CREATE TRIGGER certifications_counter_ins-->
+<!--			AFTER INSERT ON "kafka_CERTIFICATIONS_AVRO"-->
+<!--			FOR EACH ROW EXECUTE FUNCTION update_counter_certification();-->
+<!--			CREATE TRIGGER certifications_counter_del-->
+<!--			AFTER DELETE ON "kafka_CERTIFICATIONS_AVRO"-->
+<!--			FOR EACH ROW EXECUTE FUNCTION update_counter_certification();-->
+<!--		</createProcedure>-->
+<!--		-->
+<!--	</changeSet>-->
+
+	<changeSet author="catalind"  id="tab-15032022-001">
+        <preConditions onFail="MARK_RAN">
+            <tableExists schemaName="sphinx" tableName="certifications_counter"/>
+        </preConditions>
+
+        <dropTable  cascadeConstraints="true"
+                    catalogName="cat"
+                    schemaName="sphinx"
+                    tableName="certifications_counter"/>
+    </changeSet>
+
+	<changeSet author="catalind" id="tab-15032022-002">
+        <createTable tableName="certifications_counter_per_day">
+            <column name="low" type="BIGINT">
+            </column>
+            <column name="medium" type="BIGINT">
+            </column>
+            <column name="high" type="BIGINT">
+            </column>
+			<column name="timestamp" type="VARCHAR(255${varchar.type})"/>
+        </createTable>
+	</changeSet>
+
+    <changeSet id="catalind" author="tab-15032022-003">
+        <createIndex catalogName="catalog"
+                     indexName="idx_cert_count_per_day"
+                     tableName="certifications_counter_per_day">
+            <column name="timestamp"/>
+        </createIndex>
+    </changeSet>
+	
+	<changeSet author="catalind" id="tab-15032022-004">
+        <createTable tableName="certifications_counter_per_hour">
+            <column name="low" type="BIGINT">
+            </column>
+            <column name="medium" type="BIGINT">
+            </column>
+            <column name="high" type="BIGINT">
+            </column>
+			<column name="timestamp" type="VARCHAR(255${varchar.type})"/>
+        </createTable>
+	</changeSet>
+
+    <changeSet id="catalind" author="tab-15032022-005">
+        <createIndex catalogName="catalog"
+                     indexName="idx_cert_count_per_hour"
+                     tableName="certifications_counter_per_hour">
+            <column name="timestamp"/>
+        </createIndex>
+    </changeSet>
+	
+	<changeSet author="catalind" id="tab-15032022-006">
+        <createTable tableName="certifications_counter_per_sec">
+            <column name="low" type="BIGINT">
+            </column>
+            <column name="medium" type="BIGINT">
+            </column>
+            <column name="high" type="BIGINT">
+            </column>
+			<column name="timestamp" type="VARCHAR(255${varchar.type})"/>
+        </createTable>
+	</changeSet>
+
+    <changeSet id="catalind" author="tab-15032022-007">
+        <createIndex catalogName="catalog"
+                     indexName="idx_cert_count_per_sec"
+                     tableName="certifications_counter_per_sec">
+            <column name="timestamp"/>
+        </createIndex>
+    </changeSet>
+	
+<!--	<changeSet author="catalind" id="tab-08032022-100">-->
+<!--		-->
+<!--		<createProcedure>-->
+<!--			DROP TRIGGER IF EXISTS certifications_counter_ins on sphinx."kafka_CERTIFICATIONS_AVRO";-->
+<!--			DROP TRIGGER IF EXISTS certifications_counter_del on sphinx."kafka_CERTIFICATIONS_AVRO";-->
+
+<!--			CREATE OR REPLACE FUNCTION update_counter_certification() RETURNS TRIGGER AS $$-->
+<!--				BEGIN-->
+<!--					IF (TG_OP = 'DELETE') THEN-->
+<!--						CASE-->
+<!--					WHEN (cast(OLD."RULE_LEVEL" AS int) BETWEEN 0 AND 7) THEN-->
+<!--						UPDATE certifications_counter_per_day SET low=low-1 WHERE timestamp = substr(OLD."START_TIME", 0, 11);-->
+<!--						UPDATE certifications_counter_per_hour SET low=low-1 WHERE timestamp = substr(OLD."START_TIME", 0, 14);-->
+<!--						UPDATE certifications_counter_per_sec SET low=low-1 WHERE timestamp = substr(OLD."START_TIME", 0, 20);-->
+<!--					WHEN (cast(OLD."RULE_LEVEL" AS int) BETWEEN 8 AND 10) THEN-->
+<!--						UPDATE certifications_counter_per_day SET medium=medium-1 WHERE timestamp = substr(OLD."START_TIME", 0, 11);-->
+<!--						UPDATE certifications_counter_per_hour SET medium=medium-1 WHERE timestamp = substr(OLD."START_TIME", 0, 14);-->
+<!--						UPDATE certifications_counter_per_sec SET medium=medium-1 WHERE timestamp = substr(OLD."START_TIME", 0, 20);-->
+<!--					WHEN (cast(OLD."RULE_LEVEL" AS int) > 10) THEN-->
+<!--						UPDATE certifications_counter_per_day SET high=high-1 WHERE timestamp = substr(OLD."START_TIME", 0, 11);-->
+<!--						UPDATE certifications_counter_per_hour SET high=high-1 WHERE timestamp = substr(OLD."START_TIME", 0, 14);-->
+<!--						UPDATE certifications_counter_per_sec SET high=high-1 WHERE timestamp = substr(OLD."START_TIME", 0, 20);-->
+<!--					END CASE;-->
+<!--					ELSIF (TG_OP = 'INSERT') THEN-->
+<!--					IF (SELECT COUNT(*) FROM certifications_counter_per_day WHERE timestamp = substr(NEW."START_TIME", 0, 11))>0 THEN-->
+<!--					CASE-->
+<!--						WHEN (cast(NEW."RULE_LEVEL" AS int) BETWEEN 0 AND 7) THEN-->
+<!--							UPDATE certifications_counter_per_day SET low=low+1 WHERE timestamp = substr(NEW."START_TIME", 0, 11);-->
+<!--							UPDATE certifications_counter_per_hour SET low=low+1 WHERE timestamp = substr(NEW."START_TIME", 0, 14);-->
+<!--							UPDATE certifications_counter_per_sec SET low=low+1 WHERE timestamp = substr(NEW."START_TIME", 0, 20);-->
+<!--						WHEN (cast(NEW."RULE_LEVEL" AS int) BETWEEN 8 AND 10) THEN-->
+<!--							UPDATE certifications_counter_per_day SET medium=medium+1 WHERE timestamp = substr(NEW."START_TIME", 0, 11);-->
+<!--							UPDATE certifications_counter_per_hour SET medium=medium+1 WHERE timestamp = substr(NEW."START_TIME", 0, 14);-->
+<!--							UPDATE certifications_counter_per_sec SET medium=medium+1 WHERE timestamp = substr(NEW."START_TIME", 0, 20);-->
+<!--						WHEN (cast(NEW."RULE_LEVEL" AS int) > 10) THEN-->
+<!--							UPDATE certifications_counter_per_day SET high=high+1 WHERE timestamp = substr(NEW."START_TIME", 0, 11);-->
+<!--							UPDATE certifications_counter_per_hour SET high=high+1 WHERE timestamp = substr(NEW."START_TIME", 0, 14);-->
+<!--							UPDATE certifications_counter_per_sec SET high=high+1 WHERE timestamp = substr(NEW."START_TIME", 0, 20);-->
+<!--						END CASE;-->
+<!--					ELSE-->
+<!--					CASE-->
+<!--						WHEN (cast(NEW."RULE_LEVEL" AS int) BETWEEN 0 AND 7) THEN-->
+<!--							INSERT INTO certifications_counter_per_day VALUES (1, 0, 0, substr(NEW."START_TIME", 0, 11));-->
+<!--							INSERT INTO certifications_counter_per_hour VALUES (1, 0, 0, substr(NEW."START_TIME", 0, 14));-->
+<!--							INSERT INTO certifications_counter_per_sec VALUES (1, 0, 0, substr(NEW."START_TIME", 0, 20));-->
+<!--						WHEN (cast(NEW."RULE_LEVEL" AS int) BETWEEN 8 AND 10) THEN-->
+<!--							INSERT INTO certifications_counter_per_day VALUES (0, 1, 0, substr(NEW."START_TIME", 0, 11));-->
+<!--							INSERT INTO certifications_counter_per_hour VALUES (0, 1, 0, substr(NEW."START_TIME", 0, 14));-->
+<!--							INSERT INTO certifications_counter_per_sec VALUES (0, 1, 0, substr(NEW."START_TIME", 0, 20));-->
+<!--						WHEN (cast(NEW."RULE_LEVEL" AS int) > 10) THEN-->
+<!--							INSERT INTO certifications_counter_per_day VALUES (0, 0, 1, substr(NEW."START_TIME", 0, 11));-->
+<!--							INSERT INTO certifications_counter_per_hour VALUES (0, 0, 1, substr(NEW."START_TIME", 0, 14));-->
+<!--							INSERT INTO certifications_counter_per_sec VALUES (0, 0, 1, substr(NEW."START_TIME", 0, 20));-->
+<!--						END CASE;-->
+<!--					END IF;-->
+<!--					END IF;-->
+<!--					RETURN NULL;-->
+<!--				END;-->
+<!--			$$ LANGUAGE plpgsql;-->
+
+<!--			CREATE TRIGGER certifications_counter_ins-->
+<!--				AFTER INSERT ON "kafka_CERTIFICATIONS_AVRO"-->
+<!--				FOR EACH ROW EXECUTE FUNCTION update_counter_certification();-->
+<!--			CREATE TRIGGER certifications_counter_del-->
+<!--				AFTER DELETE ON "kafka_CERTIFICATIONS_AVRO"-->
+<!--				FOR EACH ROW EXECUTE FUNCTION update_counter_certification();-->
+<!--		</createProcedure>-->
+<!--		-->
+<!--	</changeSet>-->
+	
+	<changeSet author="catalind" id="tab-21032022-001">
+		<preConditions onFail="MARK_RAN">
+			<indexExists indexName="kafka_id_alerts_index" />
+		</preConditions>
+		<dropIndex indexName="kafka_id_alerts_index" tableName="kafka_ID_ALERTS" />
+	</changeSet>
+
+<!--    <changeSet id="catalind" author="tab-21032022-002">-->
+<!--        <createIndex catalogName="catalog"-->
+<!--                     indexName="kafka_id_alerts_index"-->
+<!--                     tableName="kafka_ID_ALERTS">-->
+<!--            <column name="ALERTID"/>-->
+<!--            <column name="TIMESTAMP"/>-->
+<!--            <column name="STATUS"/>-->
+<!--        </createIndex>-->
+<!--    </changeSet>-->
+	
+	<changeSet author="catalind" id="tab-21032022-003">
+		<preConditions onFail="MARK_RAN">
+			<indexExists indexName="kafka_certification_index" />
+		</preConditions>
+		<dropIndex indexName="kafka_certification_index" tableName="kafka_CERTIFICATIONS_AVRO"/>
+	</changeSet>
+
+<!--    <changeSet id="catalind" author="tab-21032022-004">-->
+<!--        <createIndex catalogName="catalog"-->
+<!--                     indexName="kafka_certification_index"-->
+<!--                     tableName="kafka_CERTIFICATIONS_AVRO">-->
+<!--            <column name="ALERTID"/>-->
+<!--            <column name="START_TIME"/>-->
+<!--            <column name='cast("RULE_LEVEL" as INT)' computed="true"/>-->
+<!--        </createIndex>-->
+<!--    </changeSet>-->
+
+    <changeSet  author="catalind" id="tab-21032022-005">
+        <preConditions onFail="MARK_RAN">
+            <tableExists schemaName="sphinx" tableName="kafka_RCRA_REPORT_TTOPIC_AVRO"/>
+        </preConditions>
+        <dropTable  cascadeConstraints="true"
+                    catalogName="cat"
+                    schemaName="sphinx"
+                    tableName="kafka_RCRA_REPORT_TTOPIC_AVRO"/>
+    </changeSet>
+	
+	<changeSet author="catalind" id="tab-21032022-006">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="kafka_RCRA_REPORT_TOPIC_AVRO"/>
+            </not>
+        </preConditions>
+		
+		<sql>
+			CREATE TABLE sphinx."kafka_RCRA_REPORT_TOPIC_AVRO" ( 
+				"REPORT_DATE_TIME" TEXT, 
+				"REPORT_TYPE" TEXT, 
+				"ASSET_ID" TEXT, 
+				"ASSET_NAME" TEXT, 
+				"ASSET_IP" TEXT, 
+				"ASSET_MAC" TEXT,
+				"ASSET_LAST_TOUCHED" TEXT, 
+				"ASSET_VULNERABILITIES" TEXT, 
+				"THREAT_NAME" TEXT, 
+				"THREAT_CAPEC_ID" TEXT, 
+				"THREAT_CAPEC_NAME" TEXT, 
+				"THREAT_CAPEC_ABSTRACTION" TEXT, 
+				"THREAT_CAPEC_LIKELIHOOD" TEXT, 
+				"THREAT_CAPEC_SEVERITY" TEXT, 
+				"THREAT_ASSET_SKILL" TEXT, 
+				"THREAT_ASSET_MOTIVE" TEXT, 
+				"THREAT_ASSET_SOURCE" TEXT, 
+				"THREAT_ASSET_ACTOR" TEXT, 
+				"THREAT_ASSET_OPPORTUNITY" TEXT, 
+				"RISK_SERVICE_INSURANCE_CHECK" TEXT, 
+				"RISK_THREAT_OCCURANCE" TEXT, 
+				"RISK_MATERIALISATION" TEXT, 
+				"RISK_UNAUTH_MODIFICATIONS" TEXT, 
+				"RISK_UNDER_MAINTENANCE" TEXT, 
+				"RISK_EXPOSURE_THREAT_OCCURENCE" TEXT, 
+				"RISK_OBJECTIVE_CONFIDENTIALITY_LOW" TEXT, 
+				"RISK_OBJECTIVE_CONFIDENTIALITY_MEDIUM" TEXT, 
+				"RISK_OBJECTIVE_CONFIDENTIALITY_HIGH" TEXT, 
+				"RISK_OBJECTIVE_INTEGRITY_LOW" TEXT, 
+				"RISK_OBJECTIVE_INTEGRITY_MEDIUM" TEXT, 
+				"RISK_OBJECTIVE_INTEGRITY_HIGH" TEXT, 
+				"RISK_OBJECTIVE_AVAILABILITY_LOW" TEXT, 
+				"RISK_OBJECTIVE_AVAILABILITY_MEDIUM" TEXT, 
+				"RISK_OBJECTIVE_AVAILABILITY_HIGH" TEXT, 
+				"RISK_OBJECTIVE_MONETARY_LOW" TEXT, 
+				"RISK_OBJECTIVE_MONETARY_MEDIUM" TEXT, 
+				"RISK_OBJECTIVE_MONETARY_HIGH" TEXT, 
+				"RISK_OBJECTIVE_SAFETY_LOW" TEXT, 
+				"RISK_OBJECTIVE_SAFETY_MEDIUM" TEXT, 
+				"RISK_OBJECTIVE_SAFETY_HIGH" TEXT, 
+				"RISK_OBJECTIVE_CIA_MOST_PROBABLE_SCENARIOS" TEXT, 
+				"RISK_OBJECTIVE_EVALUATION_MOST_PROBABLE_SCENARIOS" TEXT, 
+				"RISK_ALERT_CONFIDENTIALITY_LEVEL" TEXT, 
+				"RISK_ALERT_CONFIDENTIALITY_THRESHOLD" TEXT
+			);
+			ALTER TABLE sphinx."kafka_RCRA_REPORT_TOPIC_AVRO" OWNER TO sphinx;
+		</sql>
+		
+	</changeSet>
+
+	<changeSet author="catalind" id="tab-21032022-007">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="kafka_RCRA_ALERTS_AVRO"/>
+            </not>
+        </preConditions>
+		<sql>
+			CREATE TABLE sphinx."kafka_RCRA_ALERTS_AVRO" ( 
+				"ALERT_TYPE" TEXT,
+				"ALERT_SEVERITY" TEXT,
+				"DATE_TIME" TEXT,
+				"ASSET_IP" TEXT,
+				"ASSET_COMMON_ID" TEXT,
+				"ASSET_LAST_TOUCHED" TEXT,
+				"THREAT" TEXT,
+				"ASSET_URL" TEXT,
+				"PAGE_UPDATE_URL" TEXT,
+				"RISK_REPORT_URL" TEXT
+			);
+			ALTER TABLE sphinx."kafka_RCRA_ALERTS_AVRO" OWNER TO sphinx;
+		</sql>		
+	</changeSet>
+
+	<changeSet author="catalind" id="tab-21032022-008">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="kafka_RCRA_ASSET_REPUTATION_AVRO"/>
+            </not>
+        </preConditions>
+		<sql>
+			CREATE TABLE sphinx."kafka_RCRA_ASSET_REPUTATION_AVRO" ( 
+				"INDEX" TEXT,
+				"SOURCE_HOSPITAL_ID" TEXT,
+				"ASSET_ID" TEXT,
+				"ASSET_VALUE" TEXT,
+				"ASSET_TYPE" TEXT,
+				"COUNT" TEXT,
+				"FIRST_UPDATE" TEXT,
+				"LAST_UPDATE" TEXT,
+				"REPUTATION" TEXT,
+				"REPUTATION_SPEED" TEXT,
+				"WEIGHTED_IMPORTANCE" TEXT,
+				"ASSET_IP" TEXT
+			);
+			ALTER TABLE sphinx."kafka_RCRA_ASSET_REPUTATION_AVRO" OWNER TO sphinx;
+		</sql>		
+	</changeSet>
+
+	<changeSet author="catalind" id="tab-21032022-009">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="kafka_ECARE_NONVALIDATED_AVRO"/>
+            </not>
+        </preConditions>
+		<sql>
+			CREATE TABLE sphinx."kafka_ECARE_NONVALIDATED_AVRO" ( 
+				"ECARE_ID" TEXT,
+				"NAME" TEXT,
+				"ATTACK_TYPE" TEXT,
+				"START_NONVALIDATED" TEXT,
+				"END_NONVALIDATED" TEXT,
+				"EVENTS_COUNT" TEXT,
+				"DATA_TIMESTAMP" TEXT,
+				"DATA_LAST_SEEN" TEXT,
+				"DATA_DST_HOST" TEXT,
+				"DATA_SRC_IP" TEXT,
+				"DATA_USER" TEXT,
+				"DATA_ACTION" TEXT,
+				"DATA_STATUS" TEXT,
+				"DATA_CONT" TEXT,
+				"DATA_MTD" TEXT,
+				"QUERY_USED" TEXT,
+				"TAG" TEXT,
+				"RISK_SCORE" TEXT,
+				"SEVERITY" TEXT,
+				"UUID" TEXT
+			);
+			ALTER TABLE sphinx."kafka_ECARE_NONVALIDATED_AVRO" OWNER TO sphinx;
+		</sql>		
+	</changeSet>
+
+	<changeSet author="catalind" id="tab-21032022-010">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="kafka_ECARE_LOGIN_FAILURES_AVRO"/>
+            </not>
+        </preConditions>
+		<sql>
+			CREATE TABLE sphinx."kafka_ECARE_LOGIN_FAILURES_AVRO" ( 
+				"TIMESTAMP" TEXT,
+				"LAST_SEEN" TEXT,
+				"DST_HOST" TEXT,
+				"SRC_IP" TEXT,
+				"USER" TEXT,
+				"ACTION" TEXT,
+				"STATUS" TEXT,
+				"CONT" TEXT
+			);
+			ALTER TABLE sphinx."kafka_ECARE_LOGIN_FAILURES_AVRO" OWNER TO sphinx;
+		</sql>		
+	</changeSet>
+
+	<changeSet author="catalind" id="tab-21032022-011">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="kafka_ECARE_BRUTEFORCE_AVRO"/>
+            </not>
+        </preConditions>
+		<sql>
+			CREATE TABLE sphinx."kafka_ECARE_BRUTEFORCE_AVRO" ( 
+				"ECARE_ID" TEXT,
+				"NAME" TEXT,
+				"ATTACK_TYPE" TEXT,
+				"START_BRUTEFORCE" TEXT,
+				"END_BRUTEFORCE" TEXT,
+				"EVENTS_COUNT" TEXT,
+				"DATA_TIMESTAMP" TEXT,
+				"DATA_LAST_SEEN" TEXT,
+				"DATA_DST_HOST" TEXT,
+				"DATA_SRC_IP" TEXT,
+				"DATA_USER" TEXT,
+				"DATA_ACTION" TEXT,
+				"DATA_STATUS" TEXT,
+				"DATA_CONT" TEXT,
+				"DATA_MTD" TEXT,
+				"QUERY_USED" TEXT,
+				"TAG" TEXT,
+				"RISK_SCORE" TEXT,
+				"SEVERITY" TEXT,
+				"UUID" TEXT
+			);
+			ALTER TABLE sphinx."kafka_ECARE_BRUTEFORCE_AVRO" OWNER TO sphinx;
+		</sql>		
+	</changeSet>
+
+</databaseChangeLog>

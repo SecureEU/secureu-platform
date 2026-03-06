@@ -1,0 +1,79 @@
+{
+  "type": "bundle",
+  "id": "bundle--385f038f-836d-4dee-ac56-71d3eb5ae185",
+  "objects": [
+    {
+      "type": "identity",
+      "id": "identity--79b49351-eed5-49ef-be36-2fdea462ecac",
+      "spec_version": "2.1",
+      "created": "2021-04-19 10:02:20",
+      "modified": "2021-04-19 10:02:20",
+      "name": "AD"
+    },
+    {
+      "type": "x-sphinx-ad-alert",
+      "id": "x-sphinx-ad-alert--5029775a-8eff-46c9-9985-664c46daf6ee",
+      "spec_version": "2.1",
+      "created": "2021-04-19 10:02:20",
+      "modified": "2021-04-19 10:02:20",
+      "details": {
+        "totalFlows": 0,
+        "protocolFlow": {
+          "id": null,
+          "detectedProtocol": null,
+          "lowerPort": 0,
+          "upperPort": 0,
+          "upperIp": "255.255.255.255",
+          "lowerIp": "195.82.130.23",
+          "ipProtocol": 0,
+          "flowDuration": 0,
+          "bytes": 0,
+          "packets": 0,
+          "packetsWithoutPayload": 0,
+          "avgPacketSize": 0,
+          "minPacketSize": 0,
+          "maxPacketSize": 0,
+          "avgInterTime": 0,
+          "packetSize0": 0,
+          "interTime0": 0,
+          "packetSize1": 0,
+          "interTime1": 0,
+          "packetSize2": 0,
+          "interTime2": 0,
+          "packetSize3": 0,
+          "interTime3": 0,
+          "packetSize4": 0,
+          "interTime4": 0,
+          "hostname": null,
+          "dnaType": null,
+          "timeStamp2": null,
+          "malware": false,
+          "flags": 0
+        },
+        "text": "This IP was detected by AD performing an abnormal activity. In what follows, you can see more information.\nAbnormal behaviour: Alien accessing too much hosts (30). Possibly a horizontal port scan.\nAlienIP: 195.82.130.23\nBytes Up: 0 B\nBytes Down: 1.2GB\nPackets: 31\nNumber of pairs: 30\nFlows\n120.1.21.125:203 <= 195.82.130.23:203  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.111:203 <= 195.82.130.23:203  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.122:203 <= 195.82.130.23:203  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.131:204 <= 195.82.130.23:213  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.147:2017 <= 195.82.130.23:103  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.124:203 <= 195.82.130.23:203  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.136:204 <= 195.82.130.23:213  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.108:2017 <= 195.82.130.23:203  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.141:2017 <= 195.82.130.23:103  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.121:203 <= 195.82.130.23:203  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.144:2017 <= 195.82.130.23:103  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.125:203 <= 195.82.130.23:203  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.14:2017 <= 195.82.130.23:103  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.12.115:203 <= 195.82.130.23:203  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.12.147:2017 <= 195.82.130.23:103  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.134:204 <= 195.82.130.23:213  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.132:204 <= 195.82.130.23:213  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.10:2017 <= 195.82.130.23:203  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.12.136:204 <= 195.82.130.23:213  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.142:2017 <= 195.82.130.23:103  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.112:203 <= 195.82.130.23:203  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.114:203 <= 195.82.130.23:203  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.104:2017 <= 195.82.130.23:203  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.12:203 <= 195.82.130.23:203  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.11:203 <= 195.82.130.23:203  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.101:2017 <= 195.82.130.23:203  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.102:2017 <= 195.82.130.23:203  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.10:203 <= 195.82.130.23:203  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.12.108:2017 <= 195.82.130.23:203  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.115:203 <= 195.82.130.23:203  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.13:204 <= 195.82.130.23:213  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)",
+        "title": "AD: Horizontal scan on ports TCP/203, TCP/2017, TCP/204",
+        "flowId": "1618869737985",
+        "coords": null,
+        "username": null,
+        "timestamp": "2021-02-20 01:02:20",
+        "algorithm": {
+          "type": "AlienAccessingManyHosts_sflow",
+          "numberOfPairs": "30",
+          "alienIP": "195.82.130.23",
+          "bytesUp": "0",
+          "bytesDown": "1239974332",
+          "numberPkts": "31",
+          "ports": "TCP/203, TCP/2017, TCP/204",
+          "stringFlows": "\n120.1.21.125:203 <= 195.82.130.23:203  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.111:203 <= 195.82.130.23:203  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.122:203 <= 195.82.130.23:203  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.131:204 <= 195.82.130.23:213  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.147:2017 <= 195.82.130.23:103  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.124:203 <= 195.82.130.23:203  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.136:204 <= 195.82.130.23:213  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.108:2017 <= 195.82.130.23:203  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.141:2017 <= 195.82.130.23:103  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.121:203 <= 195.82.130.23:203  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.144:2017 <= 195.82.130.23:103  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.125:203 <= 195.82.130.23:203  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.14:2017 <= 195.82.130.23:103  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.12.115:203 <= 195.82.130.23:203  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.12.147:2017 <= 195.82.130.23:103  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.134:204 <= 195.82.130.23:213  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.132:204 <= 195.82.130.23:213  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.10:2017 <= 195.82.130.23:203  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.12.136:204 <= 195.82.130.23:213  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.142:2017 <= 195.82.130.23:103  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.112:203 <= 195.82.130.23:203  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.114:203 <= 195.82.130.23:203  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.104:2017 <= 195.82.130.23:203  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.12:203 <= 195.82.130.23:203  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.11:203 <= 195.82.130.23:203  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.101:2017 <= 195.82.130.23:203  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.102:2017 <= 195.82.130.23:203  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.10:203 <= 195.82.130.23:203  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.12.108:2017 <= 195.82.130.23:203  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.115:203 <= 195.82.130.23:203  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)\n120.1.1.13:204 <= 195.82.130.23:213  (TCP, Down: 0 B, Up: 38.1MB,1 pkts, duration: 0s, sampling: 1/1)"
+        }
+      }
+    },
+    {
+      "type": "relationship",
+      "id": "relationship--9a9dec86-9000-40e6-a0ad-81c7566cc13d",
+      "spec_version": "2.1",
+      "created": "2021-04-19 10:02:20",
+      "modified": "2021-04-19 10:02:20"
+    }
+  ]
+}

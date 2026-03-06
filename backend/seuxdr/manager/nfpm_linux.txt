@@ -1,0 +1,9 @@
+#!/bin/bash
+
+DIR="$(dirname "$0")"
+
+# Ensure the script has execution permission
+chmod +x "$DIR/%s"
+
+# Run the uninstall script with sudo
+sudo "$DIR/%s"

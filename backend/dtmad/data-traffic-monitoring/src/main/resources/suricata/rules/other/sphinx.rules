@@ -1,0 +1,35 @@
+alert udp any any ->  any 51820 (msg:"SPHINX DoS 51820 v2"; flow:to_server; threshold: type both, track by_dst, count 1000, seconds 1; classtype:attempted-dos; sid:6;)
+alert udp any any ->  any 80 (msg:"SPHINX Denial-of-Service (DoS)"; flow:to_server; threshold: type both, track by_dst, count 1000, seconds 5; classtype:attempted-dos; sid:101;)
+alert udp any any ->  any any (msg:"SPHINX Denial-of-Service (DoS)"; flow:to_server; threshold: type both, track by_dst, count 1000, seconds 5; classtype:attempted-dos; sid:102;)
+alert tcp any any ->  any any (msg:"SPHINX Denial-of-Service (DoS)"; flow:to_server; threshold: type both, track by_dst, count 1000, seconds 5; classtype:attempted-dos; sid:103;)
+alert http any any ->  any any (msg:"SPHINX Denial-of-Service (DoS)"; flow:to_server; threshold: type both, track by_dst, count 1000, seconds 5; classtype:attempted-dos; sid:104;)
+alert http any any -> any 80 (msg:"SPHINX PLAINTEXT-HTTP unencrypted traffic detected"; flow:established, to_server; content:"/search?q="; http_uri; threshold: type limit, track by_src, seconds 60, count 1; sid:904300003; rev:1;)
+#alert tcp any any -> any 1010 (msg:"SPHINX BlackList Traffic to malicious host"; flow:established,to_server; threshold: type limit, track by_src, seconds 60, count 1; classtype:trojan-activity; sid:904200001; rev:1;)
+#SMTP contine  DATA
+alert smtp any any -> any any  (msg:"SPHINX SMTP Unencrypted Traffic v1"; flow:established,to_server; content:"DATA"; nocase; classtype:attempted-user; sid:2112985; rev:1; metadata:attack_target SMTP_Server, deployment Datacenter, signature_severity Informational, created_at 2018_09_05, updated_at 2018_09_05;)
+alert tcp any any -> any 25  (msg:"SPHINX SMTP Unencrypted Traffic v2"; flow:established,to_server; content:"DATA"; nocase; classtype:attempted-user; sid:2112986; rev:1; metadata:attack_target SMTP_Server, deployment Datacenter, signature_severity Informational, created_at 2018_09_05, updated_at 2018_09_05;)
+#POP3 110
+alert tcp any any -> any 110 (msg:"SPHINX POP3 Unencrypted Traffic v1"; flow:to_server,established; content:"AUTH"; nocase; classtype:attempted-admin; sid:2201930; rev:1;)
+alert tcp any any -> any 110 (msg:"SPHINX POP3 Unencrypted Traffic v2"; flow:to_server,established; content:"LIST"; nocase; classtype:attempted-admin; sid:2201931; rev:1;)
+alert tcp any any -> any 110 (msg:"SPHINX POP3 Unencrypted Traffic v3"; flow:to_server,established; content:"PASS"; nocase; classtype:attempted-admin; sid:2201632; rev:1;)
+#IMAP 143
+alert tcp any any -> any 143 (msg:"SPHINX IMAP Unencrypted Traffic v1"; flow:established,to_server; content:"FETCH"; nocase; classtype:misc-attack; sid:2203071; rev:1;)
+alert tcp any any -> any 143 (msg:"SPHINX IMAP Unencrypted Traffic v2"; flow:established,to_server; content:"LOGIN"; classtype:attempted-user; sid:2203072; rev:1;)
+alert tcp any any -> any 143 (msg:"SPHINX IMAP Unencrypted Traffic v3"; flow:established,to_server; content:"AUTHENTICATE"; nocase; classtype:misc-attack; sid:2203073; rev:1;)
+alert tcp any any -> any 143 (msg:"SPHINX IMAP Unencrypted Traffic v3"; flow:established,to_server; content:"LIST"; nocase; classtype:misc-attack; sid:2203074; rev:1;)
+#UC10: SQL injection
+alert http any any -> any any (msg: "SPHINX SQL Possible SQL Injection attack (Contains singlequote)"; flow:established,to_server; content:"'"; nocase; http_uri; sid:1;)
+alert http any any -> any any (msg: "SPHINX Possible SQL Injection attack (Contains UNION)"; flow:established,to_server; content:"union"; nocase; http_uri; sid:2;)
+alert http any any -> any any (msg: "SPHINX Possible SQL Injection attack (Contains SELECT)"; flow:established,to_server; content:"select"; nocase; http_uri; sid:3;)
+alert http any any -> any any (msg: "SPHINX Possible SQL Injection attack (Contains singlequote POST DATA)"; flow:established,to_server; content:"'"; nocase; http_client_body; sid:4;)
+alert http any any -> any any (msg: "SPHINX Possible SQL Injection attack (Contains UNION POST DATA)"; flow:established,to_server; content:"union"; nocase; http_client_body; sid:5;)
+alert http any any -> any any (msg: "SPHINX Possible SQL Injection attack (Contains SELECT POST DATA)"; flow:established,to_server; content:"select"; nocase; http_client_body; sid:7;)
+#UC1: Conficker - alerting of access to flagged websites
+alert http any any -> any any (msg:"SPHINX ET TROJAN Downadup/Conficker A or B Worm reporting"; flow:to_server,established; content:"/search?q="; http_uri; pcre:"/\/search\?q=[0-9]{1,3}(&aq=7(\?[0-9a-f]{8})?)?$/U"; pcre:"/\x0d\x0aHost\x3a \d+\.\d+\.\d+\.\d+\x0d\x0a/"; reference:url,www.f-secure.com/weblog/archives/00001584.html; reference:url,doc.emergingthreats.net/bin/view/Main/2009024; classtype:trojan-activity; sid:2009025; rev:1; metadata:created_at 2010_07_30, updated_at 2020_04_20;)
+alert http any any -> any any (msg:"SPHINX ET TROJAN Conficker/KernelBot/MS08-067 related Trojan Checkin"; flow:established,to_server; content:"GET"; http_method; nocase; content:"/kernel/zz.htm?"; http_uri; content:"Ver="; http_uri; metadata: former_category MALWARE; reference:url,doc.emergingthreats.net/bin/view/Main/2008737; classtype:trojan-activity; sid:2008737; rev:12; metadata:created_at 2010_07_30, updated_at 2020_04_21;)
+alert http any any -> any any (msg:"SPHINX ET TROJAN Conficker/MS08-067 Worm Traffic Outbound"; flowbits:isset,ET.ms08067_header; flow:established,to_server; content:"If-None-Match|3A| |22|60794|2D|12b3|2D|e4169440|22|"; nocase; reference:url,doc.emergingthreats.net/bin/view/Main/2008739; classtype:trojan-activity; sid:2008739; rev:8; metadata:created_at 2010_07_30, updated_at 2010_07_30;)
+alert http any any -> any any (msg:"SPHINX ET TROJAN Downadup/Conficker A Worm reporting"; flow:to_server,established; content:"/search?q="; http_uri; content:"&aq="; http_uri; pcre:"/\/search\?q\=\d+&aq=\d/mi"; reference:url,www.f-secure.com/weblog/archives/00001584.html; reference:url,doc.emergingthreats.net/bin/view/Main/2009114; classtype:trojan-activity; sid:2009114; rev:7; metadata:created_at 2010_07_30, updated_at 2010_07_30;)
+alert udp any any -> any any (msg:"SPHINX ET TROJAN Possible Downadup/Conficker-C P2P encrypted traffic UDP Ping Packet (bit value 16)"; dsize:>19; byte_test:1, &, 16, 19; threshold: type both, track by_src, count 95, seconds 40; reference:url,mtc.sri.com/Conficker/addendumC/; reference:url,doc.emergingthreats.net/2009208; classtype:trojan-activity; sid:2009208; rev:4; metadata:created_at 2010_07_30, updated_at 2010_07_30;)
+
+
+

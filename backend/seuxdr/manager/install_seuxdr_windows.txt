@@ -1,0 +1,65 @@
+# PowerShell Install Script for SEUXDR
+
+# Accept the binary name as a parameter
+param (
+    [string]$BinaryName
+)
+
+# Variables
+$SCRIPT_DIR = Split-Path -Parent $MyInvocation.MyCommand.Definition
+$SEUXDR_DIR = "C:\Program Files\SEUXDR"
+$SEUXDR_BINARY = "$SCRIPT_DIR\$BinaryName"
+$SERVICE_NAME = "SEUXDR"
+
+# Check if the script is run as administrator
+if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    Write-Host "Please run as Administrator"
+    exit 1
+}
+
+Write-Host "Installing SEUXDR agent..."
+
+# Create the SEUXDR directory if it doesn't exist
+if (-not (Test-Path $SEUXDR_DIR)) {
+    Write-Host "Creating directory $SEUXDR_DIR"
+    New-Item -Path $SEUXDR_DIR -ItemType Directory | Out-Null
+}
+
+# Copy the SEUXDR binary to the target directory
+$destPath = Join-Path $SEUXDR_DIR (Split-Path $SEUXDR_BINARY -Leaf)
+if (Test-Path $SEUXDR_BINARY) {
+    Write-Host "Copying $SEUXDR_BINARY to $SEUXDR_DIR"
+    Copy-Item -Path $SEUXDR_BINARY -Destination $SEUXDR_DIR -Force
+} else {
+    Write-Host "Binary file $SEUXDR_BINARY not found!"
+    exit 1
+}
+
+# Run the service installation from the executable
+Write-Host "Running service installation via SEUXDR executable..."
+try {
+    & $destPath install
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "Service installation failed with exit code $LASTEXITCODE"
+        exit 1
+    }
+} catch {
+    Write-Host "An error occurred during service installation: $_"
+    exit 1
+}
+
+# Start the service
+Write-Host "Starting SEUXDR agent service..."
+Start-Service -Name $SERVICE_NAME
+
+# Verify if the service is running
+$service = Get-Service -Name $SERVICE_NAME -ErrorAction SilentlyContinue
+if ($null -eq $service) {
+    Write-Host "Service installation appears to have failed; service not found."
+    exit 1
+} elseif ($service.Status -ne 'Running') {
+    Write-Host "Service installed but not running. Attempting to start..."
+    Start-Service -Name $SERVICE_NAME
+} else {
+    Write-Host "SEUXDR agent installed and running successfully as a service!"
+}

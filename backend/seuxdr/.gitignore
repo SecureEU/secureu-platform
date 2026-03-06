@@ -1,0 +1,27 @@
+# Folders to ignore
+/manager/certs
+/manager/storage
+/manager/logs
+/manager/mocks
+/manager_front/certs
+/agent/certs
+/agent/queue/rids
+/agent/logs
+/agent/storage/agent.db
+/agent/config/agent_base_config.yml
+/backups
+
+
+# Binaries
+*.dll
+*.so
+*.dylib
+*.bin
+*.enc
+
+# OS-specific files
+.DS_store
+
+# Go build artifacts
+*.out
+*.test

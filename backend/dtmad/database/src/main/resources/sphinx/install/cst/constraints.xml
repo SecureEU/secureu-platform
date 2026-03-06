@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.10.xsd"
+                   logicalFilePath="sphinx/install/cst/constraints.xml" >
+
+    <!--
+    <changeSet author="iulianb" id="cst-17052020-001">
+        <addForeignKeyConstraint baseColumnNames="ID_PCAP_SESSION"
+                                  baseTableName="PCAP"
+                                  constraintName="fk_pcap_session"
+                                  deferrable="true"
+                                  initiallyDeferred="true"
+                                  onDelete="CASCADE"
+                                  onUpdate="RESTRICT"
+                                  referencedColumnNames="id"
+                                  referencedTableName="PCAP_SESSION"
+                                  />
+    </changeSet>
+-->
+    <changeSet  author="iulianb" id="cst-05062020-001">
+        <addUniqueConstraint
+                              columnNames="name"
+                              constraintName="UK_NAME"
+                              deferrable="true"
+                              disabled="true"
+                              initiallyDeferred="true"
+                              tableName="DTM_PROCESS_FILTER"
+                            />
+    </changeSet>
+
+<!--
+    <changeSet  author="iulianb" id="cst-29062020-001">
+        <addUniqueConstraint
+                columnNames="INSTANCE_KEY,NAME,FILTER_ID"
+                constraintName="UK_KEY_NAME_FILTER"
+                deferrable="true"
+                disabled="true"
+                initiallyDeferred="true"
+                tableName="TSHARK_PROCESS"
+        />
+    </changeSet>
+-->
+
+    <changeSet  author="iulianb" id="cst-11242020-001">
+        <dropPrimaryKey
+                     constraintName="pk_dtm_config"
+                     tableName="component_config"/>
+
+        <addPrimaryKey
+                columnNames="id"
+                constraintName="pk_component_config"
+                tableName="component_config"/>
+    </changeSet>
+
+    <changeSet  author="iulianb" id="cst-03152021-001">
+        <addUniqueConstraint
+                columnNames="key"
+                constraintName="UK_key"
+                deferrable="true"
+                disabled="true"
+                initiallyDeferred="true"
+                tableName="dtm_instance"
+        />
+    </changeSet>
+
+</databaseChangeLog>

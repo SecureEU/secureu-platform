@@ -1,0 +1,2821 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        logicalFilePath="sphinx/install/data/data.xml"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.10.xsd">
+
+    <changeSet author="iulianb" id="data-07072020-001">
+        <insert tableName="AD_COMPONENT">
+            <column name="ID" valueComputed="nextval('SEQ_AD_COMPONENT')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="BlackWeb"/>
+            <column name="CODE" value="BlackWeb"/>
+            <column name="DESCRIPTION" value="BlackWeb"/>
+
+            <column name="ENABLED" value="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="iulianb" id="data-07072020-002">
+        <insert tableName="AD_COMPONENT">
+            <column name="ID" valueComputed="nextval('SEQ_AD_COMPONENT')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="Massive Data Processing"/>
+            <column name="CODE" value="MassiveDataProcessing"/>
+            <column name="DESCRIPTION" value="Massive Data Processing"/>
+
+            <column name="ENABLED" value="true"/>
+        </insert>
+    </changeSet>
+
+
+    <changeSet author="iulianb" id="data-07072020-003">
+        <update tableName="AD_COMPONENT">
+            <column  name="CONFIGURABLE" value="true"/>
+            <where>CODE='MassiveDataProcessing'</where>
+        </update>
+    </changeSet>
+
+    <changeSet author="iulianb" id="data-07072020-004">
+        <update tableName="AD_COMPONENT">
+            <column  name="CONFIGURABLE" value="false"/>
+            <where>CODE='BlackWeb'</where>
+        </update>
+    </changeSet>
+
+
+    <changeSet author="iulianb" id="data-07072020-005">
+        <insert tableName="AD_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_AD_COMPONENT')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="THRESHOLD_ALERT"/>
+            <column name="DESCRIPTION" value="Threshold alert"/>
+            <column name="VALUE" value="25"/>
+
+            <column name="ID_COMPONENT" valueComputed="(SELECT ID from AD_COMPONENT where code='MassiveDataProcessing')"/>
+
+        </insert>
+    </changeSet>
+
+    <changeSet author="iulianb" id="data-08072020-001">
+        <insert tableName="AD_COMPONENT">
+            <column name="ID" valueComputed="nextval('SEQ_AD_COMPONENT')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="Asset Discovery"/>
+            <column name="CODE" value="AssetDiscovery"/>
+            <column name="DESCRIPTION" value="Asset Discovery"/>
+
+            <column name="ENABLED" value="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="iulianb" id="data-10072020-001">
+        <insert tableName="BLACKWEB_CATEGORY">
+            <column name="ID" valueComputed="nextval('SEQ_AD_COMPONENT')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="blacktlds"/>
+            <column name="DESCRIPTION" value="TLD Block"/>
+
+        </insert>
+    </changeSet>
+
+    <changeSet author="iulianb" id="data-10072020-002">
+        <insert tableName="BLACKWEB_CATEGORY">
+            <column name="ID" valueComputed="nextval('SEQ_AD_COMPONENT')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="blackSphinx"/>
+            <column name="DESCRIPTION" value="Sphinx Block"/>
+
+        </insert>
+    </changeSet>
+
+    <changeSet author="iulianb" id="data-10072020-003">
+        <update tableName="AD_COMPONENT">
+            <column  name="CONFIGURABLE" value="true"/>
+            <where>CODE='BlackWeb'</where>
+        </update>
+    </changeSet>
+
+	<!--
+    <changeSet author="catalind" id="data-17072020-001">
+        <insert tableName="WORLDMAP_LATLNG">
+		
+            <column name="ID" valueComputed="nextval('SEQ_WORLDMAP_LATLNG')" />
+            <column name='LAT' valueNumeric='42.546245' />
+			<column name='LNG' valueNumeric='1.601554' />
+			<column name='NAME' value='AD' />
+			<column name='VALUE' valueNumeric='1' />
+			<column name='TIMESTAP' valueDate='2020-07-13 19:10:25' />
+
+        </insert>
+    </changeSet>	
+    <changeSet author="catalind" id="data-17072020-002">
+        <insert tableName="WORLDMAP_LATLNG">
+		
+            <column name="ID" valueComputed="nextval('SEQ_WORLDMAP_LATLNG')" />
+            <column name='LAT' valueNumeric='23.424076' />
+			<column name='LNG' valueNumeric='53.847818' />
+			<column name='NAME' value='AE' />
+			<column name='VALUE' valueNumeric='2' />
+			<column name='TIMESTAP' valueDate='2020-07-13 19:10:25' />
+
+        </insert>
+    </changeSet>
+	<changeSet author="catalind" id="data-17072020-003">
+        <insert tableName="WORLDMAP_LATLNG">
+		
+            <column name="ID" valueComputed="nextval('SEQ_WORLDMAP_LATLNG')" />
+            <column name='LAT' valueNumeric='33.93911' />
+			<column name='LNG' valueNumeric='67.709953' />
+			<column name='NAME' value='AF' />
+			<column name='VALUE' valueNumeric='3' />
+			<column name='TIMESTAP' valueDate='2020-07-13 19:10:25' />
+
+        </insert>
+    </changeSet> 
+	<changeSet author="catalind" id="data-17072020-004">
+        <insert tableName="WORLDMAP_LATLNG">
+		
+            <column name="ID" valueComputed="nextval('SEQ_WORLDMAP_LATLNG')" />
+            <column name='LAT' valueNumeric='17.060816' />
+			<column name='LNG' valueNumeric='-61.796428' />
+			<column name='NAME' value='AG' />
+			<column name='VALUE' valueNumeric='4' />
+			<column name='TIMESTAP' valueDate='2020-07-13 19:10:25' />
+
+        </insert>
+    </changeSet>
+	<changeSet author="catalind" id="data-17072020-005">
+        <insert tableName="WORLDMAP_LATLNG">
+		
+            <column name="ID" valueComputed="nextval('SEQ_WORLDMAP_LATLNG')" />
+            <column name='LAT' valueNumeric='18.220554' />
+			<column name='LNG' valueNumeric='-63.068615' />
+			<column name='NAME' value='AI' />
+			<column name='VALUE' valueNumeric='5' />
+			<column name='TIMESTAP' valueDate='2020-07-13 19:10:25' />
+
+        </insert>
+    </changeSet>
+	<changeSet author="catalind" id="data-17072020-006">
+        <insert tableName="WORLDMAP_LATLNG">
+		
+            <column name="ID" valueComputed="nextval('SEQ_WORLDMAP_LATLNG')" />
+            <column name='LAT' valueNumeric='13.193887' />
+			<column name='LNG' valueNumeric='-59.543198' />
+			<column name='NAME' value='BB' />
+			<column name='VALUE' valueNumeric='18' />
+			<column name='TIMESTAP' valueDate='2020-07-13 19:10:25' />
+
+        </insert>
+    </changeSet>
+	<changeSet author="catalind" id="data-17072020-007">
+        <insert tableName="WORLDMAP_LATLNG">
+		
+            <column name="ID" valueComputed="nextval('SEQ_WORLDMAP_LATLNG')" />
+            <column name='LAT' valueNumeric='23.684994' />
+			<column name='LNG' valueNumeric='90.356331' />
+			<column name='NAME' value='BD' />
+			<column name='VALUE' valueNumeric='19' />
+			<column name='TIMESTAP' valueDate='2020-07-13 19:10:25' />
+
+        </insert>
+    </changeSet>
+	-->
+	
+    <changeSet author="iulianb" id="data-27072020-001">
+        <insert tableName="AD_COMPONENT">
+            <column name="ID" valueComputed="nextval('SEQ_AD_COMPONENT')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="Port Discovery"/>
+            <column name="CODE" value="PortDiscovery"/>
+            <column name="DESCRIPTION" value="Port Discovery"/>
+
+            <column name="ENABLED" value="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="iulianb" id="data-20072020-001">
+        <insert tableName="AD_COMPONENT">
+            <column name="ID" valueComputed="nextval('SEQ_AD_COMPONENT')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="TCP Analysis Flags"/>
+            <column name="CODE" value="TcpAnalysisFlags"/>
+            <column name="DESCRIPTION" value="tcp.analysis.flags: displays all retransmissions, duplicate acks, zero windows, and more in the trace. Helps when tracking down slow application performance and packet loss"/>
+
+            <column name="ENABLED" value="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="iulianb" id="data-20072020-002">
+        <update tableName="AD_COMPONENT">
+            <column  name="DESCRIPTION" value="tcp.analysis.flags and !tcp.analysis.window_update: displays all retransmissions, duplicate acks, zero windows, and more in the trace. Helps when tracking down slow application performance and packet loss.  It will not include the window updates"/>
+            <where>CODE='MassiveDataProcessing'</where>
+        </update>
+    </changeSet>
+
+    <!--
+    <changeSet author="iulianb" id="data-20072020-004">
+        <insert tableName="DTM_PROCESS_FILTER">
+            <column name="ID" valueComputed="nextval('SEQ_DTM_PROCESS_FILTER')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="TCP Analysis Flags"/>
+            <column name="COMMAND" value="tcp.analysis.flags &amp;&amp; !tcp.analysis.window_update"/>
+            <column name="CODE" value="tcp.analysis.flags"/>
+            <column name="CAN_DELETE" valueBoolean="false"/>
+
+            <column name="DESCRIPTION" value="Displays all retransmissions, duplicate acks, zero windows, and more in the trace. Helps when tracking down slow application performance and packet loss. It will not include the window updates"/>
+
+
+        </insert>
+    </changeSet>
+
+    <changeSet author="iulianb" id="data-29072020-001">
+        <update tableName="DTM_PROCESS_FILTER">
+            <column name="COMMAND" value="tcp.analysis.flags &amp;&amp; !tcp.analysis.window_update &amp;&amp; !tcp.analysis.keep_alive"/>
+            <where>CODE='tcp.analysis.flags'</where>
+        </update>
+    </changeSet>
+-->
+    <!--<changeSet author="iulianb" id="data-20082020-102-new">-->
+        <!--<insert tableName="COMPONENT_CONFIG">-->
+            <!--<column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />-->
+            <!--<column name="JPA_VERSION" valueNumeric="0" />-->
+            <!--<column name="CREATED_DATE" valueDate="${default.timestamp}" />-->
+            <!--<column name="UPDATED_DATE" valueDate="${default.timestamp}" />-->
+
+            <!--<column name="NAME" value="TCP Analysis Flag Alert Enable"/>-->
+            <!--<column name="CODE" value="tcp.analysis.flag.alert.enable"/>-->
+            <!--<column name="DESCRIPTION" value="TCP Analysis Flag Alert Enable"/>-->
+            <!--<column name="VALUE" value="false"/>-->
+            <!--<column name="TYPE" value="0"/> &lt;!&ndash; boolean &ndash;&gt;-->
+            <!--<column name="component_type_id" value="1"/>-->
+
+        <!--</insert>-->
+    <!--</changeSet>-->
+
+    <changeSet author="iulianb" id="data-20082020-103-new">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="Massive Data Processing Alert Enable"/>
+            <column name="CODE" value="massive.data.processing.alert.enable"/>
+            <column name="DESCRIPTION" value="Massive Data Processing Alert Enable"/>
+            <column name="VALUE" value="false"/>
+            <column name="TYPE" value="0"/> <!-- boolean -->
+            <column name="component_type_id" value="1"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="iulianb" id="data-20082020-108-new">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="Massive Data Processing Alert Threshold"/>
+            <column name="CODE" value="massive.data.processing.alert.threshold"/>
+            <column name="DESCRIPTION" value="Massive Data Processing Alert Threshold"/>
+            <column name="VALUE" value="50"/>
+            <column name="TYPE" value="1"/> <!-- test -->
+            <column name="component_type_id" value="1"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="iulianb" id="data-20082020-010-new">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="Port Discovery Alert Enable"/>
+            <column name="CODE" value="port.discovery.alert.enable"/>
+            <column name="DESCRIPTION" value="Port Discovery Alert Enable"/>
+            <column name="VALUE" value="false"/>
+            <column name="TYPE" value="0"/> <!-- test -->
+            <column name="component_type_id" value="1"/>
+        </insert>
+    </changeSet>
+
+
+    <changeSet author="iulianb" id="data-20082020-004">
+
+        <delete tableName="AD_COMPONENT">
+            <where>code='TcpAnalysisFlags'</where>
+        </delete>
+
+        <delete tableName="AD_COMPONENT">
+            <where>code='AssetDiscovery'</where>
+        </delete>
+
+    </changeSet>
+
+    <changeSet author="iulianb" id="data-20082020-007">
+
+        <delete tableName="AD_COMPONENT">
+            <where>code='MassiveDataProcessing'</where>
+        </delete>
+
+    </changeSet>
+
+    <changeSet author="iulianb" id="data-20082021-001">
+
+        <delete tableName="AD_COMPONENT">
+            <where>code='PortDiscovery'</where>
+        </delete>
+
+    </changeSet>
+
+    <changeSet author="iulianb" id="data-20082021-002-new">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="BlackWeb Alert Enable"/>
+            <column name="CODE" value="blackweb.alert.enable"/>
+            <column name="DESCRIPTION" value="BlackWeb Alert Enable"/>
+            <column name="VALUE" value="false"/>
+            <column name="TYPE" value="0"/> <!-- boolean -->
+            <column name="component_type_id" value="1"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="iulianb" id="data-20082021-003">
+
+        <delete tableName="AD_COMPONENT">
+            <where>code='BlackWeb'</where>
+        </delete>
+
+    </changeSet>
+
+    <!--<changeSet author="iulianb" id="data-07092020-002">-->
+        <!--<delete tableName="DTM_CONFIG">-->
+            <!--<where>CODE='tcp.analysis.flag.alert.enable'</where>-->
+        <!--</delete>-->
+    <!--</changeSet>-->
+
+    <changeSet author="danielaco" id="data-20082021-004-new">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="avg_packet_size"/>
+            <column name="CODE" value="ad.algorithm.kmeans.dns.feature.avg_packet_size"/>
+            <column name="DESCRIPTION" value="Dns Avg Packet Size"/>
+            <column name="VALUE" value="true"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-20082021-005-new">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="packets_without_payload"/>
+            <column name="CODE" value="ad.algorithm.kmeans.dns.feature.packets_without_payload"/>
+            <column name="DESCRIPTION" value="Dns Packets Without Payload"/>
+            <column name="VALUE" value="true"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-20082021-006-new">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="avg_inter_time"/>
+            <column name="CODE" value="ad.algorithm.kmeans.dns.feature.avg_inter_time"/>
+            <column name="DESCRIPTION" value="Dns Avg Inter Time"/>
+            <column name="VALUE" value="true"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-20082021-007-new">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="flow_duration"/>
+            <column name="CODE" value="ad.algorithm.kmeans.dns.feature.flow_duration"/>
+            <column name="DESCRIPTION" value="Dns Flow Duration"/>
+            <column name="VALUE" value="true"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-20082021-008-new">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="max_packet_size"/>
+            <column name="CODE" value="ad.algorithm.kmeans.dns.feature.max_packet_size"/>
+            <column name="DESCRIPTION" value="Dns Max Packet Size"/>
+            <column name="VALUE" value="true"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-20082021-009-new">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="bytes"/>
+            <column name="CODE" value="ad.algorithm.kmeans.dns.feature.bytes"/>
+            <column name="DESCRIPTION" value="Dns Bytes"/>
+            <column name="VALUE" value="true"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-20082021-010-new">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="packets"/>
+            <column name="CODE" value="ad.algorithm.kmeans.dns.feature.packets"/>
+            <column name="DESCRIPTION" value="Dns Packets"/>
+            <column name="VALUE" value="true"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-20082021-011-new">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="min_packet_size"/>
+            <column name="CODE" value="ad.algorithm.kmeans.dns.feature.min_packet_size"/>
+            <column name="DESCRIPTION" value="Dns Min Packet Size"/>
+            <column name="VALUE" value="true"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-20082021-012-new">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="packet_size-0"/>
+            <column name="CODE" value="ad.algorithm.kmeans.dns.feature.packet_size-0"/>
+            <column name="DESCRIPTION" value="Dns Packet Size-0"/>
+            <column name="VALUE" value="true"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-20082021-013-new">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="inter_time-0"/>
+            <column name="CODE" value="ad.algorithm.kmeans.dns.feature.inter_time-0"/>
+            <column name="DESCRIPTION" value="Dns Inter Time-0"/>
+            <column name="VALUE" value="true"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-20082021-014-new">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="packet_size-1"/>
+            <column name="CODE" value="ad.algorithm.kmeans.dns.feature.packet_size-1"/>
+            <column name="DESCRIPTION" value="Dns Packet Size-1"/>
+            <column name="VALUE" value="true"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-20082021-015-new">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="dns_num_queries"/>
+            <column name="CODE" value="ad.algorithm.kmeans.dns.feature.dns_num_queries"/>
+            <column name="DESCRIPTION" value="Dns Num Queries"/>
+            <column name="VALUE" value="true"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-20082021-016-new">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="dns_num_answers"/>
+            <column name="CODE" value="ad.algorithm.kmeans.dns.feature.dns_num_answers"/>
+            <column name="DESCRIPTION" value="Dns Num Answers"/>
+            <column name="VALUE" value="true"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-20082021-017-new">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="dns_ret_code"/>
+            <column name="CODE" value="ad.algorithm.kmeans.dns.feature.dns_ret_code"/>
+            <column name="DESCRIPTION" value="Dns Ret Code"/>
+            <column name="VALUE" value="true"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-20082021-018-new">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="dns_query_type"/>
+            <column name="CODE" value="ad.algorithm.kmeans.dns.feature.dns_query_type"/>
+            <column name="DESCRIPTION" value="Dns Query Type"/>
+            <column name="VALUE" value="true"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-20082021-019-new">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="dns_rsp_type"/>
+            <column name="CODE" value="ad.algorithm.kmeans.dns.feature.dns_rsp_type"/>
+            <column name="DESCRIPTION" value="Dns Rsp Type"/>
+            <column name="VALUE" value="true"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-20082021-020-new">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="avg_packet_size"/>
+            <column name="CODE" value="ad.algorithm.kmeans.http.feature.avg_packet_size"/>
+            <column name="DESCRIPTION" value="Http Avg Packet Size"/>
+            <column name="VALUE" value="true"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-20082021-0021-new">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="packets_without_payload"/>
+            <column name="CODE" value="ad.algorithm.kmeans.http.feature.packets_without_payload"/>
+            <column name="DESCRIPTION" value="Http Packets Without Payload"/>
+            <column name="VALUE" value="true"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-20082021-0022-new">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="avg_inter_time"/>
+            <column name="CODE" value="ad.algorithm.kmeans.http.feature.avg_inter_time"/>
+            <column name="DESCRIPTION" value="Http Avg Inter Time"/>
+            <column name="VALUE" value="true"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-20082021-023-new">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="flow_duration"/>
+            <column name="CODE" value="ad.algorithm.kmeans.http.feature.flow_duration"/>
+            <column name="DESCRIPTION" value="Http Flow Duration"/>
+            <column name="VALUE" value="true"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-20082021-024-new">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="max_packet_size"/>
+            <column name="CODE" value="ad.algorithm.kmeans.http.feature.max_packet_size"/>
+            <column name="DESCRIPTION" value="Http Max Packet Size"/>
+            <column name="VALUE" value="true"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-20082021-025-new">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="bytes"/>
+            <column name="CODE" value="ad.algorithm.kmeans.http.feature.bytes"/>
+            <column name="DESCRIPTION" value="Http Bytes"/>
+            <column name="VALUE" value="true"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-20082021-026-new">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="packets"/>
+            <column name="CODE" value="ad.algorithm.kmeans.http.feature.packets"/>
+            <column name="DESCRIPTION" value="Http Packets"/>
+            <column name="VALUE" value="true"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-20082021-027-new">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="min_packet_size"/>
+            <column name="CODE" value="ad.algorithm.kmeans.http.feature.min_packet_size"/>
+            <column name="DESCRIPTION" value="Http Min Packet Size"/>
+            <column name="VALUE" value="true"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-20082021-028-new">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="packet_size-0"/>
+            <column name="CODE" value="ad.algorithm.kmeans.http.feature.packet_size-0"/>
+            <column name="DESCRIPTION" value="Http Packet Size-0"/>
+            <column name="VALUE" value="true"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-20082021-029-new">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="inter_time-0"/>
+            <column name="CODE" value="ad.algorithm.kmeans.http.feature.inter_time-0"/>
+            <column name="DESCRIPTION" value="Http Inter Time-0"/>
+            <column name="VALUE" value="true"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-20082021-030-new">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="http.packet_size-1"/>
+            <column name="CODE" value="ad.algorithm.kmeans.http.feature.packet_size-1"/>
+            <column name="DESCRIPTION" value="Http Packet Size-1"/>
+            <column name="VALUE" value="true"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-20082021-031-new">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="inter_time-1"/>
+            <column name="CODE" value="ad.algorithm.kmeans.http.feature.inter_time-1"/>
+            <column name="DESCRIPTION" value="Http Inter Time-1"/>
+            <column name="VALUE" value="true"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-20082021-032-new">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="http.packet_size-2"/>
+            <column name="CODE" value="ad.algorithm.kmeans.http.feature.packet_size-2"/>
+            <column name="DESCRIPTION" value="Http Packet Size-2"/>
+            <column name="VALUE" value="true"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-20082021-033-new">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="inter_time-2"/>
+            <column name="CODE" value="ad.algorithm.kmeans.http.feature.inter_time-2"/>
+            <column name="DESCRIPTION" value="Http Inter Time-2"/>
+            <column name="VALUE" value="true"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-20082021-034-new">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="packet_size-3"/>
+            <column name="CODE" value="ad.algorithm.kmeans.http.feature.packet_size-3"/>
+            <column name="DESCRIPTION" value="Http Packet Size-3"/>
+            <column name="VALUE" value="true"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-20082021-035-new">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="inter_time-3"/>
+            <column name="CODE" value="ad.algorithm.kmeans.http.feature.inter_time-3"/>
+            <column name="DESCRIPTION" value="Http Inter Time-3"/>
+            <column name="VALUE" value="true"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-20082021-036-new">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="packet_size-4"/>
+            <column name="CODE" value="ad.algorithm.kmeans.http.feature.packet_size-4"/>
+            <column name="DESCRIPTION" value="Http Packet Size-4"/>
+            <column name="VALUE" value="true"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-20082021-037-new">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="inter_time-4"/>
+            <column name="CODE" value="ad.algorithm.kmeans.http.feature.inter_time-4"/>
+            <column name="DESCRIPTION" value="Http Inter Time-4"/>
+            <column name="VALUE" value="true"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-20082021-038-new">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="http_method"/>
+            <column name="CODE" value="ad.algorithm.kmeans.http.feature.http_method"/>
+            <column name="DESCRIPTION" value="Http Method"/>
+            <column name="VALUE" value="true"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-20082021-039-new">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="minDirtyProportion"/>
+            <column name="CODE" value="ad.parameter.algorithm.kmeans.dns.param.minDirtyProportion"/>
+            <column name="DESCRIPTION" value="Dns Min Dirty Proportion"/>
+            <column name="VALUE" value="0.001"/>
+            <column name="TYPE" value="1"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-20082021-040-new">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="numberOfClusters"/>
+            <column name="CODE" value="ad.parameter.algorithm.kmeans.dns.param.numberOfClusters"/>
+            <column name="DESCRIPTION" value="Dns Number Of Clusters"/>
+            <column name="VALUE" value="8"/>
+            <column name="TYPE" value="1"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-20082021-041-new">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="maxAnomalousClusterProportion"/>
+            <column name="CODE" value="ad.parameter.algorithm.kmeans.dns.param.maxAnomalousClusterProportion"/>
+            <column name="DESCRIPTION" value="Dns Max Anomalous Cluster Proportion"/>
+            <column name="VALUE" value="0.05"/>
+            <column name="TYPE" value="1"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-20082021-042-new">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="minDirtyProportion"/>
+            <column name="CODE" value="ad.parameter.algorithm.kmeans.http.param.minDirtyProportion"/>
+            <column name="DESCRIPTION" value="Http Min Dirty Proportion"/>
+            <column name="VALUE" value="0.001"/>
+            <column name="TYPE" value="1"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-20082021-043-new">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="numberOfClusters"/>
+            <column name="CODE" value="ad.parameter.algorithm.kmeans.http.param.numberOfClusters"/>
+            <column name="DESCRIPTION" value="Http Number Of Clusters"/>
+            <column name="VALUE" value="32"/>
+            <column name="TYPE" value="1"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-20082021-044-new">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="maxAnomalousClusterProportion"/>
+            <column name="CODE" value="ad.parameter.algorithm.kmeans.http.param.maxAnomalousClusterProportion"/>
+            <column name="DESCRIPTION" value="Http Max Anomalous Cluster Proportion"/>
+            <column name="VALUE" value="0.05"/>
+            <column name="TYPE" value="1"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-20082021-045-new">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="KMEANS_DNS"/>
+            <column name="CODE" value="ad.kmeans.dns.algorithm"/>
+            <column name="DESCRIPTION" value="KMEANS_DNS"/>
+            <column name="VALUE" value="false"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-20082021-046-new">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="KMEANS_HTTP"/>
+            <column name="CODE" value="ad.kmeans.http.algorithm"/>
+            <column name="DESCRIPTION" value="KMEANS_HTTP"/>
+            <column name="VALUE" value="false"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <!-- to delete -->
+    <changeSet author="iulianb" id="data-05042021-045">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="NETPREFIXES"/>
+            <column name="CODE" value="ad.general.mynets.net.prefix"/>
+            <column name="DESCRIPTION" value="Net prefixes"/>
+            <column name="VALUE" value="10.1.,100.100."/>
+            <column name="TYPE" value="1"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="iulianb" id="data-05042021-046">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowDisabled"/>
+            <column name="CODE" value="ad.adml.sflow.disabled"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.disabled"/>
+            <column name="VALUE" value="false"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="iulianb" id="data-05042021-047">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowGeneralExcludeIPs"/>
+            <column name="CODE" value="ad.adml.sflow.general.excludeIPs"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.general.excludeIPs"/>
+            <column name="VALUE" value=""/>
+            <column name="TYPE" value="4"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="iulianb" id="data-05042021-048">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowAlertMaxFlowList"/>
+            <column name="CODE" value="ad.adml.sflow.alert.maxFlowList"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.alert.maxFlowList"/>
+            <column name="VALUE" value="1000"/>
+            <column name="TYPE" value="2"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="iulianb" id="data-05042021-049">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowBigProvidersDisabled"/>
+            <column name="CODE" value="ad.adml.sflow.bigProviders.disabled"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.bigProviders.disabled"/>
+            <column name="VALUE" value="false"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="iulianb" id="data-05042021-050">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowBigProvidersMinBytes"/>
+            <column name="CODE" value="ad.adml.sflow.bigProviders.minBytes"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.bigProviders.minBytes"/>
+            <column name="VALUE" value="1073741824"/>
+            <column name="TYPE" value="3"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-051">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowDisabled"/>
+            <column name="CODE" value="ad.adml.sflow.disabled"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.disabled"/>
+            <column name="VALUE" value="false"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-052">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowTopTalkersDisabled"/>
+            <column name="CODE" value="ad.adml.sflow.topTalkers.disabled"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.topTalkers.disabled"/>
+            <column name="VALUE" value="false"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-053">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowTopTalkersThreshold"/>
+            <column name="CODE" value="ad.adml.sflow.topTalkers.threshold"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.topTalkers.threshold"/>
+            <column name="VALUE" value="21474836480"/>
+            <column name="TYPE" value="3"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-054">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowTopTalkersExcludeIPs"/>
+            <column name="CODE" value="ad.adml.sflow.topTalkers.excludeIPs"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.topTalkers.excludeIPs"/>
+            <column name="VALUE" value=""/>
+            <column name="TYPE" value="4"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-055">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowSMTPTalkersDisabled"/>
+            <column name="CODE" value="ad.adml.sflow.SMTPTalkers.disabled"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.SMTPTalkers.disabled"/>
+            <column name="VALUE" value="false"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-056">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowSMTPTalkersMinBytes"/>
+            <column name="CODE" value="ad.adml.sflow.SMTPTalkers.minBytes"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.SMTPTalkers.minBytes"/>
+            <column name="VALUE" value="20971520"/>
+            <column name="TYPE" value="3"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-057">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowSMTPTalkersExcludeIPs"/>
+            <column name="CODE" value="ad.adml.sflow.SMTPTalkers.excludeIPs"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.SMTPTalkers.excludeIPs"/>
+            <column name="VALUE" value=""/>
+            <column name="TYPE" value="4"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-058">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowP2pDisabled"/>
+            <column name="CODE" value="ad.adml.sflow.p2p.disabled"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.p2p.disabled"/>
+            <column name="VALUE" value="false"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-059">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowP2pMinBytes2nd"/>
+            <column name="CODE" value="ad.adml.sflow.p2p.minBytes2nd"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.p2p.minBytes2nd"/>
+            <column name="VALUE" value="10000000"/>
+            <column name="TYPE" value="3"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-060">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowP2pMinPairs2nd"/>
+            <column name="CODE" value="ad.adml.sflow.p2p.minPairs2nd"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.p2p.minPairs2nd"/>
+            <column name="VALUE" value="10"/>
+            <column name="TYPE" value="2"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-061">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowP2pMinPairs"/>
+            <column name="CODE" value="ad.adml.sflow.p2p.minPairs"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.p2p.minPairs"/>
+            <column name="VALUE" value="5"/>
+            <column name="TYPE" value="2"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-062">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowP2pMinPorts2nd"/>
+            <column name="CODE" value="ad.adml.sflow.p2p.minPorts2nd"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.p2p.minPorts2nd"/>
+            <column name="VALUE" value="10"/>
+            <column name="TYPE" value="2"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+
+    <changeSet author="danielaco" id="data-05042021-063">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowP2pMinPorts"/>
+            <column name="CODE" value="ad.adml.sflow.p2p.minPorts"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.p2p.minPorts"/>
+            <column name="VALUE" value="4"/>
+            <column name="TYPE" value="2"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-064">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowP2pExcludeIPs"/>
+            <column name="CODE" value="ad.adml.sflow.p2p.excludeIPs"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.p2p.excludeIPs"/>
+            <column name="VALUE" value=""/>
+            <column name="TYPE" value="4"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+
+
+    <changeSet author="danielaco" id="data-05042021-065">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowMediaStreamingDisabled"/>
+            <column name="CODE" value="ad.adml.sflow.mediaStreaming.disabled"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.mediaStreaming.disabled"/>
+            <column name="VALUE" value="false"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-066">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowMediaStreamingMaxDuration"/>
+            <column name="CODE" value="ad.adml.sflow.mediaStreaming.maxDuration"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.mediaStreaming.maxDuration"/>
+            <column name="VALUE" value="7200"/>
+            <column name="TYPE" value="2"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-067">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowMediaStreamingMaxUploadBytes"/>
+            <column name="CODE" value="ad.adml.sflow.mediaStreaming.maxUploadBytes"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.mediaStreaming.maxUploadBytes"/>
+            <column name="VALUE" value="10000000"/>
+            <column name="TYPE" value="3"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-068">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowMediaStreamingMinDownloadBytes"/>
+            <column name="CODE" value="ad.adml.sflow.mediaStreaming.minDownloadBytes"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.mediaStreaming.minDownloadBytes"/>
+            <column name="VALUE" value="1000000"/>
+            <column name="TYPE" value="3"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-069">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowMediaStreamingMinDuration"/>
+            <column name="CODE" value="ad.adml.sflow.mediaStreaming.minDuration"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.mediaStreaming.minDuration"/>
+            <column name="VALUE" value="300"/>
+            <column name="TYPE" value="2"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-070">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowMediaStreamingExcludePorts"/>
+            <column name="CODE" value="ad.adml.sflow.mediaStreaming.excludePorts"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.mediaStreaming.excludePorts"/>
+            <column name="VALUE" value="1194"/>
+            <column name="TYPE" value="4"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-071">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowMediaStreamingExcludeIPs"/>
+            <column name="CODE" value="ad.adml.sflow.mediaStreaming.excludeIPs"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.mediaStreaming.excludeIPs"/>
+            <column name="VALUE" value=""/>
+            <column name="TYPE" value="4"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+
+
+
+    <changeSet author="danielaco" id="data-05042021-072">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowAtypicalPortsDisabled"/>
+            <column name="CODE" value="ad.adml.sflow.atypicalPorts.disabled"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.atypicalPorts.disabled"/>
+            <column name="VALUE" value="false"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-073">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowAtypicalPortsExcludePorts"/>
+            <column name="CODE" value="ad.adml.sflow.atypicalPorts.excludePorts"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.atypicalPorts.excludePorts"/>
+            <column name="VALUE" value="80,443,587,465,993,995"/>
+            <column name="TYPE" value="4"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-074">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowAtypicalPortsMinPacketsPerFlow"/>
+            <column name="CODE" value="ad.adml.sflow.atypicalPorts.minPacketsPerFlow"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.atypicalPorts.minPacketsPerFlow"/>
+            <column name="VALUE" value="2"/>
+            <column name="TYPE" value="2"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-075">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowAtypicalPortsExcludeIPs"/>
+            <column name="CODE" value="ad.adml.sflow.atypicalPorts.excludeIPs"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.atypicalPorts.excludeIPs"/>
+            <column name="VALUE" value=""/>
+            <column name="TYPE" value="4"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+
+    <changeSet author="danielaco" id="data-05042021-076">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowAtypicalAlienPortsDisabled"/>
+            <column name="CODE" value="ad.adml.sflow.atypicalAlienPorts.disabled"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.atypicalAlienPorts.disabled"/>
+            <column name="VALUE" value="false"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-077">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowAtypicalAlienPorts.minPacketsPerFlow"/>
+            <column name="CODE" value="ad.adml.sflow.atypicalAlienPorts.minPacketsPerFlow"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.atypicalAlienPorts.minPacketsPerFlow"/>
+            <column name="VALUE" value="2"/>
+            <column name="TYPE" value="2"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-078">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowAtypicalAlienPorts.excludeIPs"/>
+            <column name="CODE" value="ad.adml.sflow.atypicalAlienPorts.excludeIPs"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.atypicalAlienPorts.excludeIPs"/>
+            <column name="VALUE" value=""/>
+            <column name="TYPE" value="4"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-079">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowAtypicalDataDisabled"/>
+            <column name="CODE" value="ad.adml.sflow.atypicalData.disabled"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.atypicalData.disabled"/>
+            <column name="VALUE" value="false"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-080">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowAtypicalDataMinBytes"/>
+            <column name="CODE" value="ad.adml.sflow.atypicalData.minBytes"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.atypicalData.minBytes"/>
+            <column name="VALUE" value="5737418240"/>
+            <column name="TYPE" value="3"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-081">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowAtypicalDataExcludeIPs"/>
+            <column name="CODE" value="ad.adml.sflow.atypicalData.excludeIPs"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.atypicalData.excludeIPs"/>
+            <column name="VALUE" value=""/>
+            <column name="TYPE" value="4"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-082">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowAlienDisabled"/>
+            <column name="CODE" value="ad.adml.sflow.alien.disabled"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.alien.disabled"/>
+            <column name="VALUE" value="false"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-083">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowAlienMinPairs"/>
+            <column name="CODE" value="ad.adml.sflow.alien.minPairs"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.alien.minPairs"/>
+            <column name="VALUE" value="20"/>
+            <column name="TYPE" value="2"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-084">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowAlienExcludeIPs"/>
+            <column name="CODE" value="ad.adml.sflow.alien.excludeIPs"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.alien.excludeIPs"/>
+            <column name="VALUE" value=""/>
+            <column name="TYPE" value="4"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-085">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowUDPAmplifierDisabled"/>
+            <column name="CODE" value="ad.adml.sflow.UDPAmplifier.disabled"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.UDPAmplifier.disabled"/>
+            <column name="VALUE" value="false"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-086">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowUDPAmplifierExcludeIPs"/>
+            <column name="CODE" value="ad.adml.sflow.UDPAmplifier.excludeIPs"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.UDPAmplifier.excludeIPs"/>
+            <column name="VALUE" value=""/>
+            <column name="TYPE" value="4"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-087">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowAbusedSMTPDisabled"/>
+            <column name="CODE" value="ad.adml.sflow.abusedSMTP.disabled"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.abusedSMTP.disabled"/>
+            <column name="VALUE" value="false"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-088">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowAbusedSMTPMinBytes"/>
+            <column name="CODE" value="ad.adml.sflow.abusedSMTP.minBytes"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.abusedSMTP.minBytes"/>
+            <column name="VALUE" value="50000000"/>
+            <column name="TYPE" value="3"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-089">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowAbusedSMTPExcludeIPs"/>
+            <column name="CODE" value="ad.adml.sflow.abusedSMTP.excludeIPs"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.abusedSMTP.excludeIPs"/>
+            <column name="VALUE" value=""/>
+            <column name="TYPE" value="4"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+
+    <changeSet author="danielaco" id="data-05042021-090">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowDnsTunnelDisabled"/>
+            <column name="CODE" value="ad.adml.sflow.dnsTunnel.disabled"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.dnsTunnel.disabled"/>
+            <column name="VALUE" value="false"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-091">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowDnsTunnelMinBytes"/>
+            <column name="CODE" value="ad.adml.sflow.dnsTunnel.minBytes"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.dnsTunnel.minBytes"/>
+            <column name="VALUE" value="50000000"/>
+            <column name="TYPE" value="3"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-92">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowDnsTunnelExcludeIPs"/>
+            <column name="CODE" value="ad.adml.sflow.dnsTunnel.excludeIPs"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.dnsTunnel.excludeIPs"/>
+            <column name="VALUE" value=""/>
+            <column name="TYPE" value="4"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-093">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowICMPTunnelDisabled"/>
+            <column name="CODE" value="ad.adml.sflow.ICMPTunnel.disabled"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.ICMPTunnel.disabled"/>
+            <column name="VALUE" value="false"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-094">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowICMPTunnelMinBytes"/>
+            <column name="CODE" value="ad.adml.sflow.ICMPTunnel.minBytes"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.ICMPTunnel.minBytes"/>
+            <column name="VALUE" value="100000000"/>
+            <column name="TYPE" value="3"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-095">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowICMPTunneMinPacket"/>
+            <column name="CODE" value="ad.adml.sflow.ICMPTunnel.minPacket"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.ICMPTunnel.minPacket"/>
+            <column name="VALUE" value="200"/>
+            <column name="TYPE" value="2"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-096">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowICMPTunnelExcludeIPs"/>
+            <column name="CODE" value="ad.adml.sflow.ICMPTunnel.excludeIPs"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.ICMPTunnel.excludeIPs"/>
+            <column name="VALUE" value=""/>
+            <column name="TYPE" value="4"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-097">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowHPortScanDisabled"/>
+            <column name="CODE" value="ad.adml.sflow.hPortScan.disabled"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.hPortScan.disabled"/>
+            <column name="VALUE" value="false"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-098">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowHPortScanHPortScanMinFlowsThreshold"/>
+            <column name="CODE" value="ad.adml.sflow.hPortScan.hPortScanMinFlowsThreshold"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.hPortScan.hPortScanMinFlowsThreshold"/>
+            <column name="VALUE" value="300"/>
+            <column name="TYPE" value="2"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-099">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowHPortScanExcludeAlienPorts"/>
+            <column name="CODE" value="ad.adml.sflow.hPortScan.excludeAlienPorts"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.hPortScan.excludeAlienPorts"/>
+            <column name="VALUE" value="80,443,587,465,993,995"/>
+            <column name="TYPE" value="4"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-100">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowHPortScanExcludeMyPorts"/>
+            <column name="CODE" value="ad.adml.sflow.hPortScan.excludeMyPorts"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.hPortScan.excludeMyPorts"/>
+            <column name="VALUE" value="123"/>
+            <column name="TYPE" value="4"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-101">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowHPortScanMinFlows"/>
+            <column name="CODE" value="ad.adml.sflow.hPortScan.minFlows"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.hPortScan.minFlows"/>
+            <column name="VALUE" value="100"/>
+            <column name="TYPE" value="2"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-102">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowHPortScanExcludeIPs"/>
+            <column name="CODE" value="ad.adml.sflow.hPortScan.excludeIPs"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.hPortScan.excludeIPs"/>
+            <column name="VALUE" value=""/>
+            <column name="TYPE" value="4"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+
+    <changeSet author="danielaco" id="data-05042021-103">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowVPortScanDisabled"/>
+            <column name="CODE" value="ad.adml.sflow.vPortScan.disabled"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.vPortScan.disabled"/>
+            <column name="VALUE" value="false"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-104">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowVPortScanVPortScanMinPortsThreshold"/>
+            <column name="CODE" value="ad.adml.sflow.vPortScan.vPortScanMinPortsThreshold"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.vPortScan.vPortScanMinPortsThreshold"/>
+            <column name="VALUE" value="3"/>
+            <column name="TYPE" value="2"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-105">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowVPortScanMaxPortNumber"/>
+            <column name="CODE" value="ad.adml.sflow.vPortScan.maxPortNumber"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.vPortScan.maxPortNumber"/>
+            <column name="VALUE" value="1024"/>
+            <column name="TYPE" value="2"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-106">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowvPortScanMinPorts"/>
+            <column name="CODE" value="ad.adml.sflow.vPortScan.minPorts"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.vPortScan.minPorts"/>
+            <column name="VALUE" value="3"/>
+            <column name="TYPE" value="2"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-107">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowVPortScanMinPorts"/>
+            <column name="CODE" value="ad.adml.sflow.vPortScan.excludeIPs"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.vPortScan.excludeIPs"/>
+            <column name="VALUE" value=""/>
+            <column name="TYPE" value="4"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-108">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowDDoSDisabled"/>
+            <column name="CODE" value="ad.adml.sflow.DDoS.disabled"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.DDoS.disabled"/>
+            <column name="VALUE" value="false"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-109">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowDDoSMinFlows"/>
+            <column name="CODE" value="ad.adml.sflow.DDoS.minFlows"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.DDoS.minFlows"/>
+            <column name="VALUE" value="50"/>
+            <column name="TYPE" value="2"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-110">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowDDoSMinPairs"/>
+            <column name="CODE" value="ad.adml.sflow.DDoS.minPairs"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.DDoS.minPairs"/>
+            <column name="VALUE" value="20"/>
+            <column name="TYPE" value="2"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-111">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowDDoSExcludeIPs"/>
+            <column name="CODE" value="ad.adml.sflow.DDoS.excludeIPs"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.DDoS.excludeIPs"/>
+            <column name="VALUE" value=""/>
+            <column name="TYPE" value="4"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+
+    <changeSet author="danielaco" id="data-05042021-112">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowBotNetDisabled"/>
+            <column name="CODE" value="ad.adml.sflow.BotNet.disabled"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.BotNet.disabled"/>
+            <column name="VALUE" value="false"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-113">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowBotNetMinPktsPerFlow"/>
+            <column name="CODE" value="ad.adml.sflow.BotNet.minPktsPerFlow"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.BotNet.minPktsPerFlow"/>
+            <column name="VALUE" value="20"/>
+            <column name="TYPE" value="2"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-114">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowBotNetExcludeIPs"/>
+            <column name="CODE" value="ad.adml.sflow.BotNet.excludeIPs"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.BotNet.excludeIPs"/>
+            <column name="VALUE" value=""/>
+            <column name="TYPE" value="4"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+
+    <changeSet author="danielaco" id="data-05042021-115">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowAtypicalPairsDisabled"/>
+            <column name="CODE" value="ad.adml.sflow.atypicalPairs.disabled"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.atypicalPairs.disabled"/>
+            <column name="VALUE" value="false"/>
+            <column name="TYPE" value="0"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-116">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowAtypicalPairsMinPairs"/>
+            <column name="CODE" value="ad.adml.sflow.atypicalPairs.minPairs"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.atypicalPairs.minPairs"/>
+            <column name="VALUE" value="300"/>
+            <column name="TYPE" value="2"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-05042021-117">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowAtypicalPairsExcludeIPs"/>
+            <column name="CODE" value="ad.adml.sflow.atypicalPairs.excludeIPs"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.atypicalPairs.excludeIPs"/>
+            <column name="VALUE" value=""/>
+            <column name="TYPE" value="4"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+
+    <changeSet author="danielaco" id="data-15042021-118">
+        <modifyDataType
+                columnName="VALUE"
+                newDataType="varchar(2000)"
+                tableName="COMPONENT_CONFIG"/>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-15042021-119x">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowOSRepoWindows"/>
+            <column name="CODE" value="ad.adml.sflow.OSRepo.windows"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.OSRepo.windows"/>
+            <column name="VALUE" value="windowsupdate.microsoft.com,update.microsoft.com,windowsupdate.com,download.windowsupdate.com,download.microsoft.com,download.windowsupdate.com,ntservicepack.microsoft.com,time.windows.com,javadl-esd.sun.com,fpdownload.adobe.com,cache.pack.google.com,aus2.mozilla.org,aus3.mozilla.org,aus4.mozilla.org,avast.com,files.avast.com"/>
+            <column name="TYPE" value="4"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-15042021-120x">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowOSRepoLinux"/>
+            <column name="CODE" value="ad.adml.sflow.OSRepo.linux"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.OSRepo.linux"/>
+            <column name="VALUE" value="ecurity.ubuntu.com,security.debian.org,mirrorlist.centos.org,0.rhel.pool.ntp.org,1.rhel.pool.ntp.org,2.rhel.pool.ntp.org,ntp.ubuntu.com,linux.dropbox.com"/>
+            <column name="TYPE" value="4"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-15042021-121x">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowOSRepoAndroid"/>
+            <column name="CODE" value="ad.adml.sflow.OSRepo.android"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.OSRepo.android"/>
+            <column name="VALUE" value="play.google.com,android.clients.google.com"/>
+            <column name="TYPE" value="4"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-15042021-122x">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowOSRepoIosApple"/>
+            <column name="CODE" value="ad.adml.sflow.OSRepo.apple"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.OSRepo.apple"/>
+            <column name="VALUE" value="phobos.apple.com,deimos3.apple.com,albert.apple.com,gs.apple.com,itunes.apple.com,ax.itunes.apple.com"/>
+            <column name="TYPE" value="4"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-15042021-123x">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowOSRepoFreebsd"/>
+            <column name="CODE" value="ad.adml.sflow.OSRepo.freebsd"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.OSRepo.freebsd"/>
+            <column name="VALUE" value="ftp.freebsd.org"/>
+            <column name="TYPE" value="1"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-16042021-124">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowBigProviderWhitelist"/>
+            <column name="CODE" value="ad.adml.sflow.BigProvider.whitelist"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.BigProvider.whitelist"/>
+            <column name="VALUE" value=""/>
+            <column name="TYPE" value="1"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-16042021-125">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowProxyServerWhitelist"/>
+            <column name="CODE" value="ad.adml.sflow.ProxyServer.whitelist"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.ProxyServer.whitelist"/>
+            <column name="VALUE" value=""/>
+            <column name="TYPE" value="1"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-16042021-126">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowMXWhitelist"/>
+            <column name="CODE" value="ad.adml.sflow.MX.whitelist"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.MX.whitelist"/>
+            <column name="VALUE" value="10.1.1.1#SMTP Server"/>
+            <column name="TYPE" value="1"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="danielaco" id="data-16042021-127">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowTTalkerWhitelist"/>
+            <column name="CODE" value="ad.adml.sflow.TTalker.whitelist"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.TTalker.whitelist"/>
+            <column name="VALUE" value="10.1.1.1#Big Talker 1,10.1.111.#DMZ"/>
+            <column name="TYPE" value="1"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="iulianb" id="data-21042021-129">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="sflowBotNetUrl"/>
+            <column name="CODE" value="ad.adml.sflow.BotNet.url"/>
+            <column name="DESCRIPTION" value="ad.adml.sflow.TTalker.whitelist"/>
+            <column name="VALUE" value="https://rules.emergingthreats.net/blockrules/emerging-botcc.rules"/>
+            <column name="TYPE" value="1"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="iulianb" id="data-23042021-130">
+
+        <delete tableName="COMPONENT_CONFIG">
+            <where>code='ad.general.mynets.net.prefix'</where>
+        </delete>
+
+        <delete tableName="COMPONENT_CONFIG">
+            <where>code='ad.adml.sflow.bigProviders.disabled'</where>
+        </delete>
+
+    </changeSet>
+
+    <changeSet author="iulianb" id="data-23042021-131">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="NETPREFIXES"/>
+            <column name="CODE" value="ad.adml.sflow.mynets.net"/>
+            <column name="DESCRIPTION" value="Net prefixes"/>
+            <column name="VALUE" value="10.#Intranet 1,100.100."/>
+            <column name="TYPE" value="1"/>
+            <column name="component_type_id" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="iulianb" id="data-23042021-132">
+
+        <delete tableName="COMPONENT_CONFIG">
+            <where>code='ad.adml.sflow.vPortScan.vPortScanMinPortsThreshold'</where>
+        </delete>
+
+    </changeSet>
+
+    <changeSet author="iulianb" id="data-23042021-133">
+
+        <delete tableName="COMPONENT_CONFIG">
+            <where>code='ad.adml.sflow.hPortScan.hPortScanMinFlowsThreshold'</where>
+        </delete>
+
+    </changeSet>
+
+    <changeSet author="iulianb" id="data-005132021-134">
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value=""/>
+            <where>CODE='ad.adml.sflow.SMTPTalkers.excludeIPs'</where>
+        </update>
+    </changeSet>
+
+    <changeSet author="iulianb" id="data-005132021-135">
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value="20971520"/>
+            <where>CODE='ad.adml.sflow.SMTPTalkers.minBytes'</where>
+        </update>
+    </changeSet>
+
+    <changeSet author="iulianb" id="data-005132021-136">
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value="10000000"/>
+            <where>CODE='ad.adml.sflow.p2p.minBytes2nd'</where>
+        </update>
+
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value="10"/>
+            <where>CODE='ad.adml.sflow.p2p.minPairs2nd'</where>
+        </update>
+
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value="5"/>
+            <where>CODE='ad.adml.sflow.p2p.minPairs'</where>
+        </update>
+
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value="10"/>
+            <where>CODE='ad.adml.sflow.p2p.minPorts2nd'</where>
+        </update>
+
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value="4"/>
+            <where>CODE='ad.adml.sflow.p2p.minPorts'</where>
+        </update>
+
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value=""/>
+            <where>CODE='ad.adml.sflow.p2p.excludeIPs'</where>
+        </update>
+
+    </changeSet>
+
+    <changeSet author="iulianb" id="data-005132021-137">
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value="7200"/>
+            <where>CODE='ad.adml.sflow.mediaStreaming.maxDuration'</where>
+        </update>
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value="10000000"/>
+            <where>CODE='ad.adml.sflow.mediaStreaming.maxUploadBytes'</where>
+        </update>
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value="1000000"/>
+            <where>CODE='ad.adml.sflow.mediaStreaming.minDownloadBytes'</where>
+        </update>
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value="300"/>
+            <where>CODE='ad.adml.sflow.mediaStreaming.minDuration'</where>
+        </update>
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value="1194"/>
+            <where>CODE='ad.adml.sflow.mediaStreaming.excludePorts'</where>
+        </update>
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value=""/>
+            <where>CODE='ad.adml.sflow.mediaStreaming.excludeIPs'</where>
+        </update>
+    </changeSet>
+
+    <changeSet author="iulianb" id="data-005132021-138">
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value="80,443,587,465,993,995"/>
+            <where>CODE='ad.adml.sflow.atypicalPorts.excludePorts'</where>
+        </update>
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value="2"/>
+            <where>CODE='ad.adml.sflow.atypicalPorts.minPacketsPerFlow'</where>
+        </update>
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value=""/>
+            <where>CODE='ad.adml.sflow.atypicalPorts.excludeIPs'</where>
+        </update>
+    </changeSet>
+
+    <changeSet author="iulianb" id="data-005132021-139">
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value="2"/>
+            <where>CODE='ad.adml.sflow.atypicalAlienPorts.minPacketsPerFlow'</where>
+        </update>
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value=""/>
+            <where>CODE='ad.adml.sflow.atypicalAlienPorts.excludeIPs'</where>
+        </update>
+
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value="5737418240"/>
+            <where>CODE='ad.adml.sflow.atypicalData.minBytes'</where>
+        </update>
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value=""/>
+            <where>CODE='ad.adml.sflow.atypicalData.excludeIPs'</where>
+        </update>
+
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value="20"/>
+            <where>CODE='ad.adml.sflow.alien.minPairs'</where>
+        </update>
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value=""/>
+            <where>CODE='ad.adml.sflow.alien.excludeIPs'</where>
+        </update>
+
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value=""/>
+            <where>CODE='ad.adml.sflow.UDPAmplifier.excludeIPs'</where>
+        </update>
+
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value="50000000"/>
+            <where>CODE='ad.adml.sflow.abusedSMTP.minBytes'</where>
+        </update>
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value=""/>
+            <where>CODE='ad.adml.sflow.abusedSMTP.excludeIPs'</where>
+        </update>
+
+    </changeSet>
+
+    <changeSet author="iulianb" id="data-005132021-140">
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value="50000000"/>
+            <where>CODE='ad.adml.sflow.dnsTunnel.minBytes'</where>
+        </update>
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value=""/>
+            <where>CODE='ad.adml.sflow.dnsTunnel.excludeIPs'</where>
+        </update>
+
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value="100000000"/>
+            <where>CODE='ad.adml.sflow.ICMPTunnel.minBytes'</where>
+        </update>
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value="200"/>
+            <where>CODE='ad.adml.sflow.ICMPTunnel.minPacket'</where>
+        </update>
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value=""/>
+            <where>CODE='ad.adml.sflow.ICMPTunnel.excludeIPs'</where>
+        </update>
+
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value="80,443,587,465,993,995"/>
+            <where>CODE='ad.adml.sflow.hPortScan.excludeAlienPorts'</where>
+        </update>
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value="123"/>
+            <where>CODE='ad.adml.sflow.hPortScan.excludeMyPorts'</where>
+        </update>
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value="100"/>
+            <where>CODE='ad.adml.sflow.hPortScan.minFlows'</where>
+        </update>
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value=""/>
+            <where>CODE='ad.adml.sflow.hPortScan.excludeIPs'</where>
+        </update>
+
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value="1024"/>
+            <where>CODE='ad.adml.sflow.vPortScan.maxPortNumber'</where>
+        </update>
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value="3"/>
+            <where>CODE='ad.adml.sflow.vPortScan.minPorts'</where>
+        </update>
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value=""/>
+            <where>CODE='ad.adml.sflow.vPortScan.excludeIPs'</where>
+        </update>
+
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value="50"/>
+            <where>CODE='ad.adml.sflow.DDoS.minFlows'</where>
+        </update>
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value="20"/>
+            <where>CODE='ad.adml.sflow.DDoS.minPairs'</where>
+        </update>
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value=""/>
+            <where>CODE='ad.adml.sflow.DDoS.excludeIPs'</where>
+        </update>
+
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value="20"/>
+            <where>CODE='ad.adml.sflow.BotNet.minPktsPerFlow'</where>
+        </update>
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value=""/>
+            <where>CODE='ad.adml.sflow.BotNet.excludeIPs'</where>
+        </update>
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value="https://rules.emergingthreats.net/blockrules/emerging-botcc.rules"/>
+            <where>CODE='ad.adml.sflow.BotNet.url'</where>
+        </update>
+
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value="300"/>
+            <where>CODE='ad.adml.sflow.atypicalPairs.minPairs'</where>
+        </update>
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value=""/>
+            <where>CODE='ad.adml.sflow.atypicalPairs.excludeIPs'</where>
+        </update>
+
+    </changeSet>
+
+    <changeSet author="iulianb" id="data-005132021-141x">
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value="0.001"/>
+            <where>CODE='ad.parameter.algorithm.kmeans.dns.param.minDirtyProportion'</where>
+        </update>
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value="8"/>
+            <where>CODE='ad.parameter.algorithm.kmeans.dns.param.numberOfClusters'</where>
+        </update>
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value="0.05"/>
+            <where>CODE='ad.parameter.algorithm.kmeans.dns.param.maxAnomalousClusterProportion'</where>
+        </update>
+
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value="0.001"/>
+            <where>CODE='ad.parameter.algorithm.kmeans.http.param.minDirtyProportion'</where>
+        </update>
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value="32"/>
+            <where>CODE='ad.parameter.algorithm.kmeans.http.param.numberOfClusters'</where>
+        </update>
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value="0.051"/>
+            <where>CODE='ad.parameter.algorithm.kmeans.http.param.maxAnomalousClusterProportion'</where>
+        </update>
+
+    </changeSet>
+
+    <changeSet author="iulianb" id="data-005132021-142x3">
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value=""/>
+            <where>CODE='ad.adml.sflow.general.excludeIPs'</where>
+        </update>
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value="1000"/>
+            <where>CODE='ad.adml.sflow.alert.maxFlowList'</where>
+        </update>
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value="1073741824"/>
+            <where>CODE='ad.adml.sflow.bigProviders.minBytes'</where>
+        </update>
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value="10.#Intranet 1,100.100."/>
+            <where>CODE='ad.adml.sflow.mynets.net'</where>
+        </update>
+
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value="windowsupdate.microsoft.com,update.microsoft.com,windowsupdate.com,download.windowsupdate.com,download.microsoft.com,download.windowsupdate.com,ntservicepack.microsoft.com,time.windows.com,javadl-esd.sun.com,fpdownload.adobe.com,cache.pack.google.com,aus2.mozilla.org,aus3.mozilla.org,aus4.mozilla.org,avast.com,files.avast.com"/>
+            <where>CODE='ad.adml.sflow.OSRepo.windows'</where>
+        </update>
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value="security.ubuntu.com,security.debian.org,mirrorlist.centos.org,0.rhel.pool.ntp.org,1.rhel.pool.ntp.org,2.rhel.pool.ntp.org,ntp.ubuntu.com,linux.dropbox.com"/>
+            <where>CODE='ad.adml.sflow.OSRepo.linux'</where>
+        </update>
+
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="VALUE" value="security.ubuntu.com,security.debian.org,mirrorlist.centos.org,0.rhel.pool.ntp.org,1.rhel.pool.ntp.org,2.rhel.pool.ntp.org,ntp.ubuntu.com,linux.dropbox.com"/>
+            <where>CODE='ad.adml.sflow.OSRepo.linux'</where>
+        </update>
+
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value="play.google.com,android.clients.google.com"/>
+            <where>CODE='ad.adml.sflow.OSRepo.android'</where>
+        </update>
+
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value="phobos.apple.com,deimos3.apple.com,albert.apple.com,gs.apple.com,itunes.apple.com,ax.itunes.apple.com"/>
+            <where>CODE='ad.adml.sflow.OSRepo.apple'</where>
+        </update>
+
+
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value="ftp.freebsd.org"/>
+            <where>CODE='ad.adml.sflow.OSRepo.freebsd'</where>
+        </update>
+
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value=""/>
+            <where>CODE='ad.adml.sflow.BigProvider.whitelist'</where>
+        </update>
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value=""/>
+            <where>CODE='ad.adml.sflow.ProxyServer.whitelist'</where>
+        </update>
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value="10.1.1.1#SMTP Server"/>
+            <where>CODE='ad.adml.sflow.MX.whitelist'</where>
+        </update>
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="DEFAULT_VALUE" value="10.1.1.1#Big Talker 1,10.1.111.#DMZ"/>
+            <where>CODE='ad.adml.sflow.TTalker.whitelist'</where>
+        </update>
+
+    </changeSet>
+
+
+    <changeSet author="iulianb" id="data-005132022-143">
+        <insert tableName="COMPONENT_CONFIG">
+            <column name="ID" valueComputed="nextval('SEQ_COMPONENT_CONFIG')" />
+            <column name="JPA_VERSION" valueNumeric="0" />
+            <column name="CREATED_DATE" valueDate="${default.timestamp}" />
+            <column name="UPDATED_DATE" valueDate="${default.timestamp}" />
+
+            <column name="NAME" value="Time Silent (minutes)"/>
+            <column name="CODE" value="dtm.assetDiscovery.timeSilent"/>
+            <column name="DESCRIPTION" value="Time Silent (minutes)"/>
+            <column name="VALUE" value="11520"/> <!-- 8 days -->
+            <column name="DEFAULT_VALUE" value="11520"/>
+            <column name="TYPE" value="3"/> <!-- test -->
+            <column name="component_type_id" value="1"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="iulianb" id="data-005132021-143x2">
+        <update tableName="COMPONENT_CONFIG">
+            <column  name="NAME" value="Time Silent"/>
+            <column name="VALUE" value="8 d"/> <!-- 8 days -->
+            <column name="DEFAULT_VALUE" value="8 d"/>
+            <column  name="TYPE" value="5"/>
+            <where>CODE='dtm.assetDiscovery.timeSilent'</where>
+        </update>
+    </changeSet>
+
+</databaseChangeLog>

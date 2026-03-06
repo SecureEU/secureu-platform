@@ -1,0 +1,2 @@
+docker-compose up --build -d   
+docker exec -d seuxdr-manager /usr/local/bin/startup.sh TEST

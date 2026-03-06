@@ -1,0 +1,7 @@
+services:
+  sslchecker-backend:
+    build: .
+    container_name: sslchecker-backend
+    ports:
+      - "5000:5000"
+    restart: unless-stopped

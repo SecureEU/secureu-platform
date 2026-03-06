@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.10.xsd"
+                   logicalFilePath="sphinx/install/seq/sequences.xml" >
+
+    <!--
+    <changeSet author="iulianb" id="seq-15052020-001">
+        <createSequence sequenceName="SEQ_PCAP" startValue="1"/>
+    </changeSet>
+
+    <changeSet author="iulianb" id="seq-17052020-001">
+        <createSequence sequenceName="SEQ_PCAP_SESSION" startValue="1"/>
+    </changeSet>
+
+    <changeSet author="iulianb" id="seq-29052020-001">
+        <createSequence sequenceName="SEQ_PCAP_INFO" startValue="1"/>
+    </changeSet>
+    -->
+    <changeSet author="iulianb" id="seq-05062020-001">
+        <createSequence sequenceName="SEQ_TSHARK_INTERFACE" startValue="1"/>
+    </changeSet>
+
+    <changeSet author="iulianb" id="seq-05062020-002">
+        <dropSequence sequenceName="SEQ_TSHARK_INTERFACE" />
+    </changeSet>
+
+    <changeSet author="iulianb" id="seq-05062020-003">
+        <createSequence sequenceName="SEQ_TSHARK_PROCESS" startValue="1"/>
+    </changeSet>
+
+    <changeSet author="iulianb" id="seq-05062020-004">
+        <createSequence sequenceName="SEQ_TSHARK_FILTER" startValue="1"/>
+    </changeSet>
+
+    <changeSet author="iulianb" id="seq-30062020-001">
+        <createSequence sequenceName="SEQ_TSHARK_INSTANCE" startValue="1"/>
+    </changeSet>
+
+    <changeSet author="iulianb" id="seq-06072020-001">
+        <createSequence sequenceName="SEQ_AD_COMPONENT" startValue="1"/>
+    </changeSet>
+
+    <changeSet author="iulianb" id="seq-06072020-002">
+        <createSequence sequenceName="SEQ_AD_CONFIG" startValue="1"/>
+    </changeSet>
+
+    <changeSet author="iulianb" id="seq-08072020-001">
+        <createSequence sequenceName="SEQ_ASSETS" startValue="1"/>
+    </changeSet>
+
+    <changeSet author="iulianb" id="seq-10072020-001">
+        <createSequence sequenceName="SEQ_BLACKWEB" startValue="1"/>
+    </changeSet>
+
+    <changeSet author="iulianb" id="seq-10072020-002">
+        <createSequence sequenceName="SEQ_BLACKWEB_CATEGORY" startValue="1"/>
+    </changeSet>
+
+    <changeSet author="catalind" id="seq-17072020-001">
+        <createSequence sequenceName="SEQ_WORLDMAP_LATLNG" startValue="1"/>
+    </changeSet>
+
+    <changeSet author="catalind" id="seq-27072020-001">
+        <createSequence sequenceName="SEQ_PORT_CATALOGUE" startValue="1"/>
+    </changeSet>
+
+    <changeSet author="iulianb" id="seq-11082020-001">
+        <createSequence sequenceName="SEQ_DTM_INSTANCE" startValue="1"/>
+        <dropSequence sequenceName="SEQ_TSHARK_INSTANCE"/>
+    </changeSet>
+
+    <changeSet author="iulianb" id="seq-13082020-001">
+        <createSequence sequenceName="SEQ_DTM_PROCESS" startValue="1"/>
+        <dropSequence sequenceName="SEQ_TSHARK_PROCESS"/>
+    </changeSet>
+
+    <changeSet author="iulianb" id="seq-13082020-002">
+        <createSequence sequenceName="SEQ_DTM_PROCESS_FILTER" startValue="1"/>
+        <dropSequence sequenceName="SEQ_TSHARK_FILTER"/>
+    </changeSet>
+
+    <changeSet author="iulianb" id="seq-20082020-001">
+        <createSequence sequenceName="SEQ_DTM_CONFIG" startValue="1"/>
+    </changeSet>
+
+    <changeSet  author="iulianb"  id="seq-24112020-0002">
+        <renameSequence newSequenceName="SEQ_COMPONENT_CONFIG" oldSequenceName="SEQ_DTM_CONFIG"/>
+    </changeSet>
+
+    <changeSet author="danielaco" id="seq-06042020-001">
+        <createSequence sequenceName="SEQ_ALERT" startValue="1"/>
+    </changeSet>
+
+    <changeSet author="danielaco" id="seq-08062021-001">
+        <createSequence sequenceName="SEQ_AD_ALERT" startValue="1"/>
+    </changeSet>
+
+<!--    <changeSet  author="danielaco"  id="seq-15062021-001">-->
+<!--        <dropSequence  catalogName="cat"-->
+<!--                       schemaName="sphinx"-->
+<!--                       sequenceName="SEQ_ALERT"/>-->
+<!--    </changeSet>-->
+
+    <changeSet author="danielaco" id="seq-15062020-002">
+        <createSequence sequenceName="SEQ_ALERTS" startValue="1"/>
+    </changeSet>
+
+<!--    <changeSet  author="danielaco"  id="seq-17062021-001">-->
+<!--        <dropSequence  catalogName="cat"-->
+<!--                       schemaName="sphinx"-->
+<!--                       sequenceName="SEQ_AD_ALERT"/>-->
+<!--    </changeSet>-->
+
+    <changeSet author="iulianb" id="seq-06072021-001">
+        <createSequence sequenceName="SEQ_DTM_CMD" startValue="1"/>
+    </changeSet>
+
+    <changeSet author="catalinda" id="seq-09072021-001">
+        <createSequence sequenceName="SEQ_CONTACT_LIST" startValue="1"/>
+    </changeSet>
+
+    <changeSet author="catalinda" id="seq-14072021-001">
+        <createSequence sequenceName="SEQ_SUGGESTIONS_APPLIED" startValue="1"/>
+    </changeSet>
+
+</databaseChangeLog>

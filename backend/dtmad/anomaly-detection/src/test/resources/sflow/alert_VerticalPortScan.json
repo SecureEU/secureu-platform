@@ -1,0 +1,81 @@
+{
+  "type": "bundle",
+  "id": "bundle--3312df69-23c7-4fcb-ab89-520290b09926",
+  "objects": [
+    {
+      "type": "identity",
+      "id": "identity--dd4b1e63-b4da-45c9-95a9-a72a23516c11",
+      "spec_version": "2.1",
+      "created": "2021-05-01 03:00:55",
+      "modified": "2021-05-01 03:00:55",
+      "name": "AD"
+    },
+    {
+      "type": "x-sphinx-ad-alert",
+      "id": "x-sphinx-ad-alert--7e272309-7dea-46d7-b97b-7744a3aa0376",
+      "spec_version": "2.1",
+      "created": "2021-05-01 03:00:55",
+      "modified": "2021-05-01 03:00:55",
+      "details": {
+        "totalFlows": 0,
+        "protocolFlow": {
+          "id": null,
+          "detectedProtocol": null,
+          "lowerPort": 0,
+          "upperPort": 0,
+          "upperIp": "104.143.6.144",
+          "lowerIp": "10.1.1.11",
+          "ipProtocol": 0,
+          "flowDuration": 0,
+          "bytes": 0,
+          "packets": 0,
+          "packetsWithoutPayload": 0,
+          "avgPacketSize": 0,
+          "minPacketSize": 0,
+          "maxPacketSize": 0,
+          "avgInterTime": 0,
+          "packetSize0": 0,
+          "interTime0": 0,
+          "packetSize1": 0,
+          "interTime1": 0,
+          "packetSize2": 0,
+          "interTime2": 0,
+          "packetSize3": 0,
+          "interTime3": 0,
+          "packetSize4": 0,
+          "interTime4": 0,
+          "hostname": null,
+          "dnaType": null,
+          "timeStamp2": null,
+          "malware": false,
+          "flags": 0
+        },
+        "text": "This IP was detected by AD performing an abnormal activity. In what follows, you can see more information.\nAbnormal behaviour: Vertical Port Scan \nIP: 10.1.1.11\nScanned AlienIP: 104.143.6.144\nNumber of flows: 33\nNumber of distinct AlienPorts: 33\nMean/Stddev of AlienPorts per AlienIP (all flows for this IP): 14/13\nBytes Up: 2.8GB\nBytes Down: 0 B\nPackets: 33\nFlows\n10.1.1.11:1158 <= 104.143.6.144:747 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:748 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:749 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:750 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:751 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:752 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:753 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:754 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:755 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:756 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:757 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:758 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:759 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:760 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:761 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:762 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:763 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:764 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:765 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:766 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:767 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:768 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:769 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:770 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:771 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:772 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:773 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:774 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:775 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:776 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:777 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:778 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:779 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)",
+        "title": "",
+        "flowId": "1619881249242",
+        "coords": null,
+        "username": null,
+        "timestamp": "2021-00-01 06:00:55",
+        "algorithm": {
+          "type": "VerticalPortScan_sflow",
+          "numberOfFlows": "33",
+          "numberOfPorts": "33",
+          "myIP": "10.1.1.11",
+          "bytesUp": "3002629476",
+          "bytesDown": "0",
+          "numberPkts": "33",
+          "stringFlows": "\n10.1.1.11:1158 <= 104.143.6.144:747 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:748 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:749 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:750 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:751 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:752 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:753 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:754 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:755 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:756 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:757 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:758 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:759 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:760 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:761 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:762 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:763 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:764 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:765 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:766 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:767 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:768 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:769 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:770 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:771 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:772 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:773 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:774 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:775 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:776 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:777 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:778 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)\n10.1.1.11:1158 <= 104.143.6.144:779 [!] (TCP, Down: 86.8MB, Up: 0 B,1 pkts, duration: 0s, sampling: 1/1)",
+          "portsMean": "14",
+          "portsStdev": "13"
+        }
+      }
+    },
+    {
+      "type": "relationship",
+      "id": "relationship--de5c6b76-d4b5-4290-af43-b7ed2893e170",
+      "spec_version": "2.1",
+      "created": "2021-05-01 03:00:55",
+      "modified": "2021-05-01 03:00:55"
+    }
+  ]
+}

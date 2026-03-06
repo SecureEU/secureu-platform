@@ -1,0 +1,84 @@
+{
+  "type": "SuricataIDPS",
+  "dest_ip_rdns": "sivdc02.main.siveco.ro",
+  "event_type": "alert",
+  "tx_id": 14,
+  "dest_ip": "10.233.100.5",
+  "src_ip": "172.18.252.14",
+  "dns": {
+    "query": [
+      {
+        "id": 61260,
+        "rrname": "p-analytics.life",
+        "type": "query",
+        "tx_id": 14,
+        "rrtype": "A"
+      }
+    ]
+  },
+  "flow_id": 2031419984217068,
+  "sphinx": {
+    "tool": "suricata",
+    "username": "IulianB",
+    "component": "dtm",
+    "instanceKey": "1234567",
+    "hostname": "D302287"
+  },
+  "alert": {
+    "action": "allowed",
+    "category": "Potentially Bad Traffic",
+    "signature": "ET INFO Observed DNS Query to .life TLD",
+    "gid": 1,
+    "severity": 2,
+    "metadata": {
+      "created_at": [
+        "2019_08_13"
+      ],
+      "attack_target": [
+        "Client_Endpoint"
+      ],
+      "updated_at": [
+        "2019_09_28"
+      ],
+      "signature_severity": [
+        "Major"
+      ],
+      "affected_product": [
+        "Any"
+      ],
+      "former_category": [
+        "INFO"
+      ],
+      "deployment": [
+        "Perimeter"
+      ]
+    },
+    "rev": 2,
+    "signature_id": 2027867
+  },
+  "dest_geoip": {},
+  "event_kind": "alert",
+  "app_proto": "dns",
+  "dest_port": 53,
+  "src_geoip": {},
+  "in_iface": "\\Device\\NPF_{81EBF789-7A11-49FB-99C7-F5C1002824A0}",
+  "proto": "UDP",
+  "timestamp": "2021-04-27T12:07:17.800397GTB Daylight Time",
+  "host": "D302287",
+  "flow": {
+    "pkts_toserver": 8,
+    "pkts_toclient": 7,
+    "bytes_toclient": 987,
+    "bytes_toserver": 660,
+    "start": "2021-04-27T11:59:56.885740GTB Daylight Time"
+  },
+  "src_port": 64679,
+  "path": "C:/tools/Suricata/log/eve.json",
+  "@version": "1",
+  "src_ip_rdns": "hbaseserver",
+  "tags": [
+    "_dateparsefailure",
+    "_geoip_lookup_failure"
+  ],
+  "@timestamp": "2021-04-27T11:35:41.844Z"
+}

@@ -1,0 +1,12 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Flask session
+flask_session/
+
+# Local database
+*.db
+
+# Environment
+.env

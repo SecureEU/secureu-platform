@@ -1,0 +1,43 @@
+# Variables
+$SERVICE_NAME = "%s"
+$SEUXDR_DIR = "C:\Program Files\%s"
+
+# Check if the script is run as administrator
+if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    Write-Host "Please run as Administrator"
+    exit 1
+}
+
+Write-Host "Uninstalling $SERVICE_NAME agent..."
+
+# Stop the service if it is running
+if (Get-Service -Name $SERVICE_NAME -ErrorAction SilentlyContinue) {
+    Write-Host "Stopping service $SERVICE_NAME..."
+    Stop-Service -Name $SERVICE_NAME -Force
+}
+
+# Remove the service
+if (Get-Service -Name $SERVICE_NAME -ErrorAction SilentlyContinue) {
+    Write-Host "Removing service $SERVICE_NAME..."
+    sc.exe delete $SERVICE_NAME
+
+    # Wait for the service to be completely removed
+    Write-Host "Waiting for service removal..."
+    while (Get-Service -Name $SERVICE_NAME -ErrorAction SilentlyContinue) {
+        Start-Sleep -Seconds 1
+    }
+    Write-Host "Service $SERVICE_NAME removed."
+} else {
+    Write-Host "Service $SERVICE_NAME not found, skipping removal."
+}
+
+# Remove the $SERVICE_NAME directory and binary if it exists
+if (Test-Path $SEUXDR_DIR) {
+    Write-Host "Removing directory $SEUXDR_DIR..."
+    Remove-Item -Path $SEUXDR_DIR -Recurse -Force
+    Write-Host "Directory $SEUXDR_DIR removed."
+} else {
+    Write-Host "Directory $SEUXDR_DIR not found, skipping removal."
+}
+
+Write-Host "$SERVICE_NAME agent uninstalled successfully!"

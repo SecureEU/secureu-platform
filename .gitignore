@@ -1,0 +1,35 @@
+# Build artifacts
+frontend/node_modules/
+frontend/.next/
+frontend/test-results/
+
+# Java build output (JARs are rebuilt on deploy)
+backend/dtmad/*/target/
+backend/dtmad/**/target/
+
+# Compiled binaries (rebuilt on deploy)
+backend/pentest/bin/
+backend/seuxdr/manager/manager
+
+# ML model files (large, downloaded/built on deploy)
+*.pkl
+
+# Tor binaries (bundled in Docker image)
+backend/darkweb/app/assets/tor/
+
+# Python virtualenvs
+backend/darkweb/app/venv/
+**/venv/
+
+# Logs
+*.log
+backend/C:/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Environment (contains secrets)
+#frontend/.env

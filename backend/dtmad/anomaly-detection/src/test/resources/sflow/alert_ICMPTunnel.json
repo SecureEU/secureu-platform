@@ -1,0 +1,78 @@
+{
+  "type": "bundle",
+  "id": "bundle--8f3a447d-2514-48ea-89d4-0a6b93616237",
+  "objects": [
+    {
+      "type": "identity",
+      "id": "identity--662caee0-8a8f-4865-b2ff-ea93822db3a8",
+      "spec_version": "2.1",
+      "created": "2021-04-13 05:21:28",
+      "modified": "2021-04-13 05:21:28",
+      "name": "AD"
+    },
+    {
+      "type": "x-sphinx-ad-alert",
+      "id": "x-sphinx-ad-alert--ddb907f3-8e29-46d0-90c3-32434b824f11",
+      "spec_version": "2.1",
+      "created": "2021-04-13 05:21:28",
+      "modified": "2021-04-13 05:21:28",
+      "details": {
+        "totalFlows": 0,
+        "protocolFlow": {
+          "id": null,
+          "detectedProtocol": null,
+          "lowerPort": 0,
+          "upperPort": 0,
+          "upperIp": "255.255.255.255",
+          "lowerIp": "192.168.1.5",
+          "ipProtocol": 0,
+          "flowDuration": 0,
+          "bytes": 0,
+          "packets": 0,
+          "packetsWithoutPayload": 0,
+          "avgPacketSize": 0,
+          "minPacketSize": 0,
+          "maxPacketSize": 0,
+          "avgInterTime": 0,
+          "packetSize0": 0,
+          "interTime0": 0,
+          "packetSize1": 0,
+          "interTime1": 0,
+          "packetSize2": 0,
+          "interTime2": 0,
+          "packetSize3": 0,
+          "interTime3": 0,
+          "packetSize4": 0,
+          "interTime4": 0,
+          "hostname": null,
+          "dnaType": null,
+          "timeStamp2": null,
+          "malware": false,
+          "flags": 0
+        },
+        "text": "This IP was detected by AD performing an abnormal activity. In what follows, you can see more information.\nAbnormal behaviour: Host has DNS communication with large amount of data. \nIP: 192.168.1.5\nBytes Up: 0 B\nBytes Down: 381.4MB\nPackets: 4\nConnections: 1\nFlows\n192.168.1.5 <- 195.82.130.6 (ICMPv6, Type/Code: 1158/1153, L-to-R: 0 B, R-to-L: 381.4MB,4 pkts, duration: 428s, sampling: 1/1)",
+        "title": "",
+        "flowId": "1618334488483",
+        "coords": null,
+        "username": null,
+        "timestamp": "2021-21-13 08:21:28",
+        "algorithm": {
+          "type": "ICMPTunnel_sflow",
+          "hostname": "192.168.1.5",
+          "bytesUp": "0",
+          "bytesDown": "399964688",
+          "numberPkts": "4",
+          "connections": "1",
+          "stringFlows": "\n192.168.1.5 <- 195.82.130.6 (ICMPv6, Type/Code: 1158/1153, L-to-R: 0 B, R-to-L: 381.4MB,4 pkts, duration: 428s, sampling: 1/1)"
+        }
+      }
+    },
+    {
+      "type": "relationship",
+      "id": "relationship--5439712d-731f-4e30-bb5f-2e81c0b41015",
+      "spec_version": "2.1",
+      "created": "2021-04-13 05:21:28",
+      "modified": "2021-04-13 05:21:28"
+    }
+  ]
+}

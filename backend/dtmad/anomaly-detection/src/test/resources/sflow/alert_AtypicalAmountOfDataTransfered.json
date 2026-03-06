@@ -1,0 +1,80 @@
+{
+  "type": "bundle",
+  "id": "bundle--348ddd1a-6fe8-4605-ae21-d9cbf8f52536",
+  "objects": [
+    {
+      "type": "identity",
+      "id": "identity--26cf7ef6-392a-4fb6-84eb-50ed70ac5e5e",
+      "spec_version": "2.1",
+      "created": "2021-05-05 05:37:48",
+      "modified": "2021-05-05 05:37:48",
+      "name": "AD"
+    },
+    {
+      "type": "x-sphinx-ad-alert",
+      "id": "x-sphinx-ad-alert--4c850d43-5ef9-4c45-80c9-68b12f5ed22c",
+      "spec_version": "2.1",
+      "created": "2021-05-05 05:37:48",
+      "modified": "2021-05-05 05:37:48",
+      "details": {
+        "totalFlows": 0,
+        "protocolFlow": {
+          "id": null,
+          "detectedProtocol": null,
+          "lowerPort": 0,
+          "upperPort": 0,
+          "upperIp": "255.255.255.255",
+          "lowerIp": "10.1.1.17",
+          "ipProtocol": 0,
+          "flowDuration": 0,
+          "bytes": 0,
+          "packets": 0,
+          "packetsWithoutPayload": 0,
+          "avgPacketSize": 0,
+          "minPacketSize": 0,
+          "maxPacketSize": 0,
+          "avgInterTime": 0,
+          "packetSize0": 0,
+          "interTime0": 0,
+          "packetSize1": 0,
+          "interTime1": 0,
+          "packetSize2": 0,
+          "interTime2": 0,
+          "packetSize3": 0,
+          "interTime3": 0,
+          "packetSize4": 0,
+          "interTime4": 0,
+          "hostname": null,
+          "dnaType": null,
+          "timeStamp2": null,
+          "malware": false,
+          "flags": 0
+        },
+        "text": "This IP was detected by AD performing an abnormal activity. In what follows, you can see more information.\nAbnormal behaviour: Atypical amount of data uploaded (28197510504 bytes)\nIP: 10.1.1.17\nBytes Up: 26.3GB\nBytes Down: 12.5GB\nBytes Up Mean/Stddev (all MyHosts): 26.3GB/0 B\nPackets: 416\nNumber of pairs: 1\nFlows\n10.1.1.17:1153 => 204.143.5.144:1153 [!] (TCP, Up: 13.4GB, Down: 0 B,144 pkts, duration: 1618s, sampling: 1/1)\n10.1.1.17:1158 <?> 204.143.5.144:1153 [!] (TCP, L-to-R: 12.9GB, R-to-L: 0 B,138 pkts, duration: 1472s, sampling: 1/1)\n10.1.1.17:1153 <?> 204.143.5.144:1158 [!] (TCP, L-to-R: 0 B, R-to-L: 12.5GB,134 pkts, duration: 1409s, sampling: 1/1)",
+        "title": "AD: Atypical amount of data transferred (26.3GB/12.5GB)",
+        "flowId": "1620193068744",
+        "coords": null,
+        "username": null,
+        "timestamp": "2021-37-05 08:37:48",
+        "algorithm": {
+          "type": "AtypicalAmountData_sflow",
+          "numberOfPairs": "1",
+          "bytesUp": "28197510504",
+          "bytesDown": "13398817048",
+          "numberPkts": "416",
+          "myIP": "10.1.1.17",
+          "stringFlows": "\n10.1.1.17:1153 => 204.143.5.144:1153 [!] (TCP, Up: 13.4GB, Down: 0 B,144 pkts, duration: 1618s, sampling: 1/1)\n10.1.1.17:1158 <?> 204.143.5.144:1153 [!] (TCP, L-to-R: 12.9GB, R-to-L: 0 B,138 pkts, duration: 1472s, sampling: 1/1)\n10.1.1.17:1153 <?> 204.143.5.144:1158 [!] (TCP, L-to-R: 0 B, R-to-L: 12.5GB,134 pkts, duration: 1409s, sampling: 1/1)",
+          "dataMean": "28197510504",
+          "dataStdev": "0"
+        }
+      }
+    },
+    {
+      "type": "relationship",
+      "id": "relationship--d269e56c-2b9e-48c8-996a-55940f35a7b7",
+      "spec_version": "2.1",
+      "created": "2021-05-05 05:37:48",
+      "modified": "2021-05-05 05:37:48"
+    }
+  ]
+}

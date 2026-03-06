@@ -1,0 +1,78 @@
+{
+  "type": "bundle",
+  "id": "bundle--912cda43-21b7-48aa-9b97-c59d8af385f8",
+  "objects": [
+    {
+      "type": "identity",
+      "id": "identity--c0751cab-3fc6-4cb0-a71a-d1d70bf3f9d0",
+      "spec_version": "2.1",
+      "created": "2021-04-12 07:01:50",
+      "modified": "2021-04-12 07:01:50",
+      "name": "AD"
+    },
+    {
+      "type": "x-sphinx-ad-alert",
+      "id": "x-sphinx-ad-alert--0601b8bd-171c-49f9-a6a1-78051a2880f3",
+      "spec_version": "2.1",
+      "created": "2021-04-12 07:01:50",
+      "modified": "2021-04-12 07:01:50",
+      "details": {
+        "totalFlows": 0,
+        "protocolFlow": {
+          "id": null,
+          "detectedProtocol": null,
+          "lowerPort": 0,
+          "upperPort": 0,
+          "upperIp": "255.255.255.255",
+          "lowerIp": "195.82.130.17",
+          "ipProtocol": 0,
+          "flowDuration": 0,
+          "bytes": 0,
+          "packets": 0,
+          "packetsWithoutPayload": 0,
+          "avgPacketSize": 0,
+          "minPacketSize": 0,
+          "maxPacketSize": 0,
+          "avgInterTime": 0,
+          "packetSize0": 0,
+          "interTime0": 0,
+          "packetSize1": 0,
+          "interTime1": 0,
+          "packetSize2": 0,
+          "interTime2": 0,
+          "packetSize3": 0,
+          "interTime3": 0,
+          "packetSize4": 0,
+          "interTime4": 0,
+          "hostname": null,
+          "dnaType": null,
+          "timeStamp2": null,
+          "malware": false,
+          "flags": 0
+        },
+        "text": "This IP was detected by AD performing an abnormal activity. In what follows, you can see more information.\nAbnormal behaviour: Host has DNS communication with large amount of data. \nIP: 195.82.130.17\nBytes Up: 0 B\nBytes Down: 76.3MB\nPackets: 2\nConnections: 1\nFlows\n195.82.130.17:53 <?> 195.82.130.8:53  (UDP, L-to-R: 0 B, R-to-L: 76.3MB,2 pkts, duration: 181s, sampling: 1/1)",
+        "title": "",
+        "flowId": "1618254110856",
+        "coords": null,
+        "username": null,
+        "timestamp": "2021-01-12 10:01:50",
+        "algorithm": {
+          "type": "DnsTunnel_sflow",
+          "hostname": "195.82.130.17",
+          "bytesUp": "0",
+          "bytesDown": "79998344",
+          "numberPkts": "2",
+          "connections": "1",
+          "stringFlows": "\n195.82.130.17:53 <?> 195.82.130.8:53  (UDP, L-to-R: 0 B, R-to-L: 76.3MB,2 pkts, duration: 181s, sampling: 1/1)"
+        }
+      }
+    },
+    {
+      "type": "relationship",
+      "id": "relationship--7b4814bd-6bb0-42aa-a25a-6e0730fa89da",
+      "spec_version": "2.1",
+      "created": "2021-04-12 07:01:50",
+      "modified": "2021-04-12 07:01:50"
+    }
+  ]
+}

@@ -1,0 +1,2 @@
+# MongoDB is now shared — started by secureu-backend/start.sh
+# Dashboard connects to localhost:27017 (secureu-mongodb container)

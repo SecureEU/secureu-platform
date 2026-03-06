@@ -1,0 +1,78 @@
+{
+  "type": "bundle",
+  "id": "bundle--62905d1d-6bd5-4a90-b2e6-905cdb04dd74",
+  "objects": [
+    {
+      "type": "identity",
+      "id": "identity--1f50600f-bb0a-4a62-b025-9e6065c9400c",
+      "spec_version": "2.1",
+      "created": "2021-04-19 07:12:16",
+      "modified": "2021-04-19 07:12:16",
+      "name": "AD"
+    },
+    {
+      "type": "x-sphinx-ad-alert",
+      "id": "x-sphinx-ad-alert--a8992269-313a-43ec-8f83-05fa58bbd240",
+      "spec_version": "2.1",
+      "created": "2021-04-19 07:12:16",
+      "modified": "2021-04-19 07:12:16",
+      "details": {
+        "totalFlows": 0,
+        "protocolFlow": {
+          "id": null,
+          "detectedProtocol": null,
+          "lowerPort": 0,
+          "upperPort": 0,
+          "upperIp": "255.255.255.255",
+          "lowerIp": "195.82.130.10",
+          "ipProtocol": 0,
+          "flowDuration": 0,
+          "bytes": 0,
+          "packets": 0,
+          "packetsWithoutPayload": 0,
+          "avgPacketSize": 0,
+          "minPacketSize": 0,
+          "maxPacketSize": 0,
+          "avgInterTime": 0,
+          "packetSize0": 0,
+          "interTime0": 0,
+          "packetSize1": 0,
+          "interTime1": 0,
+          "packetSize2": 0,
+          "interTime2": 0,
+          "packetSize3": 0,
+          "interTime3": 0,
+          "packetSize4": 0,
+          "interTime4": 0,
+          "hostname": null,
+          "dnaType": null,
+          "timeStamp2": null,
+          "malware": false,
+          "flags": 0
+        },
+        "text": "This IP was detected by AD performing an abnormal activity. In what follows, you can see more information.\nAbnormal behaviour: P2P Communication\nMyIP: 195.82.130.10\nBytes Up: 0 B\nBytes Down: 724.8MB\nPackets: 16\nNumber of pairs: 7\nFlows\n195.82.130.10:11200 <?> 192.168.1.5:11200  (TCP, L-to-R: 0 B, R-to-L: 190.7MB,2 pkts, duration: 32s, sampling: 1/1)\n195.82.130.10:20003 <?> 195.82.130.17:20003  (UDP, L-to-R: 0 B, R-to-L: 152.6MB,4 pkts, duration: 95s, sampling: 1/1)\n195.82.130.10:20005 <?> 195.82.130.21:20003  (UDP, L-to-R: 0 B, R-to-L: 76.3MB,2 pkts, duration: 9s, sampling: 1/1)\n195.82.130.10:20008 <?> 195.82.130.25:20005  (UDP, L-to-R: 0 B, R-to-L: 76.3MB,2 pkts, duration: 42s, sampling: 1/1)\n195.82.130.10:20004 <?> 195.82.130.18:20003  (UDP, L-to-R: 0 B, R-to-L: 76.3MB,2 pkts, duration: 50s, sampling: 1/1)\n195.82.130.10:20004 <?> 195.82.130.19:20003  (UDP, L-to-R: 0 B, R-to-L: 76.3MB,2 pkts, duration: 32s, sampling: 1/1)\n195.82.130.10:20005 <?> 195.82.130.20:20003  (UDP, L-to-R: 0 B, R-to-L: 76.3MB,2 pkts, duration: 27s, sampling: 1/1)",
+        "title": "AD: P2P communication",
+        "flowId": "1618859536255",
+        "coords": null,
+        "username": null,
+        "timestamp": "2021-12-19 10:12:16",
+        "algorithm": {
+          "type": "P2PCommunication_sflow",
+          "numberOfPairs": "7",
+          "myIP": "195.82.130.10",
+          "bytesUp": "0",
+          "bytesDown": "759970752",
+          "numberPkts": "16",
+          "stringFlows": "\n195.82.130.10:11200 <?> 192.168.1.5:11200  (TCP, L-to-R: 0 B, R-to-L: 190.7MB,2 pkts, duration: 32s, sampling: 1/1)\n195.82.130.10:20003 <?> 195.82.130.17:20003  (UDP, L-to-R: 0 B, R-to-L: 152.6MB,4 pkts, duration: 95s, sampling: 1/1)\n195.82.130.10:20005 <?> 195.82.130.21:20003  (UDP, L-to-R: 0 B, R-to-L: 76.3MB,2 pkts, duration: 9s, sampling: 1/1)\n195.82.130.10:20008 <?> 195.82.130.25:20005  (UDP, L-to-R: 0 B, R-to-L: 76.3MB,2 pkts, duration: 42s, sampling: 1/1)\n195.82.130.10:20004 <?> 195.82.130.18:20003  (UDP, L-to-R: 0 B, R-to-L: 76.3MB,2 pkts, duration: 50s, sampling: 1/1)\n195.82.130.10:20004 <?> 195.82.130.19:20003  (UDP, L-to-R: 0 B, R-to-L: 76.3MB,2 pkts, duration: 32s, sampling: 1/1)\n195.82.130.10:20005 <?> 195.82.130.20:20003  (UDP, L-to-R: 0 B, R-to-L: 76.3MB,2 pkts, duration: 27s, sampling: 1/1)"
+        }
+      }
+    },
+    {
+      "type": "relationship",
+      "id": "relationship--b7d5254e-973d-48de-8f4a-ee61e4890c7c",
+      "spec_version": "2.1",
+      "created": "2021-04-19 07:12:16",
+      "modified": "2021-04-19 07:12:16"
+    }
+  ]
+}

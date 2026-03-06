@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# Get the directory of the current script
+DIR="$(dirname "$0")"
+APP_NAME="%s"
+EXEC_NAME="%s" 
+
+# Ensure the install script has execution permission
+chmod +x "$DIR/$EXEC_NAME"
+
+# Prompt for sudo password using osascript
+PASSWORD=$(osascript -e "Tell application \"System Events\" to display dialog \"Enter your administrator password to install $APP_NAME:\" default answer \"\" with hidden answer buttons {\"OK\"} default button \"OK\"" -e 'text returned of result')
+
+# Attempt to verify the password by running a harmless sudo command
+echo "$PASSWORD" | sudo -S echo "Password verified" > /dev/null 2>&1
+
+# Check if the password was valid
+if [ $? -ne 0 ]; then
+  # Invalid password, display an error message
+  osascript -e "tell app \"System Events\" to display dialog \"Invalid password. Installation aborted.\" buttons {\"OK\"} default button \"OK\""
+  exit 1
+fi
+
+# Check if the install script exists before attempting to run it
+if [ ! -f "$DIR/$EXEC_NAME" ]; then
+  osascript -e "tell app \"System Events\" to display dialog \"Error: $EXEC_NAME not found in $DIR.\" buttons {\"OK\"} default button \"OK\""
+  exit 1
+fi
+
+# Run the install script with sudo and capture the output
+OUTPUT=$(echo "$PASSWORD" | sudo -S sh "$DIR/$EXEC_NAME" 2>&1)
+
+# Check if the install script was successful
+if [ $? -eq 0 ]; then
+  # Successful installation
+  RESULT="Installation was successful! Here's the output:\n\n$OUTPUT"
+else
+  # Failed installation
+  RESULT="Installation failed. Here's the error output:\n\n$OUTPUT"
+fi
+
+# Display the result in a dialog box with the output
+osascript -e "tell app \"System Events\" to display dialog \"$RESULT\" buttons {\"OK\"} default button \"OK\""

@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# Variables
+APP_NAME="seuxdr"
+SEUXDR_DIR="/var/$APP_NAME"
+SERVICE_FILE="/etc/systemd/system/$APP_NAME.service"
+
+# Check if the script is run as root
+if [ "$(id -u)" -ne 0 ]; then
+  echo "Please run as root"
+  exit 1
+fi
+
+# Stop and disable the service
+echo "Stopping and disabling SEUXDR service..."
+systemctl stop $APP_NAME
+systemctl disable $APP_NAME
+
+# Remove the SEUXDR directory and binary
+echo "Removing $APP_NAME files..."
+rm -rf $SEUXDR_DIR
+
+# Remove the systemd service file
+echo "Removing systemd service file..."
+rm -f $SERVICE_FILE
+
+# Reload systemd
+echo "Reloading systemd..."
+systemctl daemon-reload
+
+echo "$APP_NAME agent uninstalled successfully!"

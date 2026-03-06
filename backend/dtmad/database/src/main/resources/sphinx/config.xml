@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.10.xsd">
+    <property name="clob.type" value="blob" dbms="oracle"/>
+    <property name="clob.type" value="oid" dbms="postgresql"/>
+    <property name="varchar.type" value=" CHAR" dbms="oracle"/>
+    <property name="varchar.type" value="" dbms="postgresql"/>
+    <property name="default.timestamp" value="SYSTIMESTAMP" dbms="oracle"/>
+    <property name="default.timestamp" value="'NOW'" dbms="postgresql"/>
+</databaseChangeLog>

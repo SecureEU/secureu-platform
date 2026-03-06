@@ -1,0 +1,74 @@
+#bin/bash
+
+# Variables
+SEUXDR_DIR="/var/%s"
+BINARY_NAME="%s"
+LAUNCHD_FILE="/Library/LaunchDaemons/com.%s.agent.plist"
+
+# Get the absolute directory of the script, even under App Translocation
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+echo "Installer script running from: $SCRIPT_DIR"
+
+# Try to find the binary relative to the script
+# Assume: installer is at MyInstaller.app/Contents/MacOS/
+# binary is at: MyInstaller.app/Contents/Resources/seuxdr_CloneSystems_1_darwin_arm64
+
+BINARY_PATH="$SCRIPT_DIR/../Resources/$BINARY_NAME"
+
+if [ ! -f "$BINARY_PATH" ]; then
+  echo "❌ Error: SEUXDR binary '$BINARY_NAME' not found at expected path: $BINARY_PATH"
+  exit 1
+fi
+
+echo "✅ Found binary at: $BINARY_PATH"
+
+# Check if script is run as root
+if [ "$EUID" -ne 0 ]; then
+  echo "⚠️  Please run this script as root (use sudo)"
+  exit 1
+fi
+
+echo "🔧 Installing SEUXDR agent..."
+
+# Create destination directory
+if [ ! -d "$SEUXDR_DIR" ]; then
+  echo "📁 Creating directory: $SEUXDR_DIR"
+  mkdir -p "$SEUXDR_DIR"
+fi
+
+# Copy the binary
+echo "📄 Copying binary to $SEUXDR_DIR..."
+cp "$BINARY_PATH" "$SEUXDR_DIR/"
+chmod +x "$SEUXDR_DIR/$BINARY_NAME"
+
+# Create the launchd plist
+echo "⚙️  Creating launchd plist at $LAUNCHD_FILE..."
+
+cat << EOF > "$LAUNCHD_FILE"
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.seuxdr.agent</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>$SEUXDR_DIR/$BINARY_NAME</string>
+  </array>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <true/>
+  <key>WorkingDirectory</key>
+  <string>$SEUXDR_DIR</string>
+</dict>
+</plist>
+EOF
+
+chmod 644 "$LAUNCHD_FILE"
+chown root:wheel "$LAUNCHD_FILE"
+
+echo "🚀 Loading SEUXDR service..."
+launchctl load "$LAUNCHD_FILE"
+
+echo "✅ SEUXDR agent installed and running!"

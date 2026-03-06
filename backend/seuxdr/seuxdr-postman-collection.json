@@ -1,0 +1,700 @@
+{
+	"info": {
+		"_postman_id": "seuxdr-manager-api-collection",
+		"name": "SEUXDR Manager API",
+		"description": "Comprehensive API collection for SEUXDR Host-based Intrusion Detection System Manager.\n\n## Setup\n1. Set `base_url` variable to your manager URL (e.g., `https://localhost:8443`)\n2. Set `mtls_base_url` variable for mTLS endpoints (e.g., `https://localhost:8081`)\n3. For mTLS endpoints, configure client certificates in Postman Settings\n\n## Authentication\nThe Login request automatically saves the JWT token to the `token` collection variable. All authenticated requests use this token automatically.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://localhost:8443",
+			"type": "string"
+		},
+		{
+			"key": "mtls_base_url",
+			"value": "https://localhost:8081",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Authentication",
+			"description": "User authentication and session management endpoints",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.token) {",
+									"        pm.collectionVariables.set(\"token\", jsonData.token);",
+									"        console.log(\"Token saved to collection variables\");",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"admin\",\n    \"password\": \"your_password\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "login"]
+						},
+						"description": "Authenticate user and receive JWT token. The token is automatically saved to collection variables for use in subsequent requests."
+					},
+					"response": []
+				},
+				{
+					"name": "Register (First Admin)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"admin\",\n    \"password\": \"secure_password\",\n    \"email\": \"admin@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/register",
+							"host": ["{{base_url}}"],
+							"path": ["api", "register"]
+						},
+						"description": "Register the first admin user. This endpoint is only available when no users exist in the system."
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/logout",
+							"host": ["{{base_url}}"],
+							"path": ["api", "logout"]
+						},
+						"description": "Logout current user and invalidate the session."
+					},
+					"response": []
+				},
+				{
+					"name": "Change Password",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"old_password\": \"current_password\",\n    \"new_password\": \"new_secure_password\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/change-password",
+							"host": ["{{base_url}}"],
+							"path": ["api", "change-password"]
+						},
+						"description": "Change user password. Used for changing temporary passwords or regular password updates."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User Management",
+			"description": "Create, update, and list user accounts",
+			"item": [
+				{
+					"name": "Create User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"newuser\",\n    \"password\": \"temporary_password\",\n    \"email\": \"newuser@example.com\",\n    \"role_id\": 1,\n    \"org_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/create/user",
+							"host": ["{{base_url}}"],
+							"path": ["api", "create", "user"]
+						},
+						"description": "Create a new user account. Requires admin privileges."
+					},
+					"response": []
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"updateduser\",\n    \"email\": \"updated@example.com\",\n    \"role_id\": 2,\n    \"org_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/update/user/:user_id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "update", "user", ":user_id"],
+							"variable": [
+								{
+									"key": "user_id",
+									"value": "1",
+									"description": "User ID to update"
+								}
+							]
+						},
+						"description": "Update an existing user's information. Requires admin privileges."
+					},
+					"response": []
+				},
+				{
+					"name": "List Users",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"page\": 1,\n    \"page_size\": 10,\n    \"filters\": {}\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users"]
+						},
+						"description": "List all users with pagination and optional filters."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Organizations",
+			"description": "Organization and group management",
+			"item": [
+				{
+					"name": "Create Organization",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"My Organization\",\n    \"description\": \"Organization description\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/create/org",
+							"host": ["{{base_url}}"],
+							"path": ["api", "create", "org"]
+						},
+						"description": "Create a new organization for multi-tenant management."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Group",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Production Servers\",\n    \"description\": \"Group for production server agents\",\n    \"org_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/create/group",
+							"host": ["{{base_url}}"],
+							"path": ["api", "create", "group"]
+						},
+						"description": "Create a new agent group within an organization."
+					},
+					"response": []
+				},
+				{
+					"name": "List Organizations",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"page\": 1,\n    \"page_size\": 10\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/orgs",
+							"host": ["{{base_url}}"],
+							"path": ["api", "orgs"]
+						},
+						"description": "List all organizations with pagination."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Agents",
+			"description": "Agent generation, download, and management",
+			"item": [
+				{
+					"name": "Generate Agent",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"web-server-01\",\n    \"os\": \"linux\",\n    \"arch\": \"amd64\",\n    \"group_id\": 1,\n    \"org_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/create/agent",
+							"host": ["{{base_url}}"],
+							"path": ["api", "create", "agent"]
+						},
+						"description": "Generate a new agent binary for deployment. Specify target OS (linux/windows/darwin) and architecture (amd64/arm64)."
+					},
+					"response": []
+				},
+				{
+					"name": "Download Agent",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/download/agent?uuid=agent-uuid-here",
+							"host": ["{{base_url}}"],
+							"path": ["api", "download", "agent"],
+							"query": [
+								{
+									"key": "uuid",
+									"value": "agent-uuid-here",
+									"description": "Agent UUID from generation response"
+								}
+							]
+						},
+						"description": "Download the generated agent binary. Use the UUID returned from the Generate Agent request."
+					},
+					"response": []
+				},
+				{
+					"name": "Download Agent by UUID (Direct)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/download/raw/:agentUUID",
+							"host": ["{{base_url}}"],
+							"path": ["api", "download", "raw", ":agentUUID"],
+							"variable": [
+								{
+									"key": "agentUUID",
+									"value": "agent-uuid-here",
+									"description": "Agent UUID for direct download"
+								}
+							]
+						},
+						"description": "Direct download of agent binary by UUID. Does not require authentication - uses UUID as access token."
+					},
+					"response": []
+				},
+				{
+					"name": "List Agents",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"page\": 1,\n    \"page_size\": 10,\n    \"filters\": {\n        \"status\": \"\",\n        \"group_id\": 0,\n        \"org_id\": 0\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/view/agents",
+							"host": ["{{base_url}}"],
+							"path": ["api", "view", "agents"]
+						},
+						"description": "List all registered agents with pagination and optional filters."
+					},
+					"response": []
+				},
+				{
+					"name": "Activate Agent",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"agent_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/agent/activate",
+							"host": ["{{base_url}}"],
+							"path": ["api", "agent", "activate"]
+						},
+						"description": "Activate a deactivated agent to resume monitoring."
+					},
+					"response": []
+				},
+				{
+					"name": "Deactivate Agent",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"agent_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/agent/deactivate",
+							"host": ["{{base_url}}"],
+							"path": ["api", "agent", "deactivate"]
+						},
+						"description": "Deactivate an agent to stop monitoring without removing it."
+					},
+					"response": []
+				},
+				{
+					"name": "Keep-Alive",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"agent_id\": 1,\n    \"timestamp\": \"2024-01-01T00:00:00Z\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/keepalive",
+							"host": ["{{base_url}}"],
+							"path": ["api", "keepalive"]
+						},
+						"description": "Agent heartbeat to indicate it is still active. Used by agents to maintain connection status."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Agent Registration (mTLS)",
+			"description": "Agent registration endpoints requiring mTLS authentication. Configure client certificates in Postman Settings > Certificates.",
+			"item": [
+				{
+					"name": "Register Agent",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"agent_uuid\": \"agent-uuid-from-generation\",\n    \"hostname\": \"web-server-01\",\n    \"ip_address\": \"192.168.1.100\",\n    \"os\": \"linux\",\n    \"arch\": \"amd64\",\n    \"version\": \"1.0.0\"\n}"
+						},
+						"url": {
+							"raw": "{{mtls_base_url}}/api/register",
+							"host": ["{{mtls_base_url}}"],
+							"path": ["api", "register"]
+						},
+						"description": "Register an agent with the manager using mTLS authentication. This endpoint requires client certificates configured in Postman.\n\n**Setup:**\n1. Go to Settings > Certificates\n2. Add client certificate for the mTLS host\n3. Use the agent's certificate and key files"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Alerts",
+			"description": "Security alerts and log querying",
+			"item": [
+				{
+					"name": "View Alerts",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"page\": 1,\n    \"page_size\": 20,\n    \"filters\": {\n        \"severity\": \"\",\n        \"agent_id\": 0,\n        \"start_date\": \"\",\n        \"end_date\": \"\"\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/view/alerts",
+							"host": ["{{base_url}}"],
+							"path": ["api", "view", "alerts"]
+						},
+						"description": "Query security alerts with pagination and filters. Filter by severity, agent, or date range."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "System",
+			"description": "System health and certificate endpoints",
+			"item": [
+				{
+					"name": "Status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/status",
+							"host": ["{{base_url}}"],
+							"path": ["api", "status"]
+						},
+						"description": "Health check endpoint to verify the manager is running and responsive."
+					},
+					"response": []
+				},
+				{
+					"name": "Get CA Certificate",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/certs/server-ca.crt",
+							"host": ["{{base_url}}"],
+							"path": ["api", "certs", "server-ca.crt"]
+						},
+						"description": "Download the server CA certificate for TLS verification by agents or clients."
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

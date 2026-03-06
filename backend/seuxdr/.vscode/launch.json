@@ -1,0 +1,26 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch file",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "${file}"
+        },
+        {
+            "name": "Launch Agent",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",               // Automatically choose 'debug' or 'run' mode
+            "program": "${workspaceFolder}/agent",   // Path to the 'agent' directory
+            "args": [],                    // Add any command-line arguments here
+            "env": {},                     // Add any environment variables here
+            "buildFlags": "",              // Add build flags if needed
+            // "showLog": true                // Optional: Show debug log
+        }
+    ]
+}

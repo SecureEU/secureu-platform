@@ -1,0 +1,5 @@
+youtube.com
+instagram.com
+google.com
+_spotify-connect._tcp.local
+facebook.com

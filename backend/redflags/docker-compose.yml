@@ -1,0 +1,130 @@
+services:
+
+  postgres:
+    build:
+      context: ./postgres
+      dockerfile: dockerfile
+    container_name: redflags-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - redflags_postgres_data:/var/lib/postgresql/data
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+    networks:
+      - redflags_network
+    restart: unless-stopped
+
+  filebeat:
+    build:
+      context: ./filebeat
+      dockerfile: dockerfile
+    container_name: redflags-filebeat
+    user: root
+    environment:
+      SYSTEM_LOGS_ENABLED: ${SYSTEM_LOGS_ENABLED}
+      SYSTEM_LOG_PATH: ${SYSTEM_LOG_PATH}
+      SYSTEM_SOURCE_HOST: ${SYSTEM_SOURCE_HOST}
+      WEB_LOGS_ENABLED: ${WEB_LOGS_ENABLED}
+      WEB_LOG_PATH: ${WEB_LOG_PATH}
+      WEB_SOURCE_HOST: ${WEB_SOURCE_HOST}
+    volumes:
+      - redflags_shared_logs:/logs
+      - ./logs:/sample_logs:ro
+      - redflags_aggregated_logs:/aggregated_logs
+      - monitoring_suricata-logs:/suricata_logs:ro
+    stdin_open: true
+    tty: true
+    networks:
+      - redflags_network
+    restart: unless-stopped
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: redflags-ollama
+    volumes:
+      - redflags_ollama_data:/root/.ollama
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        ollama serve &
+        sleep 5
+        ollama pull llama3.2:latest
+        wait
+    networks:
+      - redflags_network
+    restart: unless-stopped
+
+  log_detector:
+    build:
+      context: ./log_detector
+      dockerfile: dockerfile
+    container_name: redflags-detector
+    environment:
+      LOG_INPUT_PATH: ${LOG_INPUT_PATH}
+      LOG_FILENAME: ${LOG_FILENAME}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      OLLAMA_HOST: ${OLLAMA_HOST}
+      OLLAMA_PORT: 11434
+    volumes:
+      - redflags_aggregated_logs:/aggregated_logs:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ollama:
+        condition: service_healthy
+    networks:
+      - redflags_network
+    restart: unless-stopped
+
+  api:
+    build:
+      context: ./api
+      dockerfile: dockerfile
+    container_name: redflags-api
+    environment:
+      API_PORT: ${API_PORT}
+      API_HOST: ${API_HOST}
+      LOG_INPUT_PATH: ${LOG_INPUT_PATH}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: 5432
+    volumes:
+      - redflags_aggregated_logs:/aggregated_logs:ro
+    ports:
+      - "${API_PORT}:${API_PORT}"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - redflags_network
+    restart: unless-stopped
+
+volumes:
+  redflags_shared_logs:
+  redflags_aggregated_logs:
+  redflags_postgres_data:
+  redflags_ollama_data:
+  monitoring_suricata-logs:
+    external: true
+
+networks:
+  redflags_network:

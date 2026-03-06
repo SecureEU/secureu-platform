@@ -1,0 +1,15 @@
+cd /opt/
+git clone https://github.com/clonesec/darkweb-engine.git
+cd darkweb-engine/
+chmod +rwx /opt/darkweb-engine/OnionSearchParser.py
+chmod +rwx /opt/darkweb-engine/cgdarkwebsearch.py
+mv darkweb-credentials.nasl darkweb-infect.nasl darkwebsearcher.nasl darkweb-databases.nasl darkweb-email.nasl darkweb-leak.nasl /usr/local/var/lib/openvas/plugins/private/
+pwd
+# Add this path in $PATH variable. For this type in terminal
+cd ~
+sudo nano .bashrc
+# then write at the end (if PWD = /usr/local/var/lib/openvas/plugins/darkweb-engine):
+alias cgdarkwebsearch="/opt/darkweb-engine/cgdarkwebsearch.py"
+alias OnionSearchParser="/opt/darkweb-engine/OnionSearchParser.py"
+# save and close it and then:
+source ~/.bashrc
