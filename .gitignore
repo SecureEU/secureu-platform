@@ -11,8 +11,7 @@ backend/dtmad/**/target/
 backend/pentest/bin/
 backend/seuxdr/manager/manager
 
-# ML model files (large, downloaded/built on deploy)
-*.pkl
+# ML model files are kept — needed for VSP predictions
 
 # Tor binaries (bundled in Docker image)
 backend/darkweb/app/assets/tor/
