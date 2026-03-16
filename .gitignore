@@ -7,8 +7,7 @@ frontend/test-results/
 backend/dtmad/*/target/
 backend/dtmad/**/target/
 
-# Compiled binaries (rebuilt on deploy)
-backend/pentest/bin/
+# Compiled binaries
 backend/seuxdr/manager/manager
 
 # ML model files are kept — needed for VSP predictions

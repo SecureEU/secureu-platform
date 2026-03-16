@@ -1,0 +1,8 @@
+all:
+  hosts:
+    ubuntu-testing:
+      ansible_host: 192.168.56.112
+      ansible_user: ubuntu-testing
+      ansible_password: ubuntu-testing
+      ansible_become_password: ubuntu-testing
+      ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
