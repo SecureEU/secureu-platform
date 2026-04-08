@@ -2,6 +2,9 @@
 frontend/node_modules/
 frontend/.next/
 frontend/test-results/
+frontend/CLAUDE.md 
+frontend/PLAYWRIGHT.md
+frontend/printscreens/
 
 # Java build output (JARs are rebuilt on deploy)
 backend/dtmad/*/target/

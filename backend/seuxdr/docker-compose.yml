@@ -13,7 +13,7 @@ services:
     privileged: true  # Required for systemd to work properly
     ports:
       - "8443:8443"
-      - "8082:8081"
+      - "8081:8081"
     stdin_open: true
     tty: true
     restart: unless-stopped
