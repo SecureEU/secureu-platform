@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import {
   Shield,
@@ -49,76 +49,18 @@ import {
   Legend
 } from 'recharts'
 
-// Generate demo data for the dashboard
-const generateDemoStats = () => ({
-  offensive: {
-    totalScans: Math.floor(Math.random() * 50) + 20,
-    activeScans: Math.floor(Math.random() * 5),
-    vulnerabilities: {
-      critical: Math.floor(Math.random() * 10) + 2,
-      high: Math.floor(Math.random() * 25) + 10,
-      medium: Math.floor(Math.random() * 40) + 20,
-      low: Math.floor(Math.random() * 60) + 30
-    },
-    sslCertificates: {
-      valid: Math.floor(Math.random() * 20) + 15,
-      expiring: Math.floor(Math.random() * 5) + 1,
-      expired: Math.floor(Math.random() * 3)
-    },
-    darkwebAlerts: Math.floor(Math.random() * 15) + 5,
-    assetsMonitored: Math.floor(Math.random() * 100) + 50
-  },
-  defensive: {
-    totalAlerts: Math.floor(Math.random() * 500) + 200,
-    activeAgents: Math.floor(Math.random() * 20) + 10,
-    offlineAgents: Math.floor(Math.random() * 3),
-    alertsBySeverity: {
-      critical: Math.floor(Math.random() * 20) + 5,
-      high: Math.floor(Math.random() * 50) + 25,
-      medium: Math.floor(Math.random() * 100) + 50,
-      low: Math.floor(Math.random() * 150) + 75,
-      info: Math.floor(Math.random() * 200) + 100
-    },
-    resolvedToday: Math.floor(Math.random() * 80) + 40
-  },
-  cti: {
-    predictionsToday: Math.floor(Math.random() * 30) + 10,
-    logsAnalyzed: Math.floor(Math.random() * 5000) + 2000,
-    threatsDetected: Math.floor(Math.random() * 50) + 20,
-    avgCVSSScore: (Math.random() * 3 + 5).toFixed(1)
-  }
-})
+const PENTEST_API_URL = process.env.NEXT_PUBLIC_PENTEST_API_URL || 'http://localhost:3001'
+const SEUXDR_PROXY = '/api/seuxdr'
 
-const generateActivityTimeline = () => {
-  const activities = [
-    { type: 'scan', icon: Globe, color: 'blue', message: 'Nmap scan completed on 192.168.1.0/24', time: '2 min ago' },
-    { type: 'alert', icon: AlertTriangle, color: 'red', message: 'Critical vulnerability detected: CVE-2024-1234', time: '5 min ago' },
-    { type: 'ssl', icon: Lock, color: 'yellow', message: 'SSL certificate expiring in 7 days for api.example.com', time: '12 min ago' },
-    { type: 'siem', icon: Eye, color: 'green', message: 'SIEM agent web-server-01 reconnected', time: '18 min ago' },
-    { type: 'darkweb', icon: EyeOff, color: 'purple', message: 'New credential leak detected for domain example.com', time: '25 min ago' },
-    { type: 'cti', icon: Flag, color: 'cyan', message: 'Red Flags: Anomaly detected in system logs', time: '32 min ago' },
-    { type: 'prediction', icon: Calculator, color: 'indigo', message: 'VSP: New vulnerability predicted with CVSS 8.5', time: '45 min ago' },
-    { type: 'scan', icon: Target, color: 'orange', message: 'ZAP scan started on https://app.example.com', time: '1 hour ago' }
-  ]
-  return activities
+async function seuxdrPost(endpoint, body = {}) {
+  const res = await fetch(`${SEUXDR_PROXY}?endpoint=${encodeURIComponent(endpoint)}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) return null
+  return res.json()
 }
-
-const generateTrendData = () => {
-  const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-  return days.map(day => ({
-    name: day,
-    scans: Math.floor(Math.random() * 20) + 5,
-    alerts: Math.floor(Math.random() * 100) + 30,
-    threats: Math.floor(Math.random() * 15) + 3
-  }))
-}
-
-const generateVulnDistribution = () => [
-  { name: 'Critical', value: Math.floor(Math.random() * 10) + 5, color: '#fca5a5' },
-  { name: 'High', value: Math.floor(Math.random() * 30) + 15, color: '#fdba74' },
-  { name: 'Medium', value: Math.floor(Math.random() * 50) + 30, color: '#fcd34d' },
-  { name: 'Low', value: Math.floor(Math.random() * 70) + 40, color: '#93c5fd' }
-]
 
 const getColorClass = (color) => {
   const colors = {
@@ -134,6 +76,16 @@ const getColorClass = (color) => {
   return colors[color] || colors.blue
 }
 
+function timeAgo(dateStr) {
+  if (!dateStr) return ''
+  const date = new Date(dateStr.replace(/_/g, ':'))
+  const seconds = Math.floor((Date.now() - date.getTime()) / 1000)
+  if (seconds < 60) return 'just now'
+  if (seconds < 3600) return `${Math.floor(seconds / 60)} min ago`
+  if (seconds < 86400) return `${Math.floor(seconds / 3600)} hours ago`
+  return `${Math.floor(seconds / 86400)} days ago`
+}
+
 export default function UnifiedDashboard() {
   const [stats, setStats] = useState(null)
   const [activities, setActivities] = useState([])
@@ -141,16 +93,161 @@ export default function UnifiedDashboard() {
   const [vulnDistribution, setVulnDistribution] = useState([])
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    // Simulate loading data
-    setTimeout(() => {
-      setStats(generateDemoStats())
-      setActivities(generateActivityTimeline())
-      setTrendData(generateTrendData())
-      setVulnDistribution(generateVulnDistribution())
+  const fetchDashboardData = useCallback(async () => {
+    setLoading(true)
+    try {
+      // Fetch pentest scans, SIEM agents, and SIEM alerts in parallel
+      const [scansRes, orgsData, agentsData] = await Promise.all([
+        fetch(`${PENTEST_API_URL}/scans`, { headers: { 'ngrok-skip-browser-warning': 'true' } })
+          .then(r => r.ok ? r.json() : []).catch(() => []),
+        seuxdrPost('orgs', {}).catch(() => []),
+        seuxdrPost('view/agents', {}).catch(() => []),
+      ])
+
+      const scans = Array.isArray(scansRes) ? scansRes : []
+      const agents = Array.isArray(agentsData) ? agentsData : []
+      const orgs = Array.isArray(orgsData) ? orgsData : []
+
+      // Fetch SIEM alerts (last 24h, all orgs)
+      let siemAlerts = []
+      const now = new Date()
+      const dayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000)
+      for (const org of orgs) {
+        try {
+          const raw = await seuxdrPost('view/alerts', {
+            query: { org_id: String(org.id), group_id: '', gte: dayAgo.toISOString(), lte: now.toISOString() }
+          })
+          const batch = raw?.data || (Array.isArray(raw) ? raw : [])
+          siemAlerts = siemAlerts.concat(batch)
+        } catch { /* skip */ }
+      }
+
+      // Deduplicate alerts
+      const seen = new Set()
+      siemAlerts = siemAlerts.filter(h => {
+        const id = h._id || ''
+        if (!id || seen.has(id)) return false
+        seen.add(id)
+        return true
+      })
+
+      // --- Compute offensive stats from scans ---
+      const activeScans = scans.filter(s => s.status === 'running').length
+      let vulnCounts = { critical: 0, high: 0, medium: 0, low: 0, info: 0 }
+
+      scans.forEach(scan => {
+        const sites = scan.zdata?.site
+        if (!sites || !Array.isArray(sites)) return
+        sites.flatMap(s => s.alerts || []).forEach(alert => {
+          const risk = alert.riskdesc?.toLowerCase().split(' ')[0]
+          if (risk === 'informational') vulnCounts.info++
+          else if (vulnCounts[risk] !== undefined) vulnCounts[risk]++
+        })
+      })
+
+      // --- Compute defensive stats from SIEM ---
+      const activeAgents = agents.filter(a => a.active).length
+      const offlineAgents = agents.length - activeAgents
+      const alertsBySeverity = { critical: 0, high: 0, medium: 0, low: 0, info: 0 }
+      siemAlerts.forEach(a => {
+        const level = (a._source || a).rule?.level || 0
+        if (level >= 12) alertsBySeverity.critical++
+        else if (level >= 8) alertsBySeverity.high++
+        else if (level >= 5) alertsBySeverity.medium++
+        else if (level >= 3) alertsBySeverity.low++
+        else alertsBySeverity.info++
+      })
+
+      // --- Build stats object ---
+      setStats({
+        offensive: {
+          totalScans: scans.length,
+          activeScans,
+          vulnerabilities: vulnCounts,
+        },
+        defensive: {
+          totalAlerts: siemAlerts.length,
+          activeAgents,
+          offlineAgents,
+          alertsBySeverity,
+        },
+        cti: {
+          orgsCount: orgs.length,
+          agentsTotal: agents.length,
+        }
+      })
+
+      // --- Build vulnerability distribution chart ---
+      setVulnDistribution([
+        { name: 'Critical', value: vulnCounts.critical, color: '#fca5a5' },
+        { name: 'High', value: vulnCounts.high, color: '#fdba74' },
+        { name: 'Medium', value: vulnCounts.medium, color: '#fcd34d' },
+        { name: 'Low', value: vulnCounts.low, color: '#93c5fd' },
+      ].filter(d => d.value > 0))
+
+      // --- Build activity timeline from real scans + alerts ---
+      const activityItems = []
+      // Recent scans
+      const sortedScans = [...scans].sort((a, b) => (b.start_time || '').localeCompare(a.start_time || '')).slice(0, 5)
+      sortedScans.forEach(scan => {
+        activityItems.push({
+          icon: scan.type === 'web' ? Zap : scan.type === 'multi' ? Globe : Search,
+          color: scan.status === 'running' ? 'blue' : scan.status === 'finished' ? 'green' : 'orange',
+          message: `${scan.type === 'web' ? 'ZAP' : scan.type === 'network' ? 'Nmap' : 'Multi'} scan "${scan.scan_name}" on ${scan.target} — ${scan.status}`,
+          time: timeAgo(scan.start_time),
+          timestamp: scan.start_time,
+        })
+      })
+      // Recent SIEM alerts (top 5 by severity)
+      const topAlerts = [...siemAlerts]
+        .map(a => ({ ...(a._source || a), _id: a._id }))
+        .sort((a, b) => (b.rule?.level || 0) - (a.rule?.level || 0))
+        .slice(0, 5)
+      topAlerts.forEach(alert => {
+        const level = alert.rule?.level || 0
+        activityItems.push({
+          icon: level >= 12 ? AlertTriangle : level >= 8 ? AlertCircle : Eye,
+          color: level >= 12 ? 'red' : level >= 8 ? 'orange' : 'green',
+          message: `[Level ${level}] ${alert.rule?.description || 'Alert'}`,
+          time: timeAgo(alert['@timestamp'] || alert.timestamp),
+          timestamp: alert['@timestamp'] || alert.timestamp,
+        })
+      })
+      // Sort by recency
+      activityItems.sort((a, b) => (b.timestamp || '').localeCompare(a.timestamp || ''))
+      setActivities(activityItems.slice(0, 10))
+
+      // --- Build trend data from scan dates (last 7 days) ---
+      const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+      const trend = []
+      for (let i = 6; i >= 0; i--) {
+        const d = new Date(now.getTime() - i * 86400000)
+        const dayKey = d.toISOString().split('T')[0]
+        const dayScans = scans.filter(s => (s.start_time || '').startsWith(dayKey.replace(/-/g, '-'))).length
+        const dayAlerts = siemAlerts.filter(a => {
+          const ts = (a._source || a)['@timestamp'] || ''
+          return ts.startsWith(dayKey)
+        }).length
+        trend.push({ name: dayNames[d.getDay()], scans: dayScans, alerts: dayAlerts })
+      }
+      setTrendData(trend)
+
+    } catch (err) {
+      console.error('Dashboard fetch error:', err)
+      // Set empty stats so the page still renders
+      setStats({
+        offensive: { totalScans: 0, activeScans: 0, vulnerabilities: { critical: 0, high: 0, medium: 0, low: 0, info: 0 } },
+        defensive: { totalAlerts: 0, activeAgents: 0, offlineAgents: 0, alertsBySeverity: { critical: 0, high: 0, medium: 0, low: 0, info: 0 } },
+        cti: { orgsCount: 0, agentsTotal: 0 },
+      })
+    } finally {
       setLoading(false)
-    }, 500)
+    }
   }, [])
+
+  useEffect(() => {
+    fetchDashboardData()
+  }, [fetchDashboardData])
 
   if (loading || !stats) {
     return (
@@ -178,9 +275,13 @@ export default function UnifiedDashboard() {
           <p className="text-gray-600 mt-1">Real-time security posture across all platforms</p>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full text-sm font-medium">
+          <div className={`flex items-center gap-2 px-3 py-1.5 border rounded-full text-sm font-medium ${
+            stats.defensive.activeAgents > 0
+              ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+              : 'bg-gray-50 text-gray-500 border-gray-200'
+          }`}>
             <Activity className="h-4 w-4" />
-            All Systems Operational
+            {stats.defensive.activeAgents > 0 ? `${stats.defensive.activeAgents} Agents Online` : 'No Agents Connected'}
           </div>
           <div className="text-sm text-gray-400">
             Last updated: {new Date().toLocaleTimeString()}
@@ -296,7 +397,7 @@ export default function UnifiedDashboard() {
             <div className="grid grid-cols-2 gap-4">
               <div className="text-center p-3 bg-gray-50 rounded-lg">
                 <p className="text-2xl font-bold text-gray-900">{stats.defensive.totalAlerts}</p>
-                <p className="text-xs text-gray-500">Total Alerts</p>
+                <p className="text-xs text-gray-500">Alerts (24h)</p>
               </div>
               <div className="text-center p-3 bg-gray-50 rounded-lg">
                 <p className="text-2xl font-bold text-gray-900">{stats.defensive.activeAgents}</p>
@@ -313,8 +414,8 @@ export default function UnifiedDashboard() {
                 <span className="font-medium text-orange-400">{stats.defensive.alertsBySeverity.high}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-500">Resolved Today</span>
-                <span className="font-medium text-emerald-400">{stats.defensive.resolvedToday}</span>
+                <span className="text-gray-500">Medium Alerts</span>
+                <span className="font-medium text-amber-400">{stats.defensive.alertsBySeverity.medium}</span>
               </div>
             </div>
             <div className="pt-3 border-t border-gray-100">
@@ -356,26 +457,26 @@ export default function UnifiedDashboard() {
           <div className="p-6 space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="text-center p-3 bg-gray-50 rounded-lg">
-                <p className="text-2xl font-bold text-gray-900">{stats.cti.logsAnalyzed.toLocaleString()}</p>
-                <p className="text-xs text-gray-500">Logs Analyzed</p>
+                <p className="text-2xl font-bold text-gray-900">{stats.cti.orgsCount}</p>
+                <p className="text-xs text-gray-500">Organizations</p>
               </div>
               <div className="text-center p-3 bg-gray-50 rounded-lg">
-                <p className="text-2xl font-bold text-gray-900">{stats.cti.threatsDetected}</p>
-                <p className="text-xs text-gray-500">Threats Detected</p>
+                <p className="text-2xl font-bold text-gray-900">{stats.cti.agentsTotal}</p>
+                <p className="text-xs text-gray-500">Total Agents</p>
               </div>
             </div>
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-500">Predictions Today</span>
-                <span className="font-medium text-violet-400">{stats.cti.predictionsToday}</span>
+                <span className="text-gray-500">Total Scans</span>
+                <span className="font-medium text-violet-400">{stats.offensive.totalScans}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-500">Avg CVSS Score</span>
-                <span className="font-medium text-orange-400">{stats.cti.avgCVSSScore}</span>
+                <span className="text-gray-500">Total Vulnerabilities</span>
+                <span className="font-medium text-orange-400">{totalVulnerabilities}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-500">Darkweb Alerts</span>
-                <span className="font-medium text-rose-400">{stats.offensive.darkwebAlerts}</span>
+                <span className="text-gray-500">SIEM Alerts (24h)</span>
+                <span className="font-medium text-rose-400">{stats.defensive.totalAlerts}</span>
               </div>
             </div>
             <div className="pt-3 border-t border-gray-100 grid grid-cols-2 gap-2">
@@ -399,34 +500,38 @@ export default function UnifiedDashboard() {
             Weekly Activity Trend
           </h3>
           <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={trendData}>
-                <defs>
-                  <linearGradient id="colorScans" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
-                  </linearGradient>
-                  <linearGradient id="colorAlerts" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="name" tick={{ fill: '#6b7280', fontSize: 12 }} />
-                <YAxis tick={{ fill: '#6b7280', fontSize: 12 }} />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: 'white',
-                    border: '1px solid #e5e7eb',
-                    borderRadius: '8px',
-                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                  }}
-                />
-                <Legend />
-                <Area type="monotone" dataKey="scans" stroke="#3b82f6" fillOpacity={1} fill="url(#colorScans)" name="Scans" />
-                <Area type="monotone" dataKey="alerts" stroke="#10b981" fillOpacity={1} fill="url(#colorAlerts)" name="Alerts" />
-              </AreaChart>
-            </ResponsiveContainer>
+            {trendData.some(d => d.scans > 0 || d.alerts > 0) ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={trendData}>
+                  <defs>
+                    <linearGradient id="colorScans" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                    </linearGradient>
+                    <linearGradient id="colorAlerts" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                  <XAxis dataKey="name" tick={{ fill: '#6b7280', fontSize: 12 }} />
+                  <YAxis tick={{ fill: '#6b7280', fontSize: 12 }} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'white',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '8px',
+                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                    }}
+                  />
+                  <Legend />
+                  <Area type="monotone" dataKey="scans" stroke="#3b82f6" fillOpacity={1} fill="url(#colorScans)" name="Scans" />
+                  <Area type="monotone" dataKey="alerts" stroke="#10b981" fillOpacity={1} fill="url(#colorAlerts)" name="Alerts" />
+                </AreaChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-full flex items-center justify-center text-gray-400">No activity data in the last 7 days</div>
+            )}
           </div>
         </div>
 
@@ -437,26 +542,30 @@ export default function UnifiedDashboard() {
             Vulnerability Distribution
           </h3>
           <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <RePieChart>
-                <Pie
-                  data={vulnDistribution}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={90}
-                  paddingAngle={5}
-                  dataKey="value"
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                >
-                  {vulnDistribution.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </RePieChart>
-            </ResponsiveContainer>
+            {vulnDistribution.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <RePieChart>
+                  <Pie
+                    data={vulnDistribution}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={90}
+                    paddingAngle={5}
+                    dataKey="value"
+                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  >
+                    {vulnDistribution.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                  <Legend />
+                </RePieChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-full flex items-center justify-center text-gray-400">No vulnerabilities found in scans</div>
+            )}
           </div>
         </div>
       </div>
@@ -470,10 +579,10 @@ export default function UnifiedDashboard() {
               <Activity className="h-5 w-5 text-slate-500" />
               Recent Activity
             </h3>
-            <span className="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded-full">Live feed</span>
+            <span className="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded-full">Live data</span>
           </div>
           <div className="space-y-3 max-h-[350px] overflow-y-auto">
-            {activities.map((activity, index) => {
+            {activities.length > 0 ? activities.map((activity, index) => {
               const IconComponent = activity.icon
               return (
                 <div key={index} className="flex items-start gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
@@ -488,39 +597,48 @@ export default function UnifiedDashboard() {
                   </div>
                 </div>
               )
-            })}
+            }) : (
+              <div className="text-center text-gray-400 py-8">No recent activity</div>
+            )}
           </div>
         </div>
 
         {/* Quick Stats */}
         <div className="space-y-4">
-          {/* SSL Status */}
+          {/* Alert Severity Breakdown */}
           <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
             <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-              <Lock className="h-4 w-4 text-slate-500" />
-              SSL Certificates
+              <AlertTriangle className="h-4 w-4 text-slate-500" />
+              Alert Severity (24h)
             </h4>
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-emerald-400" />
-                  <span className="text-sm text-gray-500">Valid</span>
+                  <XCircle className="h-4 w-4 text-rose-400" />
+                  <span className="text-sm text-gray-500">Critical</span>
                 </div>
-                <span className="font-medium text-emerald-400">{stats.offensive.sslCertificates.valid}</span>
+                <span className="font-medium text-rose-400">{stats.defensive.alertsBySeverity.critical}</span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <AlertCircle className="h-4 w-4 text-amber-400" />
-                  <span className="text-sm text-gray-500">Expiring Soon</span>
+                  <AlertCircle className="h-4 w-4 text-orange-400" />
+                  <span className="text-sm text-gray-500">High</span>
                 </div>
-                <span className="font-medium text-amber-400">{stats.offensive.sslCertificates.expiring}</span>
+                <span className="font-medium text-orange-400">{stats.defensive.alertsBySeverity.high}</span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <XCircle className="h-4 w-4 text-rose-300" />
-                  <span className="text-sm text-gray-500">Expired</span>
+                  <AlertTriangle className="h-4 w-4 text-amber-400" />
+                  <span className="text-sm text-gray-500">Medium</span>
                 </div>
-                <span className="font-medium text-rose-400">{stats.offensive.sslCertificates.expired}</span>
+                <span className="font-medium text-amber-400">{stats.defensive.alertsBySeverity.medium}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4 text-blue-300" />
+                  <span className="text-sm text-gray-500">Low / Info</span>
+                </div>
+                <span className="font-medium text-blue-400">{stats.defensive.alertsBySeverity.low + stats.defensive.alertsBySeverity.info}</span>
               </div>
             </div>
           </div>
@@ -529,21 +647,25 @@ export default function UnifiedDashboard() {
           <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
             <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
               <Server className="h-4 w-4 text-slate-500" />
-              Assets Monitored
+              Platform Overview
             </h4>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-3xl font-bold text-gray-800">{stats.offensive.assetsMonitored}</p>
-                <p className="text-xs text-gray-400">Total Assets</p>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-500">Scans Run</span>
+                <span className="font-semibold text-gray-800">{stats.offensive.totalScans}</span>
               </div>
-              <div className="flex items-center gap-1 text-emerald-400 text-sm">
-                <TrendingUp className="h-4 w-4" />
-                +5 this week
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-500">Agents Deployed</span>
+                <span className="font-semibold text-gray-800">{stats.cti.agentsTotal}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-500">Organizations</span>
+                <span className="font-semibold text-gray-800">{stats.cti.orgsCount}</span>
               </div>
             </div>
           </div>
 
-          {/* Performance Score */}
+          {/* Security Score */}
           <div
             className="rounded-xl p-4"
             style={{ background: 'linear-gradient(to bottom right, oklch(86.5% 0.127 207.078), oklch(80% 0.12 210))' }}
@@ -552,22 +674,34 @@ export default function UnifiedDashboard() {
               <Zap className="h-4 w-4" />
               Security Score
             </h4>
-            <div className="flex items-end justify-between">
-              <div>
-                <p className="text-4xl font-bold text-slate-800">78</p>
-                <p className="text-xs text-slate-600">out of 100</p>
-              </div>
-              <div className="text-right">
-                <div className="flex items-center gap-1 text-emerald-700 text-sm">
-                  <TrendingUp className="h-4 w-4" />
-                  +3 pts
+            {(() => {
+              // Simple score: penalize for critical/high vulns and alerts
+              const vulnPenalty = stats.offensive.vulnerabilities.critical * 10 + stats.offensive.vulnerabilities.high * 5 + stats.offensive.vulnerabilities.medium * 2
+              const alertPenalty = stats.defensive.alertsBySeverity.critical * 8 + stats.defensive.alertsBySeverity.high * 3
+              const agentBonus = stats.defensive.activeAgents > 0 ? 10 : 0
+              const score = Math.max(0, Math.min(100, 100 - vulnPenalty - alertPenalty + agentBonus))
+              return (
+                <div>
+                  <div className="flex items-end justify-between">
+                    <div>
+                      <p className="text-4xl font-bold text-slate-800">{score}</p>
+                      <p className="text-xs text-slate-600">out of 100</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs text-slate-600">
+                        {score >= 80 ? 'Good' : score >= 50 ? 'Needs Attention' : 'Critical'}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="mt-3 w-full bg-white/50 rounded-full h-2">
+                    <div
+                      className={`h-2 rounded-full ${score >= 80 ? 'bg-emerald-500' : score >= 50 ? 'bg-amber-500' : 'bg-rose-500'}`}
+                      style={{ width: `${score}%` }}
+                    />
+                  </div>
                 </div>
-                <p className="text-xs text-slate-600">vs last week</p>
-              </div>
-            </div>
-            <div className="mt-3 w-full bg-white/50 rounded-full h-2">
-              <div className="bg-gradient-to-r from-slate-600 to-slate-700 h-2 rounded-full" style={{ width: '78%' }} />
-            </div>
+              )
+            })()}
           </div>
         </div>
       </div>

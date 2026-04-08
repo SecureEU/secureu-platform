@@ -38,22 +38,6 @@ export default function DocsHeader() {
             >
               Docs
             </Link>
-            <Link
-              href="/docs/api-reference/overview"
-              className={`transition-colors ${
-                isDark ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              API Reference
-            </Link>
-            <Link
-              href="/docs/features/security-scans"
-              className={`transition-colors ${
-                isDark ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              Features
-            </Link>
           </nav>
         </div>
 

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useCallback } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import {
   Shield,
   AlertTriangle,
@@ -104,6 +104,7 @@ const getSeverityBorder = (severity) => {
 }
 
 const VSP_API_URL = process.env.NEXT_PUBLIC_VSP_API_URL || 'http://localhost:5002'
+const PENTEST_API_URL = process.env.NEXT_PUBLIC_PENTEST_API_URL || 'http://localhost:3001'
 
 export default function VSPDashboard() {
   const [description, setDescription] = useState('')
@@ -111,7 +112,28 @@ export default function VSPDashboard() {
   const [results, setResults] = useState(null)
   const [history, setHistory] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
+  const [loadingHistory, setLoadingHistory] = useState(true)
   const itemsPerPage = 5
+
+  const fetchHistory = useCallback(async () => {
+    try {
+      const res = await fetch(`${PENTEST_API_URL}/vsp/predictions`, {
+        headers: { 'ngrok-skip-browser-warning': 'true' }
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setHistory(Array.isArray(data) ? data : [])
+      }
+    } catch (err) {
+      console.error('Failed to load VSP history:', err)
+    } finally {
+      setLoadingHistory(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchHistory()
+  }, [fetchHistory])
 
   // CVSS Metrics State
   const [metrics, setMetrics] = useState({
@@ -224,21 +246,31 @@ export default function VSPDashboard() {
     }
   }
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!results) return
 
     const entry = {
-      id: Date.now(),
       description: results.description,
       vector: results.vector,
-      cvssScore: results.cvssScore,
-      exploitabilityScore: results.exploitabilityScore,
-      impactScore: results.impactScore,
+      cvss_score: results.cvssScore,
+      exploitability_score: results.exploitabilityScore,
+      impact_score: results.impactScore,
       severity: results.severity,
-      savedAt: new Date().toISOString()
+      metrics: { AV: metrics.AV, AC: metrics.AC, PR: metrics.PR, UI: metrics.UI, S: metrics.S, C: metrics.C, I: metrics.I, A: metrics.A },
     }
 
-    setHistory([entry, ...history])
+    try {
+      const res = await fetch(`${PENTEST_API_URL}/vsp/predictions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
+        body: JSON.stringify(entry),
+      })
+      if (!res.ok) throw new Error('Failed to save')
+      await fetchHistory()
+    } catch (err) {
+      console.error('Failed to save prediction:', err)
+    }
+
     setResults(null)
     setDescription('')
     setMetrics({
@@ -253,13 +285,31 @@ export default function VSPDashboard() {
     })
   }
 
-  const handleClearHistory = () => {
-    setHistory([])
-    setCurrentPage(1)
+  const handleClearHistory = async () => {
+    try {
+      await fetch(`${PENTEST_API_URL}/vsp/predictions`, {
+        method: 'DELETE',
+        headers: { 'ngrok-skip-browser-warning': 'true' },
+      })
+      setHistory([])
+      setCurrentPage(1)
+    } catch (err) {
+      console.error('Failed to clear history:', err)
+    }
   }
 
-  const handleClearLast = () => {
-    setHistory(history.slice(1))
+  const handleClearLast = async () => {
+    if (history.length === 0) return
+    const lastId = history[0]._id
+    try {
+      await fetch(`${PENTEST_API_URL}/vsp/predictions/${lastId}`, {
+        method: 'DELETE',
+        headers: { 'ngrok-skip-browser-warning': 'true' },
+      })
+      await fetchHistory()
+    } catch (err) {
+      console.error('Failed to delete prediction:', err)
+    }
   }
 
   const handleDownload = () => {
@@ -479,16 +529,16 @@ export default function VSPDashboard() {
             <tbody className="divide-y divide-gray-200">
               {paginatedHistory.length > 0 ? (
                 paginatedHistory.map((entry) => (
-                  <tr key={entry.id} className="hover:bg-gray-50">
+                  <tr key={entry._id} className="hover:bg-gray-50">
                     <td className="px-4 py-3 text-sm text-gray-700 max-w-xs truncate">{entry.description}</td>
                     <td className="px-4 py-3 text-xs font-mono text-purple-600">{entry.vector}</td>
                     <td className="px-4 py-3 text-center">
                       <span className={`px-2 py-1 rounded text-sm font-medium ${getSeverityColor(entry.severity)}`}>
-                        {entry.cvssScore}
+                        {entry.cvss_score}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-center text-sm font-mono">{entry.exploitabilityScore}</td>
-                    <td className="px-4 py-3 text-center text-sm font-mono">{entry.impactScore}</td>
+                    <td className="px-4 py-3 text-center text-sm font-mono">{entry.exploitability_score}</td>
+                    <td className="px-4 py-3 text-center text-sm font-mono">{entry.impact_score}</td>
                   </tr>
                 ))
               ) : (

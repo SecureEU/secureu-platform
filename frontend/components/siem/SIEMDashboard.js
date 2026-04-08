@@ -8,6 +8,7 @@ import {
   Activity,
   Search,
   ChevronRight,
+  ChevronLeft,
   Building2,
   Plus,
   Power,
@@ -85,6 +86,16 @@ const StatsCard = ({ title, value, icon: Icon, color, subtext }) => {
 // --- Alerts Table ---
 
 const AlertsTable = ({ alerts, filters, onFilterChange }) => {
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
+
+  const totalPages = Math.max(1, Math.ceil(alerts.length / pageSize));
+  const safeePage = Math.min(page, totalPages);
+  const paged = alerts.slice((safeePage - 1) * pageSize, safeePage * pageSize);
+
+  // Reset to page 1 when filters change the alert list
+  useEffect(() => { setPage(1); }, [alerts.length]);
+
   const getSeverityColor = (level) => {
     if (level >= 12) return 'bg-red-100 text-red-800';
     if (level >= 8) return 'bg-amber-100 text-amber-800';
@@ -141,15 +152,15 @@ const AlertsTable = ({ alerts, filters, onFilterChange }) => {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {alerts.length === 0 ? (
+            {paged.length === 0 ? (
               <tr>
                 <td colSpan={6} className="py-8 text-center text-slate-500">
                   No alerts found
                 </td>
               </tr>
             ) : (
-              alerts.map((alert, index) => (
-                <tr key={alert.id || index} className="hover:bg-slate-50">
+              paged.map((alert, index) => (
+                <tr key={`${alert.id}-${(safeePage - 1) * pageSize + index}`} className="hover:bg-slate-50">
                   <td className="py-3 px-4 text-sm text-slate-600">{alert.timestamp}</td>
                   <td className="py-3 px-4 text-sm font-medium text-slate-900">{alert.agent}</td>
                   <td className="py-3 px-4 text-sm text-slate-600">
@@ -169,6 +180,55 @@ const AlertsTable = ({ alerts, filters, onFilterChange }) => {
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* Pagination */}
+      <div className="p-4 border-t border-slate-200 flex items-center justify-between">
+        <div className="flex items-center gap-2 text-sm text-slate-600">
+          <span>Showing {paged.length === 0 ? 0 : (safeePage - 1) * pageSize + 1}–{Math.min(safeePage * pageSize, alerts.length)} of {alerts.length}</span>
+          <select
+            className="ml-2 px-2 py-1 border border-slate-300 rounded text-sm"
+            value={pageSize}
+            onChange={(e) => { setPageSize(Number(e.target.value)); setPage(1); }}
+          >
+            <option value={25}>25 / page</option>
+            <option value={50}>50 / page</option>
+            <option value={100}>100 / page</option>
+          </select>
+        </div>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => setPage(1)}
+            disabled={safeePage <= 1}
+            className="px-2 py-1 text-sm rounded border border-slate-300 disabled:opacity-40 hover:bg-slate-50"
+          >
+            First
+          </button>
+          <button
+            onClick={() => setPage(safeePage - 1)}
+            disabled={safeePage <= 1}
+            className="p-1 rounded border border-slate-300 disabled:opacity-40 hover:bg-slate-50"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+          <span className="px-3 py-1 text-sm text-slate-700">
+            Page {safeePage} of {totalPages}
+          </span>
+          <button
+            onClick={() => setPage(safeePage + 1)}
+            disabled={safeePage >= totalPages}
+            className="p-1 rounded border border-slate-300 disabled:opacity-40 hover:bg-slate-50"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => setPage(totalPages)}
+            disabled={safeePage >= totalPages}
+            className="px-2 py-1 text-sm rounded border border-slate-300 disabled:opacity-40 hover:bg-slate-50"
+          >
+            Last
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -640,6 +700,7 @@ const DashboardOverview = ({ stats, alertsByTactic, alertsTrend, topAgents }) =>
               <Line type="monotone" dataKey="critical" stroke="#EF4444" strokeWidth={2} name="Critical" />
               <Line type="monotone" dataKey="high" stroke="#F59E0B" strokeWidth={2} name="High" />
               <Line type="monotone" dataKey="medium" stroke="#3B82F6" strokeWidth={2} name="Medium" />
+              <Line type="monotone" dataKey="low" stroke="#10B981" strokeWidth={2} name="Low" />
             </LineChart>
           </ResponsiveContainer>
         )}
@@ -671,6 +732,15 @@ const SIEMDashboard = () => {
   const [alertsTrend, setAlertsTrend] = useState([]);
   const [topAgents, setTopAgents] = useState([]);
 
+  // --- Extract real hostname from full_log ---
+  // full_log format: "2026-03-13T13:56:37+02:00 hostname program: message [group_id=1] [org_id=1]"
+  const extractHostname = (fullLog) => {
+    if (!fullLog) return null;
+    // Match: timestamp<space>hostname<space>
+    const match = fullLog.match(/^\S+\s+(\S+)\s/);
+    return match ? match[1] : null;
+  };
+
   // --- Map SEUXDR alert format to flat format ---
   const mapAlerts = (rawAlerts) => {
     if (!rawAlerts || !Array.isArray(rawAlerts)) return [];
@@ -679,16 +749,17 @@ const SIEMDashboard = () => {
       const rule = src.rule || {};
       const mitre = rule.mitre || {};
       const agent = src.agent || {};
+      const fullLog = src.full_log || '';
       return {
-        id: hit._id || src.id,
+        id: hit._id || src.id || '',
         timestamp: src['@timestamp'] || src.timestamp || src.time || '',
-        agent: agent.name || 'Unknown',
-        tactic: mitre.tactic || [],
-        technique: mitre.technique || [],
+        agent: extractHostname(fullLog) || agent.name || 'Unknown',
+        tactic: Array.isArray(mitre.tactic) ? mitre.tactic : [],
+        technique: Array.isArray(mitre.technique) ? mitre.technique : [],
         description: rule.description || '',
         level: rule.level || 0,
-        groups: rule.groups || [],
-        fullLog: src.full_log || '',
+        groups: Array.isArray(rule.groups) ? rule.groups : [],
+        fullLog,
       };
     });
   };
@@ -717,17 +788,18 @@ const SIEMDashboard = () => {
         .slice(0, 5)
     );
 
-    // Alerts trend (group by hour)
+    // Alerts trend (group by hour with date)
     const hourCounts = {};
     mappedAlerts.forEach((a) => {
       if (!a.timestamp) return;
       const date = new Date(a.timestamp);
       if (isNaN(date.getTime())) return;
-      const hourKey = `${date.getHours().toString().padStart(2, '0')}:00`;
-      if (!hourCounts[hourKey]) hourCounts[hourKey] = { critical: 0, high: 0, medium: 0 };
+      const hourKey = `${date.getMonth() + 1}/${date.getDate()} ${date.getHours().toString().padStart(2, '0')}:00`;
+      if (!hourCounts[hourKey]) hourCounts[hourKey] = { critical: 0, high: 0, medium: 0, low: 0 };
       if (a.level >= 12) hourCounts[hourKey].critical++;
       else if (a.level >= 8) hourCounts[hourKey].high++;
       else if (a.level >= 4) hourCounts[hourKey].medium++;
+      else hourCounts[hourKey].low++;
     });
     const trend = Object.entries(hourCounts)
       .map(([time, counts]) => ({ time, ...counts }))
@@ -758,25 +830,43 @@ const SIEMDashboard = () => {
       // Fetch alerts (may fail if OpenSearch not running)
       let alertsData = [];
       try {
+        const orgs = Array.isArray(orgsData) ? orgsData : [];
         const now = new Date();
         const dayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-        const raw = await seuxdrPost('view/alerts', {
-          query: {
-            org_id: '',
-            group_id: '',
-            gte: dayAgo.toISOString(),
-            lte: now.toISOString(),
-          },
-        });
-        // Response can be { data: [...], agent_map: [...] } or just an array
-        alertsData = raw?.data || (Array.isArray(raw) ? raw : []);
+
+        // Fetch alerts for each org (backend requires a valid org_id)
+        for (const org of orgs) {
+          try {
+            const raw = await seuxdrPost('view/alerts', {
+              query: {
+                org_id: String(org.id),
+                group_id: '',
+                gte: dayAgo.toISOString(),
+                lte: now.toISOString(),
+              },
+            });
+            const batch = raw?.data || (Array.isArray(raw) ? raw : []);
+            alertsData = alertsData.concat(batch);
+          } catch {
+            // skip this org
+          }
+        }
       } catch {
         // OpenSearch may not be running — that's fine
       }
 
       const orgs = Array.isArray(orgsData) ? orgsData : [];
       const agentsList = Array.isArray(agentsData) ? agentsData : [];
-      const mappedAlerts = mapAlerts(alertsData);
+
+      // Deduplicate alerts by _id (backend pagination bug returns duplicates)
+      const seen = new Set();
+      const uniqueAlerts = alertsData.filter((hit) => {
+        const id = hit._id || '';
+        if (!id || seen.has(id)) return false;
+        seen.add(id);
+        return true;
+      });
+      const mappedAlerts = mapAlerts(uniqueAlerts);
 
       setOrganizations(orgs);
       setAgents(agentsList);
@@ -834,8 +924,8 @@ const SIEMDashboard = () => {
     if (filters.search) {
       const q = filters.search.toLowerCase();
       if (
-        !alert.description.toLowerCase().includes(q) &&
-        !alert.agent.toLowerCase().includes(q)
+        !(alert.description || '').toLowerCase().includes(q) &&
+        !(alert.agent || '').toLowerCase().includes(q)
       ) {
         return false;
       }

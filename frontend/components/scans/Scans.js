@@ -2,9 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Trash2, AlertCircle, Play, RefreshCw, Eye } from 'lucide-react';
+import { Trash2, AlertCircle, Play, RefreshCw, Eye, ChevronLeft, ChevronRight } from 'lucide-react';
 import NewScanModal from './NewScanModal';
-import ScanDetail from './ScanDetail';
+import HostDetails from '../dashboard/HostDetails';
 import { useAuth } from '@/lib/auth';
 
 // Badge Components
@@ -77,7 +77,7 @@ const Scans = () => {
   const [selectedScanId, setSelectedScanId] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const { authFetch, loading: authLoading, API_URL } = useAuth();
@@ -136,11 +136,13 @@ const Scans = () => {
   };
 
   const getVulnerabilityCounts = (scan) => {
-    if (!scan.zdata?.site?.[0]?.alerts) return { high: 0, medium: 0, low: 0, info: 0 };
-    
-    return scan.zdata.site[0].alerts.reduce((acc, alert) => {
-      const riskLevel = alert.riskdesc.toLowerCase().split(' ')[0];
-      acc[riskLevel] = (acc[riskLevel] || 0) + 1;
+    const sites = scan.zdata?.site;
+    if (!sites || !Array.isArray(sites)) return { high: 0, medium: 0, low: 0, info: 0 };
+
+    return sites.flatMap(s => s.alerts || []).reduce((acc, alert) => {
+      const riskLevel = alert.riskdesc?.toLowerCase().split(' ')[0];
+      if (riskLevel === 'informational') acc.info++;
+      else if (acc[riskLevel] !== undefined) acc[riskLevel]++;
       return acc;
     }, { high: 0, medium: 0, low: 0, info: 0 });
   };
@@ -416,67 +418,82 @@ const Scans = () => {
       </div>
 
       {/* Pagination */}
-      {filteredScans.length > rowsPerPage && (
-        <div className="flex justify-between items-center bg-white px-6 py-3 border border-gray-200 rounded-lg">
-          <div className="flex-1 flex justify-between sm:hidden">
-            <button
-              onClick={() => setCurrentPage(page => Math.max(1, page - 1))}
-              disabled={currentPage === 1}
-              className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Previous
-            </button>
-            <button
-              onClick={() => setCurrentPage(page => Math.min(totalPages, page + 1))}
-              disabled={currentPage === totalPages}
-              className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Next
-            </button>
-          </div>
-          <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-            <div>
-              <p className="text-sm text-gray-700">
-                Showing <span className="font-medium">{indexOfFirstScan + 1}</span> to{' '}
-                <span className="font-medium">{Math.min(indexOfLastScan, filteredScans.length)}</span> of{' '}
-                <span className="font-medium">{filteredScans.length}</span> results
-              </p>
+      {filteredScans.length > 0 && (
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-3 bg-white px-6 py-3 border border-gray-200 rounded-lg">
+          <div className="flex items-center gap-4">
+            <p className="text-sm text-gray-700">
+              Showing <span className="font-medium">{indexOfFirstScan + 1}</span>–<span className="font-medium">{Math.min(indexOfLastScan, filteredScans.length)}</span> of{' '}
+              <span className="font-medium">{filteredScans.length}</span> scans
+            </p>
+            <div className="flex items-center gap-2">
+              <label className="text-sm text-gray-600">Per page:</label>
+              <select
+                value={rowsPerPage}
+                onChange={(e) => { setRowsPerPage(Number(e.target.value)); setCurrentPage(1); }}
+                className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                {[5, 10, 20, 50].map(size => (
+                  <option key={size} value={size}>{size}</option>
+                ))}
+              </select>
             </div>
-            <div>
-              <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                <button
-                  onClick={() => setCurrentPage(page => Math.max(1, page - 1))}
-                  disabled={currentPage === 1}
-                  className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Previous
-                </button>
-                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                  const pageNum = i + 1;
-                  return (
+          </div>
+          {totalPages > 1 && (
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setCurrentPage(1)}
+                disabled={currentPage === 1}
+                className="px-2 py-1 text-sm rounded border border-gray-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50"
+              >
+                First
+              </button>
+              <button
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="p-1 rounded border border-gray-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1)
+                .filter(page => page === 1 || page === totalPages || Math.abs(page - currentPage) <= 1)
+                .reduce((acc, page, idx, arr) => {
+                  if (idx > 0 && page - arr[idx - 1] > 1) acc.push('...');
+                  acc.push(page);
+                  return acc;
+                }, [])
+                .map((item, idx) =>
+                  item === '...' ? (
+                    <span key={`ellipsis-${idx}`} className="px-2 py-1 text-sm text-gray-400">...</span>
+                  ) : (
                     <button
-                      key={pageNum}
-                      onClick={() => setCurrentPage(pageNum)}
-                      className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
-                        currentPage === pageNum
-                          ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
-                          : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+                      key={item}
+                      onClick={() => setCurrentPage(item)}
+                      className={`px-3 py-1 text-sm rounded border ${
+                        currentPage === item
+                          ? 'bg-blue-600 text-white border-blue-600'
+                          : 'border-gray-300 hover:bg-gray-50'
                       }`}
                     >
-                      {pageNum}
+                      {item}
                     </button>
-                  );
-                })}
-                <button
-                  onClick={() => setCurrentPage(page => Math.min(totalPages, page + 1))}
-                  disabled={currentPage === totalPages}
-                  className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Next
-                </button>
-              </nav>
+                  )
+                )}
+              <button
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="p-1 rounded border border-gray-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </button>
+              <button
+                onClick={() => setCurrentPage(totalPages)}
+                disabled={currentPage === totalPages}
+                className="px-2 py-1 text-sm rounded border border-gray-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50"
+              >
+                Last
+              </button>
             </div>
-          </div>
+          )}
         </div>
       )}
 
@@ -571,10 +588,19 @@ const Scans = () => {
 
       {/* Scan Detail Modal */}
       {selectedScanId && (
-        <ScanDetail
-          scanId={selectedScanId}
-          onClose={() => setSelectedScanId(null)}
-        />
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="w-full max-w-5xl max-h-[90vh] overflow-y-auto m-4">
+            <div className="flex justify-end mb-2">
+              <button
+                onClick={() => setSelectedScanId(null)}
+                className="p-2 bg-white rounded-full shadow hover:bg-gray-100"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+            </div>
+            <HostDetails scanId={selectedScanId} />
+          </div>
+        </div>
       )}
     </div>
   );

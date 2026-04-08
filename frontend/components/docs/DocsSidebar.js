@@ -12,58 +12,39 @@ const docsNavigation = [
     items: [
       { title: 'Introduction', href: '/docs/getting-started/introduction' },
       { title: 'Quick Start', href: '/docs/getting-started/quick-start' },
-      { title: 'Installation', href: '/docs/getting-started/installation' },
-      { title: 'Authentication', href: '/docs/getting-started/authentication' },
     ],
   },
   {
-    title: 'Features',
+    title: 'Offensive Security',
     items: [
       { title: 'Network Scanning', href: '/docs/features/network-scanning' },
       { title: 'Web Security', href: '/docs/features/web-security' },
-      { title: 'Exploitation', href: '/docs/features/exploitation' },
-      { title: 'Data Traffic Monitoring', href: '/docs/features/dtm' },
-      { title: 'Anomaly Detection', href: '/docs/features/anomaly-detection' },
-      { title: 'Botnet Detection', href: '/docs/features/botnet-detection' },
-      { title: 'Compliance', href: '/docs/features/compliance' },
+      { title: 'Active Exploitation', href: '/docs/features/exploitation' },
+      { title: 'SSL/TLS Analysis', href: '/docs/features/ssl-checker' },
+      { title: 'Darkweb Monitoring', href: '/docs/features/darkweb' },
     ],
   },
   {
-    title: 'User Guide',
+    title: 'Defensive Security',
     items: [
-      { title: 'Dashboard', href: '/docs/user-guide/dashboard' },
-      { title: 'Managing Scans', href: '/docs/user-guide/managing-scans' },
-      { title: 'Understanding Results', href: '/docs/user-guide/understanding-results' },
-      { title: 'Organizations', href: '/docs/user-guide/organizations' },
-      { title: 'Asset Management', href: '/docs/user-guide/asset-management' },
+      { title: 'SIEM Dashboard', href: '/docs/features/siem' },
+      { title: 'Data Traffic Monitoring', href: '/docs/features/dtm' },
+      { title: 'Anomaly Detection', href: '/docs/features/anomaly-detection' },
+      { title: 'Botnet Detection', href: '/docs/features/botnet-detection' },
+    ],
+  },
+  {
+    title: 'Cyber Threat Intelligence',
+    items: [
+      { title: 'VSP Score Prediction', href: '/docs/features/vsp' },
+      { title: 'Red Flags Analysis', href: '/docs/features/red-flags' },
     ],
   },
   {
     title: 'API Reference',
     items: [
       { title: 'Overview', href: '/docs/api-reference/overview' },
-      { title: 'Swagger UI', href: '/docs/api-reference/swagger' },
-      { title: 'Authentication', href: '/docs/api-reference/authentication' },
-      { title: 'Errors', href: '/docs/api-reference/errors' },
-      { title: 'Rate Limits', href: '/docs/api-reference/rate-limits' },
-    ],
-  },
-  {
-    title: 'API Endpoints',
-    items: [
-      { title: 'Scans', href: '/docs/api-reference/endpoints/scans' },
-      { title: 'Hosts', href: '/docs/api-reference/endpoints/hosts' },
-      { title: 'Vulnerabilities', href: '/docs/api-reference/endpoints/vulnerabilities' },
-      { title: 'Organizations', href: '/docs/api-reference/endpoints/organizations' },
-      { title: 'Users', href: '/docs/api-reference/endpoints/users' },
-    ],
-  },
-  {
-    title: 'Integrations',
-    items: [
-      { title: 'Nmap', href: '/docs/integrations/nmap' },
-      { title: 'OWASP ZAP', href: '/docs/integrations/zap' },
-      { title: 'Metasploit', href: '/docs/integrations/metasploit' },
+      { title: 'Pentest API', href: '/docs/api-reference/swagger' },
     ],
   },
 ];
