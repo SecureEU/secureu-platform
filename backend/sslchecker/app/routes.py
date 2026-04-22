@@ -31,10 +31,12 @@ def check_ssl():
 
         supports_sslv3 = False
         if not status:
-            if "SSL" in headers.get("response") or "SSLv3" in cert_details.get("response"):
+            headers_resp = headers.get("response") or ""
+            cert_resp = cert_details.get("response") or ""
+            if "SSL" in headers_resp or "SSLv3" in cert_resp:
                 supports_sslv3 = True
             else:
-                return f"{headers.get('response')}, {cert_details.get('response')}", 500
+                return f"{headers_resp}, {cert_resp}", 500
 
         ai_analysis_text = "No AI analysis was generated. Please make sure to set up your API key and have the checkbox in the scanner tab checked"
         if generate_ai:

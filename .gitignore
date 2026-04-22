@@ -26,6 +26,9 @@ backend/darkweb/app/venv/
 *.log
 backend/C:/
 
+# Pentest scratch / scan output
+backend/pentest/newfile.txt
+
 # OS / editor
 .DS_Store
 Thumbs.db

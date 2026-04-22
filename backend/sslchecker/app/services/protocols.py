@@ -153,17 +153,19 @@ def run_nmap_ssl_enum(host, port='443'):
             ["nmap", "--script", "ssl-enum-ciphers", "-p", str(port), host, "-oX", "-"],
             capture_output=True,
             text=True,
-            timeout=30
+            timeout=120
         )
         if result.returncode != 0:
-            return f"Error running nmap: {result.stderr}"
+            return None
 
-        xml_output = result.stdout
-        return xml_output
+        return result.stdout
     except subprocess.TimeoutExpired:
-        return "Nmap scan timed out."
+        return None
+
 
 def extract_tls_info(xml_tree_data):
+    if not xml_tree_data:
+        return {}
     root = ET.fromstring(xml_tree_data)
     tls_versions = {}
     for script in root.findall('.//script[@id="ssl-enum-ciphers"]'):
