@@ -85,7 +85,7 @@ info "[1/7] Installing system packages..."
 apt-get update -qq
 apt-get install -y -qq \
     apt-transport-https ca-certificates curl gnupg lsb-release \
-    git openssl unzip wget net-tools software-properties-common acl
+    git openssl unzip wget net-tools acl
 info "System packages installed"
 
 # ──────────────────────────────────────────────
