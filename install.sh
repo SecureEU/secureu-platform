@@ -10,7 +10,7 @@ set -e
 #   cd /opt/secur-eu
 #   sudo ./install.sh
 #
-# Target: Ubuntu 22.04 / 24.04 LTS
+# Target: Ubuntu 22.04 / 24.04 LTS or Debian 12+
 # ═══════════════════════════════════════════════════════════════
 
 INSTALL_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -42,6 +42,20 @@ if [ ! -f "$BACKEND_DIR/start.sh" ]; then
     error "Backend not found at $BACKEND_DIR. Make sure you cloned the full repo."
 fi
 
+# Detect distribution (Ubuntu or Debian)
+if [ ! -f /etc/os-release ]; then
+    error "/etc/os-release not found — cannot determine distribution."
+fi
+DISTRO=$(. /etc/os-release && echo "$ID")
+case "$DISTRO" in
+    ubuntu|debian)
+        info "Detected distribution: $DISTRO"
+        ;;
+    *)
+        error "Unsupported distribution: $DISTRO. Supported: ubuntu, debian."
+        ;;
+esac
+
 # Detect the user who invoked sudo
 REAL_USER="${SUDO_USER:-$USER}"
 if [ "$REAL_USER" = "root" ]; then
@@ -71,7 +85,7 @@ info "[1/7] Installing system packages..."
 apt-get update -qq
 apt-get install -y -qq \
     apt-transport-https ca-certificates curl gnupg lsb-release \
-    git openssl unzip wget net-tools software-properties-common acl > /dev/null 2>&1
+    git openssl unzip wget net-tools software-properties-common acl
 info "System packages installed"
 
 # ──────────────────────────────────────────────
@@ -82,11 +96,11 @@ if command -v docker &> /dev/null; then
     info "Docker already installed: $(docker --version)"
 else
     install -m 0755 -d /etc/apt/keyrings
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+    curl -fsSL "https://download.docker.com/linux/$DISTRO/gpg" -o /etc/apt/keyrings/docker.asc
     chmod a+r /etc/apt/keyrings/docker.asc
-    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/$DISTRO $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
     apt-get update -qq
-    apt-get install -y -qq docker-ce docker-ce-cli containerd.io docker-compose-plugin > /dev/null 2>&1
+    apt-get install -y -qq docker-ce docker-ce-cli containerd.io docker-compose-plugin
     systemctl enable docker
     systemctl start docker
     info "Docker installed"
@@ -105,8 +119,8 @@ info "[3/7] Installing Node.js 20..."
 if command -v node &> /dev/null && node -v | grep -q "v2[0-9]"; then
     info "Node.js already installed: $(node -v)"
 else
-    curl -fsSL https://deb.nodesource.com/setup_20.x | bash - > /dev/null 2>&1
-    apt-get install -y -qq nodejs > /dev/null 2>&1
+    curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+    apt-get install -y -qq nodejs
     info "Node.js installed: $(node -v)"
 fi
 
@@ -122,7 +136,7 @@ else
         echo "deb [signed-by=/etc/apt/keyrings/adoptium.gpg] https://packages.adoptium.net/artifactory/deb $(lsb_release -cs) main" > /etc/apt/sources.list.d/adoptium.list
         apt-get update -qq
     fi
-    apt-get install -y -qq temurin-17-jdk > /dev/null 2>&1
+    apt-get install -y -qq temurin-17-jdk
     info "Java installed: $(java -version 2>&1 | head -1)"
 fi
 
