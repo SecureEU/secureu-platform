@@ -22,7 +22,7 @@ if ! docker ps --format '{{.Names}}' | grep -q '^zookeeper-dtm$'; then
     --network host \
     -e ZOOKEEPER_CLIENT_PORT=2181 \
     -e ZOOKEEPER_TICK_TIME=2000 \
-    confluentinc/cp-zookeeper:latest
+    confluentinc/cp-zookeeper:7.5.5
   echo "  Zookeeper started"
 else
   echo "  Zookeeper already running"
@@ -40,7 +40,7 @@ if ! docker ps --format '{{.Names}}' | grep -q '^kafka-dtm$'; then
     -e KAFKA_ZOOKEEPER_CONNECT=localhost:2181 \
     -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092 \
     -e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 \
-    confluentinc/cp-kafka:latest
+    confluentinc/cp-kafka:7.5.5
   echo "  Kafka started"
 else
   echo "  Kafka already running"
@@ -57,10 +57,27 @@ if ! docker ps --format '{{.Names}}' | grep -q '^sphinx-postgres$'; then
     -e POSTGRES_DB=sphinx \
     postgres:15-alpine
   echo "  Sphinx Postgres started"
-  # Wait for Postgres to be ready, then create sphinx schema
-  sleep 3
-  docker exec sphinx-postgres psql -U sphinx -d sphinx -c "CREATE SCHEMA IF NOT EXISTS sphinx;" 2>/dev/null
-  echo "  Sphinx schema initialized"
+  # Wait for Postgres to accept connections, then create the sphinx schema.
+  # On a fresh image pull this can take 5-15s, well past the old fixed sleep.
+  for i in $(seq 1 30); do
+    if docker exec sphinx-postgres pg_isready -U sphinx -d sphinx >/dev/null 2>&1; then
+      break
+    fi
+    sleep 1
+  done
+  # The DTM/AD Liquibase migrations expect schema "sphinx" to exist. Retry the
+  # CREATE SCHEMA a few times in case the user/db are still being initialized
+  # right after pg_isready returns ready.
+  for i in $(seq 1 10); do
+    if docker exec sphinx-postgres psql -U sphinx -d sphinx -c "CREATE SCHEMA IF NOT EXISTS sphinx;" >/dev/null 2>&1; then
+      echo "  Sphinx schema initialized"
+      break
+    fi
+    sleep 2
+    if [ "$i" = "10" ]; then
+      echo "  WARN: failed to create sphinx schema after 10 attempts"
+    fi
+  done
 else
   echo "  Sphinx Postgres already running"
 fi
@@ -103,7 +120,7 @@ else
   echo "  nmap-bash image already exists"
 fi
 # Pull ZAP and Metasploit images if not present
-for img in softwaresecurityproject/zap-stable:latest metasploitframework/metasploit-framework:latest; do
+for img in zaproxy/zap-stable:latest metasploitframework/metasploit-framework:latest; do
   if ! docker image inspect "$img" > /dev/null 2>&1; then
     echo "  Pulling $img..."
     docker pull "$img"
@@ -208,6 +225,21 @@ for i in $(seq 1 30); do
   fi
   sleep 2
 done
+
+# First-run only: register a default "local" DTM instance so the dashboard
+# isn't empty. Idempotent — checked against the live instance list.
+if curl -sf http://localhost:8087/sphinx/dtm/instance/all 2>/dev/null | grep -q '"name":"local"'; then
+  echo "  Default 'local' DTM instance already registered"
+else
+  if curl -s -X POST http://localhost:8087/sphinx/dtm/instance/save \
+       -H 'Content-Type: application/json' \
+       -d '{"name":"local","key":"local","description":"Auto-registered local instance","enabled":true,"url":"http://localhost:8087","isMaster":true,"hasTshark":true,"hasSuricata":true}' \
+       2>/dev/null | grep -q '"success":true'; then
+    echo "  Default 'local' DTM instance registered"
+  else
+    echo "  WARN: failed to register default DTM instance (you can add one from the dashboard)"
+  fi
+fi
 
 # Anomaly Detection (port 5001)
 nohup "$BACKEND_DIR/dtmad/start-ad.sh" > "$BACKEND_DIR/dtmad/ad.log" 2>&1 &

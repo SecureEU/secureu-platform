@@ -63,8 +63,14 @@ if [ "$REAL_USER" = "root" ]; then
     warn "Consider running with: sudo ./install.sh"
 fi
 
-SERVER_IP=$(hostname -I | awk '{print $1}')
-info "Detected server IP: $SERVER_IP"
+if [ -n "$SERVER_IP" ]; then
+    info "Using SERVER_IP override: $SERVER_IP"
+else
+    SERVER_IP=$(hostname -I | awk '{print $1}')
+    info "Detected server IP: $SERVER_IP"
+    info "If end users will reach this host on a different IP, re-run with: sudo SERVER_IP=<ip> ./install.sh"
+    info "On VirtualBox NAT setups, also set CAPTURE_INTERFACE=<host-only-iface> in the secureu-backend systemd unit so Suricata can sniff (NAT slirp doesn't expose raw packets)."
+fi
 
 echo ""
 echo "═══════════════════════════════════════════════════════════"
@@ -140,6 +146,30 @@ else
     info "Java installed: $(java -version 2>&1 | head -1)"
 fi
 
+# Maven (needed to build the DTM and AD Spring Boot apps)
+if ! command -v mvn &> /dev/null; then
+    apt-get install -y -qq maven
+    info "Maven installed: $(mvn -version 2>&1 | head -1)"
+else
+    info "Maven already installed: $(mvn -version 2>&1 | head -1)"
+fi
+
+# Build the DTM and AD Java apps so their JARs exist for start.sh.
+# First-time builds download the full Maven dependency graph (~5 minutes).
+DTMAD_DIR="$BACKEND_DIR/dtmad"
+DTM_JAR="$DTMAD_DIR/data-traffic-monitoring/target/data-traffic-monitoring-0.0.1-SNAPSHOT.jar"
+AD_JAR="$DTMAD_DIR/anomaly-detection/target/anomaly-detection-0.0.1-SNAPSHOT.jar"
+if [ ! -f "$DTM_JAR" ] || [ ! -f "$AD_JAR" ]; then
+    info "Building DTM and AD Spring Boot apps (this can take a while on first run)..."
+    sudo -u "$REAL_USER" bash -c "cd '$DTMAD_DIR' && mvn -B -q -DskipTests package"
+    if [ ! -f "$DTM_JAR" ] || [ ! -f "$AD_JAR" ]; then
+        error "DTM/AD JARs missing after Maven build — see output above."
+    fi
+    info "DTM and AD JARs built"
+else
+    info "DTM and AD JARs already present"
+fi
+
 # ──────────────────────────────────────────────
 # 5. Configure frontend
 # ──────────────────────────────────────────────
@@ -160,15 +190,24 @@ NEXT_PUBLIC_SSL_API_URL=http://${SERVER_IP}:5000
 NEXT_PUBLIC_PENTEST_API_URL=http://${SERVER_IP}:3001
 NEXT_PUBLIC_VSP_API_URL=http://${SERVER_IP}:5002
 NEXT_PUBLIC_SEUXDR_API_URL=https://${SERVER_IP}:8443
+NEXT_PUBLIC_SQS_API_URL=http://${SERVER_IP}:8000
+NEXT_PUBLIC_DTM_API_URL=http://${SERVER_IP}:8087
+NEXT_PUBLIC_AD_API_URL=http://${SERVER_IP}:5001
 EOF
 
 info "Frontend .env created with server IP: $SERVER_IP"
 
 cd "$FRONTEND_DIR"
 info "Installing frontend dependencies (npm ci)..."
+# pipefail on (already from set -e wouldn't catch a failing left side of a pipe)
+set -o pipefail
 sudo -u "$REAL_USER" npm ci --silent 2>&1 | tail -1
 info "Building frontend (npm run build)..."
-sudo -u "$REAL_USER" npm run build 2>&1 | tail -3
+sudo -u "$REAL_USER" npm run build 2>&1 | tail -10
+# Verify the production build actually produced a BUILD_ID; otherwise next start fails.
+if [ ! -f "$FRONTEND_DIR/.next/BUILD_ID" ]; then
+    error "Frontend build did not produce $FRONTEND_DIR/.next/BUILD_ID — see output above."
+fi
 info "Frontend built"
 
 # ──────────────────────────────────────────────
@@ -216,7 +255,11 @@ WorkingDirectory=$BACKEND_DIR
 ExecStart=$BACKEND_DIR/start.sh
 ExecStop=$BACKEND_DIR/stop.sh
 Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-TimeoutStartSec=600
+# First-run pulls ~3GB of images and runs Wazuh initialization, which routinely
+# takes 10-20 minutes on a fresh host. 30 min gives generous headroom.
+TimeoutStartSec=1800
+# stop.sh tears down many docker-compose stacks; default 90s is too tight.
+TimeoutStopSec=300
 
 [Install]
 WantedBy=multi-user.target

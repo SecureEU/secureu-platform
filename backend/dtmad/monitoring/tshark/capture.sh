@@ -12,7 +12,7 @@
 
 set -euo pipefail
 
-IFACE="${CAPTURE_INTERFACE:-wlo1}"
+IFACE="${CAPTURE_INTERFACE:-any}"
 BROKER="${KAFKA_BROKER:-localhost:9092}"
 TOPIC="${KAFKA_TOPIC:-dtm-package}"
 
