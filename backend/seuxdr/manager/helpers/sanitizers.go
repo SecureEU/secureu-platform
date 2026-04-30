@@ -13,8 +13,9 @@ func SanitizeAndValidateInput(osType, osVersion, architecture, distro string) (s
 		"windows": true, "linux": true, "darwin": true, // Add other OS types if needed
 	}
 
-	// Allowed patterns for OS version & architecture
-	var validOSVersionPattern = regexp.MustCompile(`^[a-zA-Z0-9\s._\-\(\)]+$`)
+	// Allowed patterns for OS version & architecture.
+	// Forward slash is needed for Debian's PRETTY_NAME ("Debian GNU/Linux 12 (bookworm)").
+	var validOSVersionPattern = regexp.MustCompile(`^[a-zA-Z0-9\s._\-\(\)/]+$`)
 	// Allow letters, numbers, dots, dashes
 	var validArchitecturePattern = regexp.MustCompile(`^(amd64|x86_64|386|arm|arm64|riscv64)$`) // Strictly allow known architectures
 

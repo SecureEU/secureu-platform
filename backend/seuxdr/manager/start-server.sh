@@ -12,36 +12,37 @@ echo "Time: $(date)"
 echo "Working directory: $(pwd)"
 echo "========================================"
 
+SERVER_BIN="/seuxdr/manager/bin/seuxdr-manager"
 GO_BIN="/usr/local/go/bin/go"
-
-# Verify Go binary exists
-if [ ! -f "$GO_BIN" ]; then
-    echo "ERROR: Go binary not found at $GO_BIN"
-    exit 1
-fi
-
-echo "Using Go at: $GO_BIN"
-echo "Go version: $($GO_BIN version)"
 
 # Show environment variables (without sensitive values)
 echo "Environment: GO_ENV=$GO_ENV"
 echo "INDEXER_USERNAME is set: $([ -n "$INDEXER_USERNAME" ] && echo 'yes' || echo 'no')"
 echo "INDEXER_PASSWORD is set: $([ -n "$INDEXER_PASSWORD" ] && echo 'yes' || echo 'no')"
 
-# Download dependencies
+# Prefer the pre-built binary baked into the image — restarts go from
+# ~3 minutes (go run) to a few seconds. Fall back to `go run` only when the
+# binary is missing (e.g. local dev / mounted source).
+if [ -x "$SERVER_BIN" ]; then
+    echo "Starting pre-built binary at $SERVER_BIN"
+    exec "$SERVER_BIN"
+fi
+
+echo "Pre-built binary not found at $SERVER_BIN, falling back to 'go run' (slow path)"
+if [ ! -f "$GO_BIN" ]; then
+    echo "ERROR: neither $SERVER_BIN nor $GO_BIN found; cannot start the manager"
+    exit 1
+fi
+echo "Using Go at: $GO_BIN"
+echo "Go version: $($GO_BIN version)"
 echo "Downloading Go dependencies..."
 if ! $GO_BIN mod download; then
     echo "ERROR: Failed to download Go modules"
     exit 1
 fi
-echo "Dependencies downloaded successfully"
-
-# Verify main.go exists
 if [ ! -f "main.go" ]; then
     echo "ERROR: main.go not found in $(pwd)"
     exit 1
 fi
-
-# Start the server
 echo "Starting main.go..."
 exec $GO_BIN run main.go

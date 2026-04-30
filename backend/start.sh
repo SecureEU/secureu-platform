@@ -88,6 +88,15 @@ echo ""
 # 2. DTM Monitoring Pipeline (Suricata → Logstash → Kafka)
 # ─────────────────────────────────────────────
 echo "[2/10] Starting DTM monitoring pipeline..."
+# Suricata's af-packet does not accept "any" — pick the host's default-route
+# interface so it can sniff. Tshark accepts real interface names too, so the
+# same env var works for both. Allow override via CAPTURE_INTERFACE.
+if [ -z "${CAPTURE_INTERFACE:-}" ]; then
+    CAPTURE_INTERFACE=$(ip -4 route show default 2>/dev/null | awk '{print $5; exit}')
+    [ -z "$CAPTURE_INTERFACE" ] && CAPTURE_INTERFACE=$(ip -o link show | awk -F': ' '$2!~/lo|docker|br-/ {print $2; exit}')
+fi
+echo "  Capture interface: ${CAPTURE_INTERFACE:-<auto>}"
+export CAPTURE_INTERFACE
 docker compose -f "$BACKEND_DIR/dtmad/monitoring/docker-compose.yml" up -d
 echo ""
 
@@ -131,7 +140,7 @@ done
 
 echo "[5/10] Starting Pentest Go server (requires sudo)..."
 cd "$BACKEND_DIR/pentest"
-sudo nohup ./bin/server > server_run.log 2>&1 &
+sudo -E nohup ./bin/server > server_run.log 2>&1 &
 PENTEST_PID=$!
 cd "$BACKEND_DIR"
 echo "  Pentest server PID: $PENTEST_PID"
@@ -165,7 +174,10 @@ echo "[9/10] Starting SEUXDR backend..."
 SEUXDR_DIR="$BACKEND_DIR/seuxdr"
 
 # Auto-detect local IP
-LOCAL_IP=$(hostname -I | awk '{print $1}')
+# Honor SERVER_IP override (set by install.sh for multi-NIC hosts where
+# `hostname -I` would pick the NAT/internal address instead of the host-only
+# adapter operators actually expose).
+LOCAL_IP="${SERVER_IP:-$(hostname -I | awk '{print $1}')}"
 echo "  Detected local IP: $LOCAL_IP"
 
 # Replace IP in config files
@@ -187,7 +199,9 @@ fi
 docker compose -f "$SEUXDR_DIR/docker-compose.yml" up -d --build
 
 # First-run: initialize Wazuh + Go server inside the container
-if ! docker exec seuxdr-manager systemctl is-enabled seuxdr.service > /dev/null 2>&1; then
+# A marker file in the volumed /var/ossec tells us Wazuh has already been
+# installed and survives container recreates (the systemd unit file does not).
+if ! docker exec seuxdr-manager test -f /var/ossec/.wazuh-installed; then
   echo "  First run — initializing SEUXDR (this takes several minutes)..."
   docker exec seuxdr-manager /usr/local/bin/startup.sh TEST
   echo "  SEUXDR initialization complete"

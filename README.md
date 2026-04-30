@@ -53,10 +53,34 @@ A unified cybersecurity dashboard integrating offensive and defensive security t
 
 ## Prerequisites
 
-- Ubuntu 22.04 or 24.04 LTS
-- 16 GB RAM minimum (Wazuh + OpenSearch + Kafka are memory-intensive)
+- Ubuntu 22.04 / 24.04 LTS or Debian 12 (bookworm) and newer
+- **20 GB RAM minimum, 24 GB recommended.** Wazuh's installer briefly co-runs the
+  indexer (1.5 GB JVM heap), the manager, and the dashboard alongside two more
+  Spring Boot apps (DTM, AD) — ~10 GB peak during first install. 16 GB hosts
+  routinely OOM-kill networking during Wazuh init.
+- 4 vCPUs minimum
 - 50 GB disk space
-- SSH access with sudo privileges
+- SSH access with passwordless `sudo`
+
+### Networking notes for VirtualBox / multi-NIC hosts
+
+The installer auto-detects the server IP via `hostname -I`, which on
+VirtualBox returns the **NAT** address (10.0.2.x) — that address only exists
+inside the VM. Pass the host-reachable IP explicitly so the frontend `.env`
+and SEUXDR's TLS cert SAN match the address operators actually use:
+
+```bash
+sudo SERVER_IP=<host-only-ip> ./install.sh
+```
+
+If the platform also needs to receive packets for Suricata/tshark (DTM
+network monitoring), set `CAPTURE_INTERFACE` to the interface that sees the
+target traffic — typically the host-only adapter (`enp0s8`) on VirtualBox,
+because VirtualBox NAT (slirp) does not expose raw packets to af-packet:
+
+```bash
+sudo SERVER_IP=192.168.56.10 CAPTURE_INTERFACE=enp0s8 ./install.sh
+```
 
 ## Quick Start (Ansible)
 

@@ -19,3 +19,28 @@ services:
     restart: unless-stopped
     volumes:
       - ./manager/certs:/seuxdr/manager/certs
+      # Persist SEUXDR storage (manager.db etc.) and Wazuh state across
+      # container recreates. Without these, every `docker compose up --build`
+      # nukes Wazuh and forces a 10-minute reinstall on the next start.
+      - seuxdr-storage:/seuxdr/manager/storage
+      - seuxdr-queue:/var/seuxdr/manager/queue
+      - wazuh-server:/var/ossec
+      - wazuh-indexer-data:/var/lib/wazuh-indexer
+      - wazuh-indexer-config:/etc/wazuh-indexer
+      - wazuh-server-config:/etc/wazuh-server
+      - wazuh-dashboard-data:/var/lib/wazuh-dashboard
+      - wazuh-dashboard-config:/etc/wazuh-dashboard
+      - wazuh-filebeat-config:/etc/filebeat
+      - wazuh-filebeat-data:/var/lib/filebeat
+
+volumes:
+  seuxdr-storage:
+  seuxdr-queue:
+  wazuh-server:
+  wazuh-indexer-data:
+  wazuh-indexer-config:
+  wazuh-server-config:
+  wazuh-dashboard-data:
+  wazuh-dashboard-config:
+  wazuh-filebeat-config:
+  wazuh-filebeat-data:

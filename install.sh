@@ -84,6 +84,14 @@ echo "  Run as user:  $REAL_USER"
 echo "═══════════════════════════════════════════════════════════"
 echo ""
 
+# Disable PackageKit if it is running — it holds the dpkg frontend lock and
+# blocks our apt-get install commands on fresh Debian images.
+if systemctl is-active --quiet packagekit 2>/dev/null; then
+    info "Stopping packagekit to release the dpkg lock..."
+    systemctl stop packagekit 2>/dev/null || true
+    systemctl mask packagekit 2>/dev/null || true
+fi
+
 # ──────────────────────────────────────────────
 # 1. System packages
 # ──────────────────────────────────────────────
@@ -91,7 +99,8 @@ info "[1/7] Installing system packages..."
 apt-get update -qq
 apt-get install -y -qq \
     apt-transport-https ca-certificates curl gnupg lsb-release \
-    git openssl unzip wget net-tools acl
+    git openssl unzip wget net-tools acl \
+    python3 python3-xmltodict
 info "System packages installed"
 
 # ──────────────────────────────────────────────
@@ -222,6 +231,20 @@ else
     warn "Pentest scans will not work. Rebuild with: cd backend/pentest && go build -o bin/server ."
 fi
 
+# Pin RPATH in the pentest .env to this checkout (the committed value is
+# developer-specific and breaks nmap result import / ZAP volume mounting).
+PENTEST_ENV="$BACKEND_DIR/pentest/.env"
+if [ -f "$PENTEST_ENV" ]; then
+    if grep -q '^RPATH=' "$PENTEST_ENV"; then
+        sed -i "s|^RPATH=.*|RPATH=\"$BACKEND_DIR/pentest\"|" "$PENTEST_ENV"
+    else
+        echo "RPATH=\"$BACKEND_DIR/pentest\"" >> "$PENTEST_ENV"
+    fi
+    info "Pentest .env RPATH set to $BACKEND_DIR/pentest"
+else
+    warn "Pentest .env not found at $PENTEST_ENV; nmap result import may not work"
+fi
+
 # ──────────────────────────────────────────────
 # 7. Make scripts executable + set ownership
 # ──────────────────────────────────────────────
@@ -255,9 +278,18 @@ WorkingDirectory=$BACKEND_DIR
 ExecStart=$BACKEND_DIR/start.sh
 ExecStop=$BACKEND_DIR/stop.sh
 Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-# First-run pulls ~3GB of images and runs Wazuh initialization, which routinely
-# takes 10-20 minutes on a fresh host. 30 min gives generous headroom.
-TimeoutStartSec=1800
+# RPATH is read by the pentest Go server to locate scan results and parser scripts.
+# Setting it here avoids relying on godotenv finding pentest/.env relative to a
+# moving cwd.
+Environment=RPATH=$BACKEND_DIR/pentest
+# SERVER_IP is honored by start.sh when patching SEUXDR's manager.yaml so the
+# manager domain / cert SANs use the operator-chosen address rather than the
+# first interface from `hostname -I` (which is often the NAT IP).
+Environment=SERVER_IP=$SERVER_IP
+# First-run pulls ~3GB of images and runs Wazuh initialization, which can
+# take 30-50 minutes on a fresh host with limited bandwidth. 60 min gives
+# generous headroom; subsequent starts are fast.
+TimeoutStartSec=3600
 # stop.sh tears down many docker-compose stacks; default 90s is too tight.
 TimeoutStopSec=300
 

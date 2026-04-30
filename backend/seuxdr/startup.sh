@@ -18,6 +18,10 @@ yum install curl --allowerasing -y
 
 curl -sO https://packages.wazuh.com/4.14/wazuh-install.sh && bash ./wazuh-install.sh -a --all-in-one
 
+# Marker for the host start.sh to detect that Wazuh is installed.
+# Lives on the persisted /var/ossec volume so it survives container recreates.
+touch /var/ossec/.wazuh-installed
+
 # Extract the first indexer username and password
 tar -O -xvf wazuh-install-files.tar wazuh-install-files/wazuh-passwords.txt | awk '
     /indexer_username:/ { if (!found) { username=$2; found=1; next } }

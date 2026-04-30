@@ -31,12 +31,20 @@ def run_method(new_engine, parser_args, proxies, supported_engines, desktop_agen
 
 
 def ahmia(searchstr, args, proxies, supported_engines, desktop_agents):
-    ahmia_url = supported_engines['ahmia'] + "/search/?q={}"
+    # Ahmia now requires a per-request anti-scraping token: GET /search/ first,
+    # extract the random hidden form field, then submit the query with it.
+    base = supported_engines['ahmia']
+    headers = random_headers(desktop_agents)
 
     pos = get_proc_pos()
     with tqdm(total=1, initial=0, desc=get_tqdm_desc("Ahmia", pos), position=pos) as progress_bar:
-        response = requests.get(ahmia_url.format(quote(searchstr)), proxies=proxies,
-                                headers=random_headers(desktop_agents))
+        s = requests.Session()
+        s.proxies = proxies
+        s.headers.update(headers)
+        form_resp = s.get(base + "/search/")
+        hidden = dict(re.findall(r'name="([^"]+)"\s+value="([^"]+)"', form_resp.text))
+        params = {"q": searchstr, **hidden}
+        response = s.get(base + "/search/", params=params)
         soup = BeautifulSoup(response.text, 'html5lib')
         results = link_finder("ahmia", soup, args)
         progress_bar.update()

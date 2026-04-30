@@ -42,6 +42,16 @@ RUN yum install -y systemd && \
 # Copy the parent directory of the current directory
 COPY . /seuxdr
 
+# Pre-build the SEUXDR Go server so that runtime restarts are instant.
+# Without this, start-server.sh runs `go run main.go` on every restart and
+# recompiles SQLite C bindings (~3 min per restart). The binary is written to
+# /seuxdr/manager/bin/seuxdr-manager and start-server.sh execs it.
+RUN cd /seuxdr/manager && \
+    /usr/local/go/bin/go mod download && \
+    mkdir -p bin && \
+    CGO_ENABLED=1 /usr/local/go/bin/go build -trimpath -ldflags='-s -w' -o /seuxdr/manager/bin/seuxdr-manager . && \
+    chmod +x /seuxdr/manager/bin/seuxdr-manager
+
 # Set correct permissions for Go execution and fix PAM for sudo in container
 RUN usermod -aG wheel root && echo 'root ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers && \
     # Fix PAM configuration for sudo to work in container

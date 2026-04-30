@@ -275,20 +275,31 @@ func (mtlsSvc *mtlsService) setupCAs() (string, string, bool, error) {
 		caKeyPath = GetPathForCert(latestCA.CAKeyName)
 		caPath = GetPathForCert(latestCA.CACertName)
 
-		// if no ca files exist then return error
+		// If files were deleted out from under us (e.g. cert volume wiped on
+		// the host), the DB row is orphaned. Drop it and regenerate a fresh CA
+		// in place rather than crashing the manager.
 		if !helpers.FileExists(caKeyPath) || !helpers.FileExists(caPath) {
-
-			missingFiles := []string{}
-
-			if !helpers.FileExists(caKeyPath) {
-				missingFiles = append(missingFiles, caKeyPath)
+			log.Printf("CA DB row references missing files (key=%s exists=%v, cert=%s exists=%v); deleting orphaned row and regenerating",
+				caKeyPath, helpers.FileExists(caKeyPath), caPath, helpers.FileExists(caPath))
+			if delErr := mtlsSvc.caRepo.Delete(scopes.ByID(latestCA.ID)); delErr != nil {
+				return caKeyPath, caPath, serverCertRefreshRequired, fmt.Errorf("failed to delete orphaned CA row %d: %w", latestCA.ID, delErr)
 			}
-			if !helpers.FileExists(caPath) {
-				missingFiles = append(missingFiles, caPath)
+			// Use the default CA paths/names from config and generate a brand
+			// new CA. This recovers cleanly without requiring an operator to
+			// hand-edit the DB or cert volume.
+			caKeyPath = GetPathForCert(mtlsSvc.mainConfig.CERTS.MTLS.SERVER_CA_KEY)
+			caPath = GetPathForCert(mtlsSvc.mainConfig.CERTS.MTLS.SERVER_CA_CRT)
+			os.Remove(caKeyPath)
+			os.Remove(caPath)
+			if err = mtlsSvc.generateCA(caKeyPath, caPath); err != nil {
+				return caKeyPath, caPath, serverCertRefreshRequired, err
 			}
-
-			return caKeyPath, caPath, serverCertRefreshRequired, fmt.Errorf("missing ca files: %v", missingFiles)
-
+			// Server certs were signed by the old CA — they need to be regenerated too.
+			serverCertRefreshRequired = true
+			if err = mtlsSvc.cleanUpInvalidCAs(); err != nil {
+				mtlsSvc.logger.LogWithContext(logrus.ErrorLevel, "Failed to delete invalid ca certificates", logrus.Fields{"error": err.Error()})
+			}
+			return caKeyPath, caPath, serverCertRefreshRequired, nil
 		}
 		// Check if the certificate is expired
 		now := time.Now().UTC()
@@ -512,18 +523,24 @@ func (mtlsSvc *mtlsService) setupServerCerts(CAKeyName string, CACertName string
 			}
 		} else { // otherwise check their validity and whether they expired or will expire soon
 
-			// if none of them exist then we have an issue
-			if !helpers.FileExists(serverCrtPath) || !helpers.FileExists(ServerKeyName) { // if only some of them exist then delete and regenerate them
-				missingFiles := []string{}
-
-				if !helpers.FileExists(serverCrtPath) {
-					missingFiles = append(missingFiles, serverCrtPath)
+			// If files are missing on disk (e.g. cert volume wiped), drop the
+			// orphaned DB row and generate a fresh server cert with the current
+			// CA. Avoids the manager's "tls: no certificates configured" loop
+			// after a partial wipe.
+			if !helpers.FileExists(serverCrtPath) || !helpers.FileExists(ServerKeyName) {
+				log.Printf("server cert DB row references missing files (cert=%s exists=%v, key=%s exists=%v); deleting orphan and regenerating",
+					serverCrtPath, helpers.FileExists(serverCrtPath), ServerKeyName, helpers.FileExists(ServerKeyName))
+				if delErr := mtlsSvc.serverRepo.Delete(scopes.ByID(latestServerCert.ID)); delErr != nil {
+					return fmt.Errorf("failed to delete orphaned server-cert row %d: %w", latestServerCert.ID, delErr)
 				}
-				if !helpers.FileExists(ServerKeyName) {
-					missingFiles = append(missingFiles, ServerKeyName)
+				defaultServerKeyName := GetPathForCert(mtlsSvc.mainConfig.CERTS.MTLS.SERVER_KEY)
+				defaultServerCertName := GetPathForCert(mtlsSvc.mainConfig.CERTS.MTLS.SERVER_CRT)
+				os.Remove(defaultServerKeyName)
+				os.Remove(defaultServerCertName)
+				if err = mtlsSvc.generateServerCerts(defaultServerKeyName, defaultServerCertName, CACertName, CAKeyName); err != nil {
+					return err
 				}
-
-				return fmt.Errorf("missing server files: %v", missingFiles)
+				return nil
 			} else { // if they all exist check that they are not expired
 				// load the server files
 				certData, err := tls.LoadX509KeyPair(serverCrtPath, ServerKeyName)
