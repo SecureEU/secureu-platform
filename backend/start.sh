@@ -238,20 +238,10 @@ for i in $(seq 1 30); do
   sleep 2
 done
 
-# First-run only: register a default "local" DTM instance so the dashboard
-# isn't empty. Idempotent — checked against the live instance list.
-if curl -sf http://localhost:8087/sphinx/dtm/instance/all 2>/dev/null | grep -q '"name":"local"'; then
-  echo "  Default 'local' DTM instance already registered"
-else
-  if curl -s -X POST http://localhost:8087/sphinx/dtm/instance/save \
-       -H 'Content-Type: application/json' \
-       -d '{"name":"local","key":"local","description":"Auto-registered local instance","enabled":true,"url":"http://localhost:8087","isMaster":true,"hasTshark":true,"hasSuricata":true}' \
-       2>/dev/null | grep -q '"success":true'; then
-    echo "  Default 'local' DTM instance registered"
-  else
-    echo "  WARN: failed to register default DTM instance (you can add one from the dashboard)"
-  fi
-fi
+# Default 'local' DTM instance is now seeded by DefaultInstanceInitializer
+# (CommandLineRunner) inside the DTM Spring Boot app on startup. No HTTP curl
+# needed — the JSON POST path returns 415 Unsupported Media Type for reasons we
+# haven't fully root-caused, so we sidestep it with a JPA insert at boot.
 
 # Anomaly Detection (port 5001)
 nohup "$BACKEND_DIR/dtmad/start-ad.sh" > "$BACKEND_DIR/dtmad/ad.log" 2>&1 &

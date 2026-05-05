@@ -91,10 +91,6 @@ const DTMADDashboard = () => {
           <div>
             <p className="font-medium">Connection Error</p>
             <p className="text-sm">{error}</p>
-            <p className="text-xs mt-1 text-red-500">
-              DTM backend: {process.env.NEXT_PUBLIC_DTM_API_URL || 'http://localhost:8087'} |
-              AD backend: {process.env.NEXT_PUBLIC_AD_API_URL || 'http://localhost:5001'}
-            </p>
           </div>
         </div>
       )}

@@ -200,8 +200,13 @@ NEXT_PUBLIC_PENTEST_API_URL=http://${SERVER_IP}:3001
 NEXT_PUBLIC_VSP_API_URL=http://${SERVER_IP}:5002
 NEXT_PUBLIC_SEUXDR_API_URL=https://${SERVER_IP}:8443
 NEXT_PUBLIC_SQS_API_URL=http://${SERVER_IP}:8000
-NEXT_PUBLIC_DTM_API_URL=http://${SERVER_IP}:8087
-NEXT_PUBLIC_AD_API_URL=http://${SERVER_IP}:5001
+# DTM and AD are proxied server-side by Next.js rewrites in next.config.mjs
+# (browser hits :3000 → Next.js fetches localhost:8087/5001 → returns to browser).
+# Server-side vars only — no NEXT_PUBLIC_ prefix. Localhost is correct here:
+# the Next.js process runs on the same host as the Spring Boot apps. This means
+# ports 8087 and 5001 do NOT need to be opened in the host firewall.
+DTM_API_URL=http://localhost:8087
+AD_API_URL=http://localhost:5001
 EOF
 
 info "Frontend .env created with server IP: $SERVER_IP"
