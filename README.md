@@ -54,10 +54,11 @@ A unified cybersecurity dashboard integrating offensive and defensive security t
 ## Prerequisites
 
 - Ubuntu 22.04 / 24.04 LTS or Debian 12 (bookworm) and newer
-- **20 GB RAM minimum, 24 GB recommended.** Wazuh's installer briefly co-runs the
+- **20 GB RAM minimum, 32 GB recommended.** Wazuh's installer briefly co-runs the
   indexer (1.5 GB JVM heap), the manager, and the dashboard alongside two more
   Spring Boot apps (DTM, AD) — ~10 GB peak during first install. 16 GB hosts
-  routinely OOM-kill networking during Wazuh init.
+  routinely OOM-kill networking during Wazuh init. 32 GB gives comfortable
+  headroom for query bursts and Wazuh re-init on container recreate.
 - 4 vCPUs minimum
 - 50 GB disk space
 - SSH access with passwordless `sudo`

@@ -199,9 +199,7 @@ fi
 docker compose -f "$SEUXDR_DIR/docker-compose.yml" up -d --build
 
 # First-run: initialize Wazuh + Go server inside the container
-# A marker file in the volumed /var/ossec tells us Wazuh has already been
-# installed and survives container recreates (the systemd unit file does not).
-if ! docker exec seuxdr-manager test -f /var/ossec/.wazuh-installed; then
+if ! docker exec seuxdr-manager systemctl is-enabled seuxdr.service > /dev/null 2>&1; then
   echo "  First run — initializing SEUXDR (this takes several minutes)..."
   docker exec seuxdr-manager /usr/local/bin/startup.sh TEST
   echo "  SEUXDR initialization complete"
