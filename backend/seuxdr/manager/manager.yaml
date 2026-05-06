@@ -1,7 +1,7 @@
 # server info
 tls_server: "0.0.0.0"
 mtls_server: "0.0.0.0"
-domain: "192.168.1.173"
+domain: "127.0.0.1"
 tls_port: 8443
 mtls_port: 8081
 frontend_port: 8080
@@ -57,7 +57,7 @@ certs:
         - "localhost"
       IP_ADDRESSES:
         - "0.0.0.0"
-        - "192.168.1.173"
+        - "127.0.0.1"
       expiration_date:
         years: 10
         months: 0
@@ -78,7 +78,7 @@ certs:
         - "localhost"
       IP_ADDRESSES:
         - "0.0.0.0"
-        - "192.168.1.173"
+        - "127.0.0.1"
       expiration_date:
         years: 1
         months: 0
@@ -98,7 +98,7 @@ certs:
         - "localhost"
       IP_ADDRESSES:
         - "0.0.0.0"
-        - "192.168.1.173"
+        - "127.0.0.1"
       expiration_date:
         years: 0
         months: 1
