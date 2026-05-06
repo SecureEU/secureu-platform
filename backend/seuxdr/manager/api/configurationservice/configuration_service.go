@@ -112,7 +112,7 @@ func (configSvc *configurationService) buildExecutable(outputPath, tempDir, OS, 
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		return fmt.Errorf("build failed: %s", output)
+		return fmt.Errorf("build failed: %s (err=%v)", output, err)
 	}
 	return nil
 }
@@ -320,8 +320,14 @@ func (configSvc *configurationService) GenerateClientWithVersion(details helpers
 func (configSvc *configurationService) generateExecutableForGroupWithVersion(group *db.Group, caCertificate string, clientCertificate []byte, clientKey []byte, clientDetails Keys, clientSettings ClientSettings, osFlag string, agentVersion *db.AgentVersion) error {
 	gID := strconv.Itoa(int(*clientSettings.GroupID))
 
-	// Create a temporary directory
+	// Create a temporary directory and absolutize it. Without this, downstream
+	// `go build -o <path>` calls (which run with cmd.Dir set to a child of tempDir)
+	// double-resolve relative parents and write the binary to the wrong location.
 	tempDir, err := helpers.CreateTempDir("../", helpers.SanitizeInput(clientSettings.OrgName), gID)
+	if err != nil {
+		return err
+	}
+	tempDir, err = filepath.Abs(tempDir)
 	if err != nil {
 		return err
 	}
@@ -751,7 +757,7 @@ func (configSvc *configurationService) buildAndPackageExecutable(tempDir, output
 
 	switch osFlag {
 	case "windows":
-		outputPath := filepath.Join("..", tempDir, outputFile)
+		outputPath := filepath.Join(tempDir, outputFile)
 
 		err := configSvc.buildExecutable(outputPath, filepath.Join(tempDir, "agent"), osFlag, clientSettings.Architecture)
 		if err != nil {
@@ -855,7 +861,11 @@ func (configSvc *configurationService) buildAndPackageExecutable(tempDir, output
 	case "linux":
 		appName := fmt.Sprintf("%s-package", configSvc.config.CLIENT_CONFIG.APP_NAME)
 		appPath := filepath.Join(tempDir, appName)
-		outputPath := filepath.Join("..", appPath, outputFile)
+		// appPath dir must exist before `go build -o` writes into it.
+		if err := os.MkdirAll(appPath, 0755); err != nil {
+			return rawBinary, "", err
+		}
+		outputPath := filepath.Join(appPath, outputFile)
 
 		err := configSvc.buildExecutable(outputPath, filepath.Join(tempDir, "agent"), osFlag, clientSettings.Architecture)
 		if err != nil {

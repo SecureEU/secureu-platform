@@ -3,6 +3,12 @@ set -e
 
 cd /seuxdr/manager
 
+# Without this, exec.Command("go", ...) inside the Go server fails with
+# "executable file not found in $PATH" — systemd doesn't inherit a PATH
+# that includes /usr/local/go/bin, and we need the go binary at runtime
+# to compile per-tenant agent binaries.
+export PATH="/usr/local/go/bin:$PATH"
+
 LOGFILE="/var/log/seuxdr-startup.log"
 exec > >(tee -a "$LOGFILE") 2>&1
 

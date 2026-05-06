@@ -63,6 +63,19 @@ if [ "$REAL_USER" = "root" ]; then
     warn "Consider running with: sudo ./install.sh"
 fi
 
+# Auto-chown when the install dir isn't owned by REAL_USER. The README's
+# "git clone /opt/secureu-platform" pattern requires writable /opt, so most
+# operators do `sudo git clone`, which leaves the tree root-owned. Without
+# this fix, the later `sudo -u $REAL_USER mvn package` and `sudo -u $REAL_USER
+# npm ci` calls fail with "could not create parent directories".
+if [ "$REAL_USER" != "root" ]; then
+    CURRENT_OWNER=$(stat -c '%U' "$INSTALL_DIR")
+    if [ "$CURRENT_OWNER" != "$REAL_USER" ]; then
+        warn "Install dir owned by $CURRENT_OWNER, changing to $REAL_USER to allow non-root build steps"
+        chown -R "$REAL_USER:$REAL_USER" "$INSTALL_DIR"
+    fi
+fi
+
 if [ -n "$SERVER_IP" ]; then
     info "Using SERVER_IP override: $SERVER_IP"
 else
@@ -138,6 +151,22 @@ else
     apt-get install -y -qq nodejs
     info "Node.js installed: $(node -v)"
 fi
+
+# Resolve the working npm binary. Hosts that have BOTH the apt 'npm' package
+# (broken on Node 22 — "Cannot find module 'semver'") and a NodeSource-installed
+# /usr/local/bin/npm will fail at frontend startup if we hardcode /usr/bin/npm
+# in the systemd unit. Pick the one that actually runs.
+NPM_BIN=""
+for candidate in /usr/local/bin/npm /usr/bin/npm $(command -v npm 2>/dev/null); do
+    if [ -x "$candidate" ] && "$candidate" --version &>/dev/null; then
+        NPM_BIN="$candidate"
+        break
+    fi
+done
+if [ -z "$NPM_BIN" ]; then
+    error "No working npm binary found. Install nodejs from NodeSource and retry."
+fi
+info "Using npm at: $NPM_BIN ($("$NPM_BIN" --version))"
 
 # ──────────────────────────────────────────────
 # 4. Java 17
@@ -215,9 +244,9 @@ cd "$FRONTEND_DIR"
 info "Installing frontend dependencies (npm ci)..."
 # pipefail on (already from set -e wouldn't catch a failing left side of a pipe)
 set -o pipefail
-sudo -u "$REAL_USER" npm ci --silent 2>&1 | tail -1
+sudo -u "$REAL_USER" "$NPM_BIN" ci --silent 2>&1 | tail -1
 info "Building frontend (npm run build)..."
-sudo -u "$REAL_USER" npm run build 2>&1 | tail -10
+sudo -u "$REAL_USER" "$NPM_BIN" run build 2>&1 | tail -10
 # Verify the production build actually produced a BUILD_ID; otherwise next start fails.
 if [ ! -f "$FRONTEND_DIR/.next/BUILD_ID" ]; then
     error "Frontend build did not produce $FRONTEND_DIR/.next/BUILD_ID — see output above."
@@ -312,7 +341,7 @@ Wants=secureu-backend.service
 Type=simple
 User=$REAL_USER
 WorkingDirectory=$FRONTEND_DIR
-ExecStart=/usr/bin/npm start -- -p 3000
+ExecStart=$NPM_BIN start -- -p 3000
 Restart=on-failure
 RestartSec=10
 Environment=NODE_ENV=production
