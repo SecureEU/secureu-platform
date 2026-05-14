@@ -20,28 +20,20 @@ services:
     volumes:
       - ./manager/certs:/seuxdr/manager/certs
       # SEUXDR Go-server state (SQLite DB + log queue).
+      # Wazuh state (/var/ossec, /etc/wazuh-*, /var/lib/wazuh-*) is
+      # intentionally NOT volumed. wazuh-install.sh pre-flight-checks for
+      # those directories' existence and treats them as "already installed"
+      # even when empty (a directory created by a fresh empty named volume
+      # is enough to abort the install). For state persistence across
+      # restarts we instead rely on the container itself surviving
+      # `systemctl restart` and host reboots: start.sh uses `compose up -d`
+      # (no --build), and startup.sh skips wazuh-install.sh when the
+      # /var/ossec/.wazuh-installed marker is present from a prior install.
+      # Explicit container recreate (docker compose down) is a rebuild
+      # event by definition and pays the ~10-minute Wazuh install cost.
       - seuxdr-storage:/seuxdr/manager/storage
       - seuxdr-queue:/var/seuxdr/manager/queue
-      # Persist Wazuh state across container recreate. Combined with the
-      # marker-file check in startup.sh (skips wazuh-install.sh if already
-      # installed), restarts take ~30s instead of ~10 min and no longer hit
-      # the flaky reinstall path. The .wazuh-installed marker lives at
-      # /var/ossec/, on the wazuh-ossec volume.
-      - wazuh-ossec:/var/ossec
-      - wazuh-indexer-data:/var/lib/wazuh-indexer
-      - wazuh-indexer-conf:/etc/wazuh-indexer
-      - wazuh-dashboard-data:/var/lib/wazuh-dashboard
-      - wazuh-dashboard-conf:/etc/wazuh-dashboard
-      - filebeat-data:/var/lib/filebeat
-      - filebeat-conf:/etc/filebeat
 
 volumes:
   seuxdr-storage:
   seuxdr-queue:
-  wazuh-ossec:
-  wazuh-indexer-data:
-  wazuh-indexer-conf:
-  wazuh-dashboard-data:
-  wazuh-dashboard-conf:
-  filebeat-data:
-  filebeat-conf:
