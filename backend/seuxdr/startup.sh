@@ -16,11 +16,19 @@ yum install coreutils --allowerasing -y
 yum install curl --allowerasing -y
 
 
-curl -sO https://packages.wazuh.com/4.14/wazuh-install.sh && bash ./wazuh-install.sh -a --all-in-one
-
-# Marker for the host start.sh to detect that Wazuh is installed.
-# Lives on the persisted /var/ossec volume so it survives container recreates.
-touch /var/ossec/.wazuh-installed
+# Skip Wazuh install if a previous run already provisioned it. Combined with
+# the persistent volume mounts on /var/ossec and /var/lib/wazuh-* in
+# docker-compose.yml, this turns restarts from "~10 min reinstall (flaky)"
+# into "~30s service start". The marker file gets created at the end of a
+# successful install below.
+if [ -f /var/ossec/.wazuh-installed ]; then
+    echo "Wazuh already installed (marker present); skipping wazuh-install.sh"
+else
+    curl -sO https://packages.wazuh.com/4.14/wazuh-install.sh && bash ./wazuh-install.sh -a --all-in-one
+    # Marker for the host start.sh to detect that Wazuh is installed.
+    # Lives on the persisted /var/ossec volume so it survives container recreates.
+    touch /var/ossec/.wazuh-installed
+fi
 
 # Extract the first indexer username and password
 tar -O -xvf wazuh-install-files.tar wazuh-install-files/wazuh-passwords.txt | awk '

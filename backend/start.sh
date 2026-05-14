@@ -196,7 +196,14 @@ if [ ! -f "$SEUXDR_DIR/manager/certs/server.crt" ]; then
   echo "  Certificates generated"
 fi
 
-docker compose -f "$SEUXDR_DIR/docker-compose.yml" up -d --build
+# NOTE: --build is intentionally omitted. Re-building forces a container
+# recreate, which wipes /var/ossec and triggers a full Wazuh re-install on
+# every restart (~10 min, and flaky). On subsequent restarts the existing
+# image+container are reused, /var/ossec persists in the container's
+# filesystem, and Wazuh services just restart against existing state (~30s).
+# When SEUXDR source changes, rebuild explicitly:
+#   docker compose -f .../docker-compose.yml up -d --build seuxdr-manager
+docker compose -f "$SEUXDR_DIR/docker-compose.yml" up -d
 
 # First-run: initialize Wazuh + Go server inside the container
 if ! docker exec seuxdr-manager systemctl is-enabled seuxdr.service > /dev/null 2>&1; then

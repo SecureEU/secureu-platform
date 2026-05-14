@@ -19,15 +19,29 @@ services:
     restart: unless-stopped
     volumes:
       - ./manager/certs:/seuxdr/manager/certs
-      # Persist the SEUXDR Go-server state (SQLite DB, log queue) across
-      # container recreates. Wazuh's own state (/var/ossec, /etc/wazuh-*,
-      # /var/lib/wazuh-*) is intentionally NOT volumed: Wazuh's installer
-      # treats any pre-existing /var/ossec as "already installed" and refuses
-      # to set up the services. Persisting Wazuh state requires either a
-      # pre-installed image OR an installer wrapper, both deferred to v1.0.5.
+      # SEUXDR Go-server state (SQLite DB + log queue).
       - seuxdr-storage:/seuxdr/manager/storage
       - seuxdr-queue:/var/seuxdr/manager/queue
+      # Persist Wazuh state across container recreate. Combined with the
+      # marker-file check in startup.sh (skips wazuh-install.sh if already
+      # installed), restarts take ~30s instead of ~10 min and no longer hit
+      # the flaky reinstall path. The .wazuh-installed marker lives at
+      # /var/ossec/, on the wazuh-ossec volume.
+      - wazuh-ossec:/var/ossec
+      - wazuh-indexer-data:/var/lib/wazuh-indexer
+      - wazuh-indexer-conf:/etc/wazuh-indexer
+      - wazuh-dashboard-data:/var/lib/wazuh-dashboard
+      - wazuh-dashboard-conf:/etc/wazuh-dashboard
+      - filebeat-data:/var/lib/filebeat
+      - filebeat-conf:/etc/filebeat
 
 volumes:
   seuxdr-storage:
   seuxdr-queue:
+  wazuh-ossec:
+  wazuh-indexer-data:
+  wazuh-indexer-conf:
+  wazuh-dashboard-data:
+  wazuh-dashboard-conf:
+  filebeat-data:
+  filebeat-conf:
