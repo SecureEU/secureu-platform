@@ -24,14 +24,22 @@ log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"; }
 # We load credentials from the SEUXDR manager .env (same credentials the Go server uses).
 
 cleanup_opensearch() {
-    if [ ! -f "$SEUXDR_ENV" ]; then
-        log "WARN: $SEUXDR_ENV not found — skipping OpenSearch cleanup"
+    # Prefer the host-side .env; fall back to reading it from inside the container
+    local env_content=""
+    if [ -f "$SEUXDR_ENV" ]; then
+        env_content=$(cat "$SEUXDR_ENV")
+    elif docker ps --format '{{.Names}}' 2>/dev/null | grep -q '^seuxdr-manager$'; then
+        env_content=$(docker exec seuxdr-manager cat /seuxdr/manager/.env 2>/dev/null || true)
+    fi
+
+    if [ -z "$env_content" ]; then
+        log "WARN: Could not read seuxdr .env — skipping OpenSearch cleanup"
         return
     fi
 
-    # Parse credentials from .env (strip surrounding quotes)
-    OS_USER=$(grep '^INDEXER_USERNAME' "$SEUXDR_ENV" | cut -d= -f2- | tr -d "'" | tr -d '"')
-    OS_PASS=$(grep '^INDEXER_PASSWORD' "$SEUXDR_ENV" | cut -d= -f2- | tr -d "'" | tr -d '"')
+    # Parse credentials (strip surrounding quotes)
+    OS_USER=$(echo "$env_content" | grep '^INDEXER_USERNAME' | cut -d= -f2- | tr -d "'" | tr -d '"')
+    OS_PASS=$(echo "$env_content" | grep '^INDEXER_PASSWORD' | cut -d= -f2- | tr -d "'" | tr -d '"')
 
     if [ -z "$OS_USER" ] || [ -z "$OS_PASS" ]; then
         log "WARN: Could not read OpenSearch credentials — skipping index cleanup"
