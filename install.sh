@@ -364,10 +364,10 @@ EOF
 
 cat > /etc/systemd/system/secureu-cleanup.timer <<EOF
 [Unit]
-Description=SECUR-EU Log Cleanup (daily)
+Description=SECUR-EU Log Cleanup (disk threshold monitor)
 
 [Timer]
-OnCalendar=daily
+OnCalendar=*:0/15
 Persistent=true
 
 [Install]
