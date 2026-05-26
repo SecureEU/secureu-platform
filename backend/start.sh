@@ -221,6 +221,22 @@ for i in $(seq 1 60); do
   fi
   sleep 3
 done
+
+# Seed default org and group on first run (idempotent — skipped if any org exists)
+ORG_COUNT=$(curl -sk -X POST "https://$LOCAL_IP:8443/api/orgs" 2>/dev/null \
+  | python3 -c "import sys,json; print(len(json.load(sys.stdin)))" 2>/dev/null || echo "0")
+if [ "${ORG_COUNT:-0}" -eq 0 ] 2>/dev/null; then
+  ORG_RESP=$(curl -sk -X POST "https://$LOCAL_IP:8443/api/create/org" \
+    -H "Content-Type: application/json" \
+    -d '{"name":"Default Organization","code":"DEFAULT"}')
+  ORG_ID=$(echo "$ORG_RESP" | python3 -c "import sys,json; print(json.load(sys.stdin)['id'])" 2>/dev/null)
+  if [ -n "$ORG_ID" ]; then
+    curl -sk -X POST "https://$LOCAL_IP:8443/api/create/group" \
+      -H "Content-Type: application/json" \
+      -d "{\"name\":\"Default Group\",\"org_id\":$ORG_ID}" > /dev/null
+    echo "  Seeded default org 'Default Organization' and group 'Default Group' (org_id=$ORG_ID)"
+  fi
+fi
 echo ""
 
 # ─────────────────────────────────────────────
