@@ -40,6 +40,8 @@ services:
       - NET_ADMIN
     volumes:
       - ./tshark/capture.sh:/capture.sh:ro
+    tmpfs:
+      - /tmp:size=512m,mode=1777
     environment:
       CAPTURE_INTERFACE: ${CAPTURE_INTERFACE:-any}
       KAFKA_BROKER: ${KAFKA_BROKER:-localhost:9092}

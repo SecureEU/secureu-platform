@@ -283,7 +283,7 @@ fi
 # 7. Make scripts executable + set ownership
 # ──────────────────────────────────────────────
 info "[7/7] Setting permissions..."
-chmod +x "$BACKEND_DIR/start.sh" "$BACKEND_DIR/stop.sh"
+chmod +x "$BACKEND_DIR/start.sh" "$BACKEND_DIR/stop.sh" "$BACKEND_DIR/cleanup-logs.sh"
 
 # Passwordless sudo for the user (needed for pentest server)
 if [ "$REAL_USER" != "root" ]; then
@@ -351,8 +351,34 @@ Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 WantedBy=multi-user.target
 EOF
 
+cat > /etc/systemd/system/secureu-cleanup.service <<EOF
+[Unit]
+Description=SECUR-EU Log Cleanup
+
+[Service]
+Type=oneshot
+User=root
+ExecStart=$BACKEND_DIR/cleanup-logs.sh
+Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+EOF
+
+cat > /etc/systemd/system/secureu-cleanup.timer <<EOF
+[Unit]
+Description=SECUR-EU Log Cleanup (daily)
+
+[Timer]
+OnCalendar=daily
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+EOF
+
+chmod +x "$BACKEND_DIR/cleanup-logs.sh"
+
 systemctl daemon-reload
-systemctl enable secureu-backend secureu-frontend
+systemctl enable secureu-backend secureu-frontend secureu-cleanup.timer
+systemctl start secureu-cleanup.timer
 
 echo ""
 echo "═══════════════════════════════════════════════════════════"
