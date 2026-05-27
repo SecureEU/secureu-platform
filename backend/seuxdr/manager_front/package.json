@@ -14,12 +14,11 @@
     "antd": "^5.24.3",
     "chart.js": "^4.4.8",
     "chartjs-plugin-annotation": "^3.1.0",
-    "faker": "^6.6.6",
     "faker-js": "^1.0.0",
     "react": "^19.0.0",
     "react-chartjs-2": "^5.3.0",
     "react-dom": "^19.0.0",
-    "uuid": "^11.1.0",
+    "uuid": "^11.1.1",
     "wouter": "^3.6.0",
     "zustand": "^5.0.4"
   },
@@ -35,6 +34,6 @@
     "globals": "^15.15.0",
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.24.1",
-    "vite": "^6.2.0"
+    "vite": "^6.4.2"
   }
 }

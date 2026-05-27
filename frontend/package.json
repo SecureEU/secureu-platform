@@ -14,7 +14,7 @@
     "jsonwebtoken": "^9.0.3",
     "lucide-react": "^0.511.0",
     "mongodb": "^7.1.0",
-    "next": "15.3.3",
+    "next": "15.5.18",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "recharts": "^2.15.3"
@@ -24,7 +24,7 @@
     "@playwright/test": "^1.58.2",
     "@tailwindcss/postcss": "^4",
     "eslint": "^9",
-    "eslint-config-next": "15.3.3",
+    "eslint-config-next": "15.5.18",
     "tailwindcss": "^4"
   }
 }
