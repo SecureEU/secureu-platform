@@ -339,6 +339,16 @@ func (configSvc *configurationService) generateExecutableForGroupWithVersion(gro
 		return err
 	}
 
+	// go.mod and go.sum live at the repo root (one level above manager).
+	// Without them the `go build` inside tempDir/agent fails with no module found.
+	for _, modFile := range []string{"go.mod", "go.sum"} {
+		src := filepath.Join("..", modFile)
+		dst := filepath.Join(tempDir, modFile)
+		if err := helpers.CopyFile(src, dst); err != nil {
+			return fmt.Errorf("failed to copy %s: %w", modFile, err)
+		}
+	}
+
 	// Setup certificates and config files
 	if err := configSvc.setupCertificatesAndConfig(tempDir, caCertificate, clientCertificate, clientKey, clientDetails, group, *agentVersion, clientSettings.OS); err != nil {
 		return err
