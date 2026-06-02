@@ -339,14 +339,16 @@ func (configSvc *configurationService) generateExecutableForGroupWithVersion(gro
 		return err
 	}
 
-	// go.mod and go.sum live at the repo root (one level above manager).
-	// Without them the `go build` inside tempDir/agent fails with no module found.
+	// go.mod, go.sum, and the manager/ source must be present at the module
+	// root inside tempDir. The agent imports SEUXDR/manager/* packages, so
+	// the full manager source tree is required alongside agent/ to resolve them.
 	for _, modFile := range []string{"go.mod", "go.sum"} {
-		src := filepath.Join("..", modFile)
-		dst := filepath.Join(tempDir, modFile)
-		if err := helpers.CopyFile(src, dst); err != nil {
+		if err := helpers.CopyFile(filepath.Join("..", modFile), filepath.Join(tempDir, modFile)); err != nil {
 			return fmt.Errorf("failed to copy %s: %w", modFile, err)
 		}
+	}
+	if err := helpers.CopyFolder(filepath.Join("..", "manager"), filepath.Join(tempDir, "manager")); err != nil {
+		return fmt.Errorf("failed to copy manager source: %w", err)
 	}
 
 	// Setup certificates and config files
