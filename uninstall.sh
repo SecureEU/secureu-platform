@@ -31,13 +31,15 @@ step()  { echo -e "\n${GREEN}───${NC} $1"; }
 
 REMOVE_DOCKER=0
 REMOVE_JAVA=0
+REMOVE_IMAGES=0
 KEEP_DIR=0
 
 for arg in "$@"; do
     case "$arg" in
-        --remove-docker) REMOVE_DOCKER=1 ;;
-        --remove-java)   REMOVE_JAVA=1   ;;
-        --keep-dir)      KEEP_DIR=1      ;;
+        --remove-docker) REMOVE_DOCKER=1  ;;
+        --remove-java)   REMOVE_JAVA=1    ;;
+        --remove-images) REMOVE_IMAGES=1  ;;
+        --keep-dir)      KEEP_DIR=1       ;;
         *) echo "Unknown option: $arg"; exit 1 ;;
     esac
 done
@@ -55,9 +57,10 @@ echo "  SECUR-EU Platform Uninstaller"
 echo "═══════════════════════════════════════════════════════════"
 echo "  Install dir : $INSTALL_DIR"
 echo "  User        : $REAL_USER"
+echo "  Remove images: $([ $REMOVE_IMAGES -eq 1 ] && echo yes || echo no)"
 echo "  Remove Docker: $([ $REMOVE_DOCKER -eq 1 ] && echo yes || echo no)"
-echo "  Remove Java : $([ $REMOVE_JAVA -eq 1 ] && echo yes || echo no)"
-echo "  Keep dir    : $([ $KEEP_DIR -eq 1 ] && echo yes || echo no)"
+echo "  Remove Java  : $([ $REMOVE_JAVA -eq 1 ] && echo yes || echo no)"
+echo "  Keep dir     : $([ $KEEP_DIR -eq 1 ] && echo yes || echo no)"
 echo "═══════════════════════════════════════════════════════════"
 echo ""
 read -r -p "This will permanently destroy all platform data. Continue? [y/N] " confirm
@@ -116,10 +119,12 @@ for container in kafka-dtm zookeeper-dtm sphinx-postgres; do
 done
 
 # ─────────────────────────────────────────────
-# 5. Docker images
+# 5. Docker images (opt-in)
 # ─────────────────────────────────────────────
-step "Pruning Docker images..."
-docker image prune -a -f 2>/dev/null && info "Docker images pruned" || true
+if [ "$REMOVE_IMAGES" -eq 1 ]; then
+    step "Pruning Docker images..."
+    docker image prune -a -f 2>/dev/null && info "Docker images pruned" || true
+fi
 
 # ─────────────────────────────────────────────
 # 6. Sudoers entry
