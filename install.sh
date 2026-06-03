@@ -172,7 +172,7 @@ info "Using npm at: $NPM_BIN ($("$NPM_BIN" --version))"
 # 4. Java 17
 # ──────────────────────────────────────────────
 info "[4/7] Installing Java 17..."
-if java -version 2>&1 | grep -q "17"; then
+if java -version 2>&1 | grep -q "17" && javac -version 2>&1 | grep -q "17"; then
     info "Java 17 already installed"
 else
     if [ ! -f /etc/apt/keyrings/adoptium.gpg ]; then
