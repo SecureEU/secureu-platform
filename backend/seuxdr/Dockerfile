@@ -16,10 +16,10 @@ RUN yum update -y && \
     rm go${GO_VERSION}.linux-amd64.tar.gz
         
 # Install Go manually
-RUN curl -LO https://go.dev/dl/go1.24.2.linux-amd64.tar.gz && \
+RUN curl -LO https://go.dev/dl/go1.25.0.linux-amd64.tar.gz && \
 rm -rf /usr/local/go && \
-tar -C /usr/local -xzf go1.24.2.linux-amd64.tar.gz && \
-rm go1.24.2.linux-amd64.tar.gz
+tar -C /usr/local -xzf go1.25.0.linux-amd64.tar.gz && \
+rm go1.25.0.linux-amd64.tar.gz
 
 # Set PATH
 ENV PATH="/usr/local/go/bin:${PATH}"
