@@ -108,7 +108,9 @@ func (configSvc *configurationService) buildExecutable(outputPath, tempDir, OS, 
 
 	cmd := exec.Command("go", "build", "-o", outputPath)
 	cmd.Dir = tempDir
-	cmd.Env = append(os.Environ(), fmt.Sprintf("GOOS=%s", OS), fmt.Sprintf("GOARCH=%s", architecture), "GOFLAGS=-tags=agent")
+	// GOTOOLCHAIN=local prevents Go from auto-downloading a newer toolchain
+	// when go.mod requires a version higher than what is installed in the image.
+	cmd.Env = append(os.Environ(), fmt.Sprintf("GOOS=%s", OS), fmt.Sprintf("GOARCH=%s", architecture), "GOFLAGS=-tags=agent", "GOTOOLCHAIN=local")
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
@@ -342,12 +344,14 @@ func (configSvc *configurationService) generateExecutableForGroupWithVersion(gro
 	// go.mod, go.sum, and the manager/ source must be present at the module
 	// root inside tempDir. The agent imports SEUXDR/manager/* packages, so
 	// the full manager source tree is required alongside agent/ to resolve them.
+	// NOTE: CopyFolder appends the source basename to dst, so pass tempDir
+	// directly (not tempDir/manager) to get tempDir/manager/ not tempDir/manager/manager/.
 	for _, modFile := range []string{"go.mod", "go.sum"} {
 		if err := helpers.CopyFile(filepath.Join("..", modFile), filepath.Join(tempDir, modFile)); err != nil {
 			return fmt.Errorf("failed to copy %s: %w", modFile, err)
 		}
 	}
-	if err := helpers.CopyFolder(filepath.Join("..", "manager"), filepath.Join(tempDir, "manager")); err != nil {
+	if err := helpers.CopyFolder(filepath.Join("..", "manager"), tempDir); err != nil {
 		return fmt.Errorf("failed to copy manager source: %w", err)
 	}
 
