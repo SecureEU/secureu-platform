@@ -199,7 +199,14 @@ DTM_JAR="$DTMAD_DIR/data-traffic-monitoring/target/data-traffic-monitoring-0.0.1
 AD_JAR="$DTMAD_DIR/anomaly-detection/target/anomaly-detection-0.0.1-SNAPSHOT.jar"
 if [ ! -f "$DTM_JAR" ] || [ ! -f "$AD_JAR" ]; then
     info "Building DTM and AD Spring Boot apps (this can take a while on first run)..."
-    sudo -u "$REAL_USER" bash -c "cd '$DTMAD_DIR' && mvn -B -q -DskipTests package"
+    # Explicitly point JAVA_HOME at Temurin so the Scala Maven plugin finds javac
+    # even when default-jre-headless has set update-alternatives to an OpenJDK stub.
+    TEMURIN_HOME=$(update-alternatives --list javac 2>/dev/null | grep temurin | head -1 | sed 's|/bin/javac||')
+    if [ -n "$TEMURIN_HOME" ]; then
+        export JAVA_HOME="$TEMURIN_HOME"
+        info "Using JAVA_HOME: $JAVA_HOME"
+    fi
+    sudo -u "$REAL_USER" bash -c "cd '$DTMAD_DIR' && JAVA_HOME='$JAVA_HOME' mvn -B -q -DskipTests package"
     if [ ! -f "$DTM_JAR" ] || [ ! -f "$AD_JAR" ]; then
         error "DTM/AD JARs missing after Maven build — see output above."
     fi
