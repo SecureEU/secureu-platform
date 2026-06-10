@@ -195,12 +195,8 @@ func (searchSvc *openSearchService) getByQuery(qry helpers.LogQuery) error {
 	// JSON payload (match all documents)
 	// Define the query payload with sorting and timestamp range filter
 	// Construct the base must clause
+	// Wazuh alert documents don't have input.type; filter only by full_log content and timestamp
 	mustClauses := []map[string]interface{}{
-		{
-			"term": map[string]interface{}{
-				"input.type": "log",
-			},
-		},
 		{
 			"match_phrase": map[string]interface{}{
 				"full_log": orgMatch,
