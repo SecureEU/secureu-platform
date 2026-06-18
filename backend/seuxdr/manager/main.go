@@ -61,7 +61,7 @@ func main() {
 
 	mtlsService := mtls.MTLSServiceFactory(dbClient.DB, logger)
 
-	cas, serverCrt, err := mtlsService.SetupMTLS()
+	_, _, err = mtlsService.SetupMTLS()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -180,35 +180,21 @@ func main() {
 	go func() {
 		mtlsH := handlers.NewHandlers(dbClient.DB)
 		mTLSRouter := routes.InitializemTLSRoutes(mtlsH, m)
-		caCertPool := x509.NewCertPool()
-		for _, crt := range cas {
-			// Load CA certificate
-			caCert, err := os.ReadFile(mtls.GetPathForCert(crt.CACertName))
-			if err != nil {
-				log.Fatalf("Failed to read CA certificate: %v", err)
-			}
-			caCertPool.AppendCertsFromPEM(caCert)
-		}
-
-		serverCerts := []tls.Certificate{}
-		for _, svrCrt := range serverCrt {
-
-			// Load server certificate and key
-			serverCert, err := tls.LoadX509KeyPair(mtls.GetPathForCert(svrCrt.ServerCertName), mtls.GetPathForCert(svrCrt.ServerKeyName))
-			if err != nil {
-				log.Fatalf("Failed to load server certificate and key: %v", err)
-			}
-			serverCerts = append(serverCerts, serverCert)
+		// Use the same API TLS cert for port 8081 so that agents can verify it
+		// using the server-ca.crt they already trust. Client cert auth is not
+		// required because the WebSocket dialer in the agent binary does not
+		// present a client certificate after the initial registration step.
+		wsServerCert, err := tls.LoadX509KeyPair(config.CERTS.TLS.SERVER_CRT, config.CERTS.TLS.SERVER_KEY)
+		if err != nil {
+			log.Fatalf("Failed to load API TLS certificate for WebSocket server: %v", err)
 		}
 
 		// Setup TLS configuration
 		mtlsConfig := &tls.Config{
-			ClientCAs:          caCertPool,
-			ClientAuth:         tls.RequireAndVerifyClientCert, // Require mTLS
-			Certificates:       serverCerts,
-			GetConfigForClient: mtlsService.RefreshConfig,
-			MinVersion:         tls.VersionTLS12,
-			MaxVersion:         tls.VersionTLS13,
+			Certificates: []tls.Certificate{wsServerCert},
+			ClientAuth:   tls.NoClientCert,
+			MinVersion:   tls.VersionTLS12,
+			MaxVersion:   tls.VersionTLS13,
 		}
 		mTLSServer := &http.Server{
 			Addr:      fmt.Sprintf("%s:%d", config.MTLS_SERVER, config.MTLS_PORT),

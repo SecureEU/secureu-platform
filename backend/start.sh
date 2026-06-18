@@ -164,7 +164,8 @@ echo ""
 # 8. Red Flags Backend (Log Anomaly Detection)
 # ─────────────────────────────────────────────
 echo "[8/10] Starting Red Flags backend..."
-docker compose -f "$BACKEND_DIR/redflags/docker-compose.yml" up -d
+# || true: transient Docker stale-network errors at boot must not abort the rest of startup
+docker compose -f "$BACKEND_DIR/redflags/docker-compose.yml" up -d || true
 echo ""
 
 # ─────────────────────────────────────────────
@@ -212,10 +213,10 @@ if ! docker exec seuxdr-manager systemctl is-enabled seuxdr.service > /dev/null 
   echo "  SEUXDR initialization complete"
 fi
 
-# Verify SEUXDR manager is ready
+# Verify SEUXDR manager is ready (use localhost — LOCAL_IP may not be routable to the container port at boot)
 echo "  Waiting for SEUXDR manager to start..."
 for i in $(seq 1 60); do
-  if curl -sk "https://$LOCAL_IP:8443/api/status" 2>/dev/null | grep -q '"status"'; then
+  if curl -sk --max-time 5 "https://localhost:8443/api/status" 2>/dev/null | grep -q '"message"'; then
     echo "  SEUXDR manager is ready"
     break
   fi
@@ -223,15 +224,15 @@ for i in $(seq 1 60); do
 done
 
 # Seed default org and group on first run (idempotent — skipped if any org exists)
-ORG_COUNT=$(curl -sk -X POST "https://$LOCAL_IP:8443/api/orgs" 2>/dev/null \
+ORG_COUNT=$(curl -sk --max-time 10 -X POST "https://localhost:8443/api/orgs" 2>/dev/null \
   | python3 -c "import sys,json; print(len(json.load(sys.stdin)))" 2>/dev/null || echo "0")
 if [ "${ORG_COUNT:-0}" -eq 0 ] 2>/dev/null; then
-  ORG_RESP=$(curl -sk -X POST "https://$LOCAL_IP:8443/api/create/org" \
+  ORG_RESP=$(curl -sk --max-time 10 -X POST "https://localhost:8443/api/create/org" \
     -H "Content-Type: application/json" \
     -d '{"name":"Default Organization","code":"DEFAULT"}')
   ORG_ID=$(echo "$ORG_RESP" | python3 -c "import sys,json; print(json.load(sys.stdin)['id'])" 2>/dev/null)
   if [ -n "$ORG_ID" ]; then
-    curl -sk -X POST "https://$LOCAL_IP:8443/api/create/group" \
+    curl -sk --max-time 10 -X POST "https://localhost:8443/api/create/group" \
       -H "Content-Type: application/json" \
       -d "{\"name\":\"Default Group\",\"org_id\":$ORG_ID}" > /dev/null
     echo "  Seeded default org 'Default Organization' and group 'Default Group' (org_id=$ORG_ID)"

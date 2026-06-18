@@ -11,23 +11,80 @@ MODE=$1
 # Wait for systemd to be fully initialized
 sleep 10
 
-# Install necessary packages
+# Install necessary packages before anything else (including before Wazuh install).
+# Running yum update AFTER Wazuh is installed risks removing Wazuh RPMs due to
+# dependency conflicts — so we update the base OS first, then install Wazuh on top.
 yum install coreutils --allowerasing -y
 yum install curl --allowerasing -y
+yum update -y
+yum install procps-ng -y
+yum install -y xmlstarlet
 
-
-# Skip Wazuh install if a previous run already provisioned it. Combined with
-# the persistent volume mounts on /var/ossec and /var/lib/wazuh-* in
-# docker-compose.yml, this turns restarts from "~10 min reinstall (flaky)"
-# into "~30s service start". The marker file gets created at the end of a
-# successful install below.
-if [ -f /var/ossec/.wazuh-installed ]; then
-    echo "Wazuh already installed (marker present); skipping wazuh-install.sh"
+# Skip Wazuh install if a previous run already provisioned it. The marker lives on
+# the seuxdr-storage volume (/seuxdr/manager/storage) which persists across container
+# restarts (but NOT across container recreates — docker compose down destroys it).
+# Container restarts via `docker compose up -d` reuse the existing container, so the
+# Wazuh binaries installed in the container layer survive. The marker prevents a
+# redundant reinstall when the container is recreated.
+WAZUH_MARKER="/seuxdr/manager/storage/.wazuh-installed"
+if [ -f "$WAZUH_MARKER" ] && [ -x "/var/ossec/bin/wazuh-control" ]; then
+    echo "Wazuh already installed (marker + binary present); skipping wazuh-install.sh"
 else
-    curl -sO https://packages.wazuh.com/4.14/wazuh-install.sh && bash ./wazuh-install.sh -a --all-in-one
-    # Marker for the host start.sh to detect that Wazuh is installed.
-    # Lives on the persisted /var/ossec volume so it survives container recreates.
-    touch /var/ossec/.wazuh-installed
+    rm -f "$WAZUH_MARKER"
+
+    # Background watcher: disable OpenSearch disk watermarks so the dashboard can
+    # create indices on systems with >85% disk usage. Two layers:
+    # 1. Write to opensearch.yml before indexer starts (prevents initial block).
+    # 2. Poll the live cluster API and remove any re-imposed block every 30s.
+    # Both are needed: the indexer re-imposes cluster.blocks.create_index via API
+    # after startup if it detects disk still above the watermark threshold.
+    (
+        OPENSEARCH_YML="/etc/wazuh-indexer/opensearch.yml"
+        INDEXER_READY=0
+        # Phase 1: wait for opensearch.yml and patch it
+        for i in $(seq 1 120); do
+            if [ -f "$OPENSEARCH_YML" ]; then
+                if ! grep -q 'disk.threshold_enabled' "$OPENSEARCH_YML"; then
+                    echo "cluster.routing.allocation.disk.threshold_enabled: false" >> "$OPENSEARCH_YML"
+                    echo "[disk-watcher] Patched opensearch.yml to disable disk watermark"
+                fi
+                break
+            fi
+            sleep 5
+        done
+        # Phase 2: once indexer is up, disable watermark + remove any index-create block via API
+        # Poll for up to 20 minutes (wazuh-install.sh runs ~10 min)
+        for i in $(seq 1 240); do
+            if systemctl is-active --quiet wazuh-indexer; then
+                PASS=$(tar -O -xf /root/wazuh-install-files.tar wazuh-install-files/wazuh-passwords.txt 2>/dev/null \
+                    | awk '/indexer_username:/{found=1} found && /indexer_password:/{print $2; exit}')
+                if [ -n "$PASS" ]; then
+                    # Disable disk threshold enforcement
+                    curl -sk -X PUT -u "admin:$PASS" 'https://localhost:9200/_cluster/settings' \
+                        -H 'Content-Type: application/json' \
+                        -d '{"persistent":{"cluster.routing.allocation.disk.threshold_enabled":false}}' \
+                        >/dev/null 2>&1
+                    # Remove index creation block if present
+                    BLOCK=$(curl -sk -u "admin:$PASS" 'https://localhost:9200/_cluster/settings' 2>/dev/null \
+                        | grep -o '"create_index":"true"')
+                    if [ -n "$BLOCK" ]; then
+                        curl -sk -X PUT -u "admin:$PASS" 'https://localhost:9200/_cluster/settings' \
+                            -H 'Content-Type: application/json' \
+                            -d '{"persistent":{"cluster.blocks.create_index":null}}' \
+                            >/dev/null 2>&1
+                        echo "[disk-watcher] Removed cluster.blocks.create_index block"
+                    fi
+                    if [ "$INDEXER_READY" = "0" ]; then
+                        echo "[disk-watcher] Indexer API reachable; disk watermark disabled via cluster settings"
+                        INDEXER_READY=1
+                    fi
+                fi
+            fi
+            sleep 5
+        done
+    ) &
+
+    curl -sO https://packages.wazuh.com/4.14/wazuh-install.sh && bash ./wazuh-install.sh -a --all-in-one && touch "$WAZUH_MARKER"
 fi
 
 # Extract the first indexer username and password
@@ -36,8 +93,6 @@ tar -O -xvf wazuh-install-files.tar wazuh-install-files/wazuh-passwords.txt | aw
     /indexer_password:/ { if (found) { password=$2; exit } }
     END { print "INDEXER_USERNAME=" username "\nINDEXER_PASSWORD=" password }
 ' > /seuxdr/manager/.env
-
-yum install -y xmlstarlet
 
 if ! grep -q '<location>/var/seuxdr/manager/queue/*.log</location>' /var/ossec/etc/ossec.conf; then
     awk '
@@ -53,7 +108,7 @@ if ! grep -q '<location>/var/seuxdr/manager/queue/*.log</location>' /var/ossec/e
                 print "  <localfile>"
                 print "    <log_format>syslog</log_format>"
                 print "    <location>/var/seuxdr/manager/queue/*.log</location>"
-                print "    <only-future-events>no</only-future-events>"
+                print "    <only-future-events>yes</only-future-events>"
                 print "  </localfile>"
             }
             print lines[i]
@@ -113,8 +168,9 @@ echo "- logcollector.rlimit_nofile=50100"
 
 sed -i 's/^enabled *= *1/enabled=0/' /etc/yum.repos.d/wazuh.repo
 
-yum update -y
-yum install procps-ng -y
+# Enable Wazuh services so they auto-start on container restarts without needing
+# startup.sh to run again (startup.sh is only called on first run by start.sh).
+systemctl enable wazuh-indexer wazuh-dashboard wazuh-manager filebeat
 
 systemctl stop wazuh-manager
 systemctl stop wazuh-indexer
