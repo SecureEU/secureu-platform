@@ -211,6 +211,7 @@ if os.path.exists(db):
     conn = sqlite3.connect(db)
     conn.execute('DELETE FROM cas')
     conn.execute('DELETE FROM server_certs')
+    conn.execute('DELETE FROM group_certificates')
     conn.execute('DELETE FROM executables')
     conn.commit()
     conn.close()
