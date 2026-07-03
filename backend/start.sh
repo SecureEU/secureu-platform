@@ -185,8 +185,38 @@ echo "  Detected local IP: $LOCAL_IP"
 sed -i "s|^domain:.*|domain: \"$LOCAL_IP\"|" "$SEUXDR_DIR/manager/manager.yaml"
 # Replace non-0.0.0.0 IPs in IP_ADDRESSES arrays
 sed -i "/IP_ADDRESSES/,/expiration_date/{s|\"[1-9][0-9]*\.[0-9]*\.[0-9]*\.[0-9]*\"|\"$LOCAL_IP\"|g}" "$SEUXDR_DIR/manager/manager.yaml"
+# Also patch the running container's copy (no-op if container not running yet; bind mount handles future recreates)
+docker exec seuxdr-manager sh -c "
+  sed -i 's|^domain:.*|domain: \"$LOCAL_IP\"|' /seuxdr/manager/manager.yaml
+  sed -i '/IP_ADDRESSES/,/expiration_date/{s|\"[1-9][0-9]*\.[0-9]*\.[0-9]*\.[0-9]*\"|\"$LOCAL_IP\"|g}' /seuxdr/manager/manager.yaml
+" 2>/dev/null || true
 sed -i "s|IP\.1 = .*|IP.1 = $LOCAL_IP|" "$SEUXDR_DIR/localhost.ext"
 sed -i "s|VITE_ROOT_URI=.*|VITE_ROOT_URI=https://$LOCAL_IP:8443|" "$SEUXDR_DIR/manager_front/.env"
+
+# If the mTLS server cert doesn't contain LOCAL_IP, delete it so the manager
+# regenerates it with the correct IP on next startup (avoids agent TLS errors).
+MTLS_CERT="$SEUXDR_DIR/manager/certs/server-cert.pem"
+if [ -f "$MTLS_CERT" ]; then
+  if ! openssl x509 -in "$MTLS_CERT" -noout -text 2>/dev/null | grep -q "IP Address:$LOCAL_IP"; then
+    echo "  mTLS cert IP mismatch — deleting to force regeneration with IP $LOCAL_IP"
+    rm -f "$SEUXDR_DIR/manager/certs/server-ca-crt.pem" \
+          "$SEUXDR_DIR/manager/certs/server-ca-key.pem" \
+          "$SEUXDR_DIR/manager/certs/server-cert.pem" \
+          "$SEUXDR_DIR/manager/certs/server-cert-key.pem"
+    # Also clear stale DB rows so the manager regenerates without error
+    docker exec seuxdr-manager python3 -c "
+import sqlite3, os
+db = '/seuxdr/manager/storage/manager.db'
+if os.path.exists(db):
+    conn = sqlite3.connect(db)
+    conn.execute('DELETE FROM cas')
+    conn.execute('DELETE FROM server_certs')
+    conn.execute('DELETE FROM executables')
+    conn.commit()
+    conn.close()
+" 2>/dev/null || true
+  fi
+fi
 
 # First-run: generate certs if they don't exist
 if [ ! -f "$SEUXDR_DIR/manager/certs/server.crt" ]; then

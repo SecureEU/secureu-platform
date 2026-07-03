@@ -19,6 +19,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./manager/certs:/seuxdr/manager/certs
+      - ./manager/manager.yaml:/seuxdr/manager/manager.yaml
       # SEUXDR Go-server state (SQLite DB + log queue).
       # Wazuh state (/var/ossec, /etc/wazuh-*, /var/lib/wazuh-*) is
       # intentionally NOT volumed. wazuh-install.sh pre-flight-checks for
