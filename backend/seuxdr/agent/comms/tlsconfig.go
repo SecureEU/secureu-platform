@@ -95,6 +95,14 @@ func (commSvc *CommunicationService) InitmTLSClient(servermTLSCaCrtPath, clientC
 		return fmt.Errorf("failed to append CA certificate to the pool")
 	}
 
+	// The manager serves its API/TLS server cert (signed by the TLS CA
+	// certs/server-ca.crt) on the mTLS registration port so agents can verify
+	// it. Trust that CA too, otherwise TLS verification of /api/register fails
+	// with "certificate signed by unknown authority".
+	if tlsCACert, tlsErr := commSvc.EmbeddedFiles.ReadFile("certs/server-ca.crt"); tlsErr == nil {
+		caCertPool.AppendCertsFromPEM(tlsCACert)
+	}
+
 	// Decode the PEM file
 	block, _ := pem.Decode(caCert)
 	if block == nil || block.Type != "CERTIFICATE" {
