@@ -199,14 +199,24 @@ DTM_JAR="$DTMAD_DIR/data-traffic-monitoring/target/data-traffic-monitoring-0.0.1
 AD_JAR="$DTMAD_DIR/anomaly-detection/target/anomaly-detection-0.0.1-SNAPSHOT.jar"
 if [ ! -f "$DTM_JAR" ] || [ ! -f "$AD_JAR" ]; then
     info "Building DTM and AD Spring Boot apps (this can take a while on first run)..."
-    # Explicitly point JAVA_HOME at Temurin so the Scala Maven plugin finds javac
-    # even when default-jre-headless has set update-alternatives to an OpenJDK stub.
-    TEMURIN_HOME=$(update-alternatives --list javac 2>/dev/null | grep temurin | head -1 | sed 's|/bin/javac||')
-    if [ -n "$TEMURIN_HOME" ]; then
-        export JAVA_HOME="$TEMURIN_HOME"
-        info "Using JAVA_HOME: $JAVA_HOME"
+    # Explicitly point JAVA_HOME at a JDK so the forked Maven compiler finds
+    # javac. update-alternatives alone is unreliable: on some hosts Temurin
+    # never registers a javac alternative, JAVA_HOME stays empty, and the
+    # build dies with 'Cannot run program "javac"'. Try, in order:
+    # update-alternatives → the Temurin install dir → wherever javac resolves.
+    JDK_HOME=$(update-alternatives --list javac 2>/dev/null | grep temurin | head -1 | sed 's|/bin/javac||')
+    if [ -z "$JDK_HOME" ]; then
+        JDK_HOME=$(ls -d /usr/lib/jvm/temurin-17-jdk-* 2>/dev/null | head -1)
     fi
-    sudo -u "$REAL_USER" bash -c "cd '$DTMAD_DIR' && JAVA_HOME='$JAVA_HOME' mvn -B -q -DskipTests package"
+    if [ -z "$JDK_HOME" ] && command -v javac &>/dev/null; then
+        JDK_HOME=$(dirname "$(dirname "$(readlink -f "$(command -v javac)")")")
+    fi
+    if [ -z "$JDK_HOME" ] || [ ! -x "$JDK_HOME/bin/javac" ]; then
+        error "Could not locate a JDK with javac (looked in update-alternatives, /usr/lib/jvm/temurin-17-jdk-*, PATH). Install temurin-17-jdk and retry."
+    fi
+    export JAVA_HOME="$JDK_HOME"
+    info "Using JAVA_HOME: $JAVA_HOME"
+    sudo -u "$REAL_USER" bash -c "cd '$DTMAD_DIR' && JAVA_HOME='$JAVA_HOME' PATH='$JAVA_HOME/bin':\$PATH mvn -B -q -DskipTests package"
     if [ ! -f "$DTM_JAR" ] || [ ! -f "$AD_JAR" ]; then
         error "DTM/AD JARs missing after Maven build — see output above."
     fi
