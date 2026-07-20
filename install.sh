@@ -105,6 +105,18 @@ if systemctl is-active --quiet packagekit 2>/dev/null; then
     systemctl mask packagekit 2>/dev/null || true
 fi
 
+# On fresh cloud images, unattended-upgrades / apt-daily run at boot and hold
+# the dpkg frontend lock. apt-get does not retry, so our first install step
+# would fail. Stop and disable that machinery, then wait for the lock to clear.
+info "Disabling apt auto-update services to free the dpkg lock..."
+systemctl stop unattended-upgrades apt-daily.timer apt-daily-upgrade.timer \
+    apt-daily.service apt-daily-upgrade.service 2>/dev/null || true
+systemctl disable unattended-upgrades apt-daily.timer apt-daily-upgrade.timer 2>/dev/null || true
+for _ in $(seq 1 60); do
+    fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1 || break
+    sleep 2
+done
+
 # ──────────────────────────────────────────────
 # 1. System packages
 # ──────────────────────────────────────────────
