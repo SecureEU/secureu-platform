@@ -184,16 +184,38 @@ info "Using npm at: $NPM_BIN ($("$NPM_BIN" --version))"
 # 4. Java 17
 # ──────────────────────────────────────────────
 info "[4/7] Installing Java 17..."
-if java -version 2>&1 | grep -q "17" && javac -version 2>&1 | grep -q "17"; then
-    info "Java 17 already installed"
+# Detect a *working* JDK 17: javac must actually run and report version 17.
+# Do NOT grep `java -version | grep 17` — when Java is absent, Ubuntu's
+# command-not-found handler prints suggestion text mentioning
+# "openjdk-17-jre-headless", which matches "17" and falsely reports Java as
+# installed, so the real install gets skipped and the build later fails with
+# "Cannot run program javac".
+if command -v javac >/dev/null 2>&1 && javac -version 2>&1 | grep -q "javac 17"; then
+    info "Java 17 already installed: $(javac -version 2>&1)"
 else
-    if [ ! -f /etc/apt/keyrings/adoptium.gpg ]; then
-        curl -fsSL https://packages.adoptium.net/artifactory/api/gpg/key/public | gpg --dearmor -o /etc/apt/keyrings/adoptium.gpg
-        echo "deb [signed-by=/etc/apt/keyrings/adoptium.gpg] https://packages.adoptium.net/artifactory/deb $(lsb_release -cs) main" > /etc/apt/sources.list.d/adoptium.list
-        apt-get update -qq
+    # Prefer the distro's openjdk-17-jdk — always in the Ubuntu/Debian repos,
+    # no third-party key/repo to fetch, and sufficient to build the apps.
+    if apt-get install -y -qq openjdk-17-jdk; then
+        info "Installed openjdk-17-jdk"
+    else
+        # Fall back to Temurin if the distro package is unavailable.
+        warn "openjdk-17-jdk unavailable; falling back to Temurin"
+        if [ ! -f /etc/apt/keyrings/adoptium.gpg ]; then
+            curl -fsSL https://packages.adoptium.net/artifactory/api/gpg/key/public | gpg --dearmor -o /etc/apt/keyrings/adoptium.gpg
+            echo "deb [signed-by=/etc/apt/keyrings/adoptium.gpg] https://packages.adoptium.net/artifactory/deb $(lsb_release -cs) main" > /etc/apt/sources.list.d/adoptium.list
+            apt-get update -qq
+        fi
+        apt-get install -y -qq temurin-17-jdk
     fi
-    apt-get install -y -qq temurin-17-jdk
-    info "Java installed: $(java -version 2>&1 | head -1)"
+    # Pin javac (and java) to 17 so a co-installed JRE 21 doesn't shadow it.
+    JDK17_HOME=$(ls -d /usr/lib/jvm/*temurin-17* /usr/lib/jvm/java-17-openjdk-* 2>/dev/null | head -1)
+    if [ -n "$JDK17_HOME" ] && [ -x "$JDK17_HOME/bin/javac" ]; then
+        update-alternatives --install /usr/bin/javac javac "$JDK17_HOME/bin/javac" 2000
+        update-alternatives --install /usr/bin/java  java  "$JDK17_HOME/bin/java"  2000
+        update-alternatives --set javac "$JDK17_HOME/bin/javac"
+        update-alternatives --set java  "$JDK17_HOME/bin/java"
+    fi
+    info "Java installed: $(javac -version 2>&1)"
 fi
 
 # Maven (needed to build the DTM and AD Spring Boot apps)
