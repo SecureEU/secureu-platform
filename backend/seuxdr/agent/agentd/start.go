@@ -133,11 +133,33 @@ func (agent *agent) Start() {
 				log.Fatal(err)
 			}
 
-			// if registration fails then exit
-			if err = agent.Register(); err != nil {
-				agent.logger.LogWithContext(logrus.ErrorLevel, "failed to register", logrus.Fields{"error": err})
-				log.Fatal(err)
+			// Retry registration instead of crashing the service. Registration
+			// often fails transiently — clock skew ("client certificate is not
+			// valid yet" when the manager's clock is ahead), or the manager not
+			// yet reachable. The old log.Fatal here made the Windows service
+			// exit with "Error 1067: The process terminated unexpectedly".
+			// Retrying with backoff keeps the service alive and lets it register
+			// once the cert becomes valid / the manager becomes reachable.
+			// Safe to block: agent.Start() runs in its own goroutine (see
+			// service.go), so this does not stall the service-manager start.
+			backoff := 15 * time.Second
+			const maxRegBackoff = 5 * time.Minute
+			for {
+				if err = agent.Register(); err == nil {
+					break
+				}
+				agent.logger.LogWithContext(logrus.WarnLevel, "registration failed, retrying", logrus.Fields{
+					"error":         err.Error(),
+					"retry_in_secs": backoff.Seconds(),
+				})
+				time.Sleep(backoff)
+				if backoff < maxRegBackoff {
+					if backoff *= 2; backoff > maxRegBackoff {
+						backoff = maxRegBackoff
+					}
+				}
 			}
+			agent.logger.LogWithContext(logrus.InfoLevel, "registration succeeded", logrus.Fields{})
 			time.Sleep(time.Second * 1)
 		}
 	}

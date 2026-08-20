@@ -364,12 +364,17 @@ func (installSvc *installationService) generateWindowsInstallationFile(templateF
 	if err != nil {
 		return fmt.Errorf(templateReadError, err)
 	}
-	appName := installSvc.config.CLIENT_CONFIG.APP_NAME
-	// Use fmt.Sprintf to replace placeholders with actual values
-	scriptContent := fmt.Sprintf(string(templateContent), appName, executable, installSvc.config.CLIENT_CONFIG.SERVICE_NAME_WINDOWS)
-
-	// Write the script to a new file
-	if err := os.WriteFile(scriptFile, []byte(scriptContent), 0755); err != nil {
+	// The Windows install template is self-contained: it receives the binary
+	// name as a PowerShell -BinaryName parameter at runtime and hardcodes the
+	// service name, so it contains no fmt verbs. Write it verbatim.
+	//
+	// Previously this ran fmt.Sprintf(template, appName, executable, service)
+	// against a zero-verb template, so Go appended a literal
+	// "%!(EXTRA string=..., ...)" to the generated install_seuxdr.ps1. That
+	// produced the "EXTRA : The term 'EXTRA' is not recognized" error at the
+	// end of every Windows install.
+	_ = executable // passed to the .ps1 at runtime via -BinaryName, not substituted here
+	if err := os.WriteFile(scriptFile, templateContent, 0755); err != nil {
 		return fmt.Errorf(scriptWriteError, err)
 	}
 	return nil
