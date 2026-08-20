@@ -9,20 +9,56 @@
 #   DISK_THRESHOLD        — trigger cleanup above this % disk usage (default: 80)
 #   INDEX_RETENTION_DAYS  — delete OpenSearch indices older than N days (default: 30)
 #   QUEUE_RETENTION_DAYS  — delete SEUXDR queue log files older than N days (default: 7)
+#   APP_LOG_MAX_MB        — truncate dtmad/{dtm,ad}.log above this size (default: 500)
+#   APP_LOG_RETENTION_DAYS— delete /var/log/secureu logs older than N days (default: 7)
+#
+# NOTE: the DTM/AD application-log cleanup runs on EVERY invocation (not gated
+# on disk %), because dtm.log/ad.log are unrotated stdout logs that grow
+# unbounded and are the most common cause of a full disk.
 
 set -euo pipefail
 
 DISK_THRESHOLD="${DISK_THRESHOLD:-80}"
 INDEX_RETENTION_DAYS="${INDEX_RETENTION_DAYS:-30}"
 QUEUE_RETENTION_DAYS="${QUEUE_RETENTION_DAYS:-7}"
+APP_LOG_MAX_MB="${APP_LOG_MAX_MB:-500}"
+APP_LOG_RETENTION_DAYS="${APP_LOG_RETENTION_DAYS:-7}"
 FORCE=0
 [ "${1:-}" = "--force" ] && FORCE=1
 
 BACKEND_DIR="$(cd "$(dirname "$0")" && pwd)"
 SEUXDR_ENV="$BACKEND_DIR/seuxdr/manager/.env"
 QUEUE_DIR="/var/lib/docker/volumes/seuxdr_seuxdr-queue/_data"
+DTMAD_DIR="$BACKEND_DIR/dtmad"
+SECUREU_LOG_DIR="/var/log/secureu"
 
 log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"; }
+
+# ─────────────────────────────────────────────
+# DTM/AD application logs — runs on EVERY invocation (NOT gated on disk %).
+# dtm.log/ad.log are unrotated stdout logs the Java apps hold open, so they
+# grow without limit and are the usual cause of a full disk. Cap them
+# proactively so they can never balloon (truncate, never rm — rm would not
+# free the space while the process keeps the handle open).
+# ─────────────────────────────────────────────
+cleanup_app_logs() {
+    for f in "$DTMAD_DIR/dtm.log" "$DTMAD_DIR/ad.log"; do
+        [ -f "$f" ] || continue
+        size_mb=$(( $(stat -c %s "$f" 2>/dev/null || echo 0) / 1024 / 1024 ))
+        if [ "$size_mb" -ge "$APP_LOG_MAX_MB" ]; then
+            : > "$f"
+            log "App logs: truncated $f (was ${size_mb}MB >= cap ${APP_LOG_MAX_MB}MB)"
+        fi
+    done
+    if [ -d "$SECUREU_LOG_DIR" ]; then
+        old=$(find "$SECUREU_LOG_DIR" -type f -name "*.log" -mtime "+${APP_LOG_RETENTION_DAYS}" 2>/dev/null | wc -l)
+        if [ "${old:-0}" -gt 0 ]; then
+            find "$SECUREU_LOG_DIR" -type f -name "*.log" -mtime "+${APP_LOG_RETENTION_DAYS}" -delete 2>/dev/null || true
+            log "App logs: deleted $old old file(s) from $SECUREU_LOG_DIR (>${APP_LOG_RETENTION_DAYS}d)"
+        fi
+    fi
+}
+cleanup_app_logs
 
 # ─────────────────────────────────────────────
 # Disk usage gate
