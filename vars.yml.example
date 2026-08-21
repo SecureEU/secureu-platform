@@ -23,8 +23,8 @@ java_package: temurin-17-jdk
 dashboard_port: 3000
 
 # MongoDB (dashboard auth database)
-mongodb_uri: "mongodb://admin:password@localhost:27017/intersoc-dashboard?authSource=admin"
+mongodb_uri: "mongodb://USER:CHANGEME@localhost:27017/intersoc-dashboard?authSource=admin"
 mongodb_db: "intersoc-dashboard"
 
 # JWT secret — CHANGE THIS IN PRODUCTION
-jwt_secret: "change-me-in-production"
+jwt_secret: "GENERATE_WITH_openssl_rand_hex_32"

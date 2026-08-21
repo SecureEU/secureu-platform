@@ -1,6 +1,8 @@
 all:
   hosts:
-    secureu-server:
-      ansible_host: 192.168.1.100       # Target server IP
-      ansible_user: ubuntu               # SSH user
-      ansible_ssh_private_key_file: ~/.ssh/id_rsa
+    secureu-target:
+      ansible_host: "TARGET_HOST_IP"
+      ansible_user: "TARGET_SSH_USER"
+      ansible_password: "CHANGEME"
+      ansible_become_password: "CHANGEME"
+      ansible_ssh_common_args: '-o StrictHostKeyChecking=no'

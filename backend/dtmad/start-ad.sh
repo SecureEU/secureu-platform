@@ -10,4 +10,4 @@ exec java \
   -jar "$DIR/anomaly-detection/target/anomaly-detection-0.0.1-SNAPSHOT.jar" \
   "--spring.datasource.url=jdbc:postgresql://localhost:8432/sphinx?currentSchema=sphinx" \
   --spring.datasource.username=sphinx \
-  --spring.datasource.password=sphinx
+  "--spring.datasource.password=${POSTGRES_PASSWORD:?POSTGRES_PASSWORD not set - run via backend/start.sh}"

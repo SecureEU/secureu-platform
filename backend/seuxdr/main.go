@@ -14,22 +14,22 @@ import (
 
 func main() {
 
-	// curl -v --insecure --user "admin:?nkRfjd8upF?*gomCIhcTNo8klS1Z41H" https://127.0.0.1:9200/_search/?size=10000 -H "Content-Type: application/json" -d "{"query": {"match_all": {}}}"
 
-	// curl -v --insecure --user "admin:?nkRfjd8upF?*gomCIhcTNo8klS1Z41H" https://192.168.10.7:9288/wazuh-alerts*/_search
 
-	// curl -u 'admin:?nkRfjd8upF?*gomCIhcTNo8klS1Z41H' -k -X POST "https://192.168.10.7:55000/security/user/authenticate"
 
-	// curl -k -X POST "https://192.168.10.7:55000/security/user/authenticate" \
-	// -u admin:?nkRfjd8upF?*gomCIhcTNo8klS1Z41H \
-	// -H "Content-Type: application/json"
 
 	// OpenSearch/Elasticsearch URL
 	url := "https://127.0.0.1:9200/_search/?size=10000"
 
-	// Authentication credentials
-	username := "admin"
-	password := "?nkRfjd8upF?*gomCIhcTNo8klS1Z41H"
+	// Authentication credentials come from the environment; never hardcode them.
+	// They are written to /seuxdr/manager/.env by startup.sh after the Wazuh
+	// install (INDEXER_USERNAME / INDEXER_PASSWORD).
+	username := os.Getenv("INDEXER_USERNAME")
+	password := os.Getenv("INDEXER_PASSWORD")
+	if username == "" || password == "" {
+		fmt.Println("INDEXER_USERNAME and INDEXER_PASSWORD must be set")
+		os.Exit(1)
+	}
 
 	// JSON payload (match all documents)
 	query := map[string]interface{}{

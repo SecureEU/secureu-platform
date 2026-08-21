@@ -101,8 +101,9 @@ domain: "192.168.1.173"
 
 wazuh:
   url: "https://127.0.0.1:9200/_search/?size=10000"
-  username: "admin"
-  password: "admin"
+  # Credentials are NOT stored here. They are generated during Wazuh
+  # installation and injected from /seuxdr/manager/.env at runtime
+  # (INDEXER_USERNAME / INDEXER_PASSWORD). Never document real values.
 
 active_response:
   enabled: true

@@ -18,7 +18,7 @@ services:
     restart: unless-stopped
 
   logstash:
-    image: docker.elastic.co/logstash/logstash-oss:8.12.0
+    image: docker.elastic.co/logstash/logstash-oss:8.19.14
     container_name: dtm-logstash
     network_mode: host
     volumes:
