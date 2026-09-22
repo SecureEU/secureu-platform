@@ -35,6 +35,12 @@ Thumbs.db
 *.swp
 *.swo
 
-# Environment (contains secrets)
-#frontend/.env
+# Environment / secrets — NEVER commit these (see *.example templates)
+frontend/.env
+frontend/local.env
+inventory.yml
+vars.yml
+backend/.secrets.env
+!*.example
 printscreens/
+backend/pentest/.env

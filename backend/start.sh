@@ -5,6 +5,12 @@ set -e
 sudo -n true 2>/dev/null || { echo "Error: passwordless sudo is required for the pentest backend."; exit 1; }
 
 BACKEND_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+# Per-deployment credentials (DNV VULN-18127-04-002). Creates backend/.secrets.env
+# on first run and exports POSTGRES_PASSWORD / MONGO_PASSWORD / JWT_SECRET.
+# shellcheck source=gen-secrets.sh
+. "$BACKEND_DIR/gen-secrets.sh"
+
 echo "=== SECUR-EU Backend Startup ==="
 echo "Backend dir: $BACKEND_DIR"
 echo ""
@@ -51,9 +57,9 @@ if ! docker ps --format '{{.Names}}' | grep -q '^sphinx-postgres$'; then
   docker start sphinx-postgres 2>/dev/null || \
   docker run -d --name sphinx-postgres \
     --restart unless-stopped \
-    -p 8432:5432 \
+    -p 127.0.0.1:8432:5432 \
     -e POSTGRES_USER=sphinx \
-    -e POSTGRES_PASSWORD=sphinx \
+    -e POSTGRES_PASSWORD="$POSTGRES_PASSWORD" \
     -e POSTGRES_DB=sphinx \
     postgres:15-alpine
   echo "  Sphinx Postgres started"

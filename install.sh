@@ -264,13 +264,20 @@ fi
 # ──────────────────────────────────────────────
 info "[5/7] Configuring frontend..."
 
+# Per-deployment credentials (DNV VULN-18127-04-002). Creates backend/.secrets.env
+# on first install and reuses it afterwards, so re-running does not invalidate
+# existing sessions or database users.
+# shellcheck source=backend/gen-secrets.sh
+. "$BACKEND_DIR/gen-secrets.sh"
+chown "$REAL_USER":"$REAL_USER" "$BACKEND_DIR/.secrets.env" 2>/dev/null || true
+
 cat > "$FRONTEND_DIR/.env" <<EOF
 # MongoDB
-MONGODB_URI=mongodb://admin:password@localhost:27017/intersoc-dashboard?authSource=admin
+MONGODB_URI=mongodb://admin:${MONGO_PASSWORD}@localhost:27017/intersoc-dashboard?authSource=admin
 MONGODB_DB=intersoc-dashboard
 
 # JWT
-JWT_SECRET=$(openssl rand -hex 32)
+JWT_SECRET=${JWT_SECRET}
 
 # Backend API URLs
 NEXT_PUBLIC_DARKWEB_API_URL=http://${SERVER_IP}:8001
@@ -325,7 +332,10 @@ if [ -f "$PENTEST_ENV" ]; then
     else
         echo "RPATH=\"$BACKEND_DIR/pentest\"" >> "$PENTEST_ENV"
     fi
-    info "Pentest .env RPATH set to $BACKEND_DIR/pentest"
+    sed -i "s|^MONGOURI=.*|MONGOURI=\"mongodb://admin:${MONGO_PASSWORD}@localhost:27017/?retryWrites=true\&w=majority\"|" "$PENTEST_ENV"
+    sed -i "s|^METAVAS_DB_URL=.*|METAVAS_DB_URL=\"postgresql://postgres:${MSF_DB_PASSWORD}@172.18.0.2/postgres\"|" "$PENTEST_ENV"
+    chmod 600 "$PENTEST_ENV"; chown "$REAL_USER":"$REAL_USER" "$PENTEST_ENV" 2>/dev/null || true
+    info "Pentest .env RPATH + generated DB credentials set"
 else
     warn "Pentest .env not found at $PENTEST_ENV; nmap result import may not work"
 fi
@@ -334,7 +344,8 @@ fi
 # 7. Make scripts executable + set ownership
 # ──────────────────────────────────────────────
 info "[7/7] Setting permissions..."
-chmod +x "$BACKEND_DIR/start.sh" "$BACKEND_DIR/stop.sh" "$BACKEND_DIR/cleanup-logs.sh"
+chmod +x "$BACKEND_DIR/start.sh" "$BACKEND_DIR/stop.sh" "$BACKEND_DIR/cleanup-logs.sh" \
+         "$BACKEND_DIR/gen-secrets.sh" "$BACKEND_DIR/harden-firewall.sh"
 
 # Passwordless sudo for the user (needed for pentest server)
 if [ "$REAL_USER" != "root" ]; then
