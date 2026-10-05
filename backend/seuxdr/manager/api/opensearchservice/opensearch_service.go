@@ -470,6 +470,9 @@ func (searchSvc *openSearchService) Stats(qry helpers.LogQuery) (helpers.AlertSt
 	query := map[string]interface{}{
 		// size 0: we want the counts, never the documents.
 		"size": 0,
+		// Without this hits.total caps at 10000 and the dashboard shows 10000
+		// alerts no matter how many there really are.
+		"track_total_hits": true,
 		"query": map[string]interface{}{
 			"bool": map[string]interface{}{
 				"must": mustClauses,
