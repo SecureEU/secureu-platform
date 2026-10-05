@@ -74,7 +74,43 @@ type LogQuery struct {
 type LogQueryDetails struct {
 	OrgID   string `json:"org_id,omitempty"`
 	GroupID string `json:"group_id,omitempty"`
+	// Size caps how many alerts come back. Without it the service pages through
+	// every matching document with search_after - on a busy deployment that is
+	// tens of thousands of alerts per request, which the dashboard then has to
+	// transfer and aggregate in the browser. Callers that only need a table page
+	// should always set this.
+	Size int `json:"size,omitempty"`
+	// Interval is the date_histogram bucket width for the stats endpoint
+	// ("1h", "1d", ...). Only used by /view/alerts/stats; defaults to 1h.
+	Interval string `json:"interval,omitempty"`
 	TimestampRange
+}
+
+// AlertStats is the aggregated view of a time range: the counts the dashboard
+// actually displays, computed by OpenSearch instead of by downloading every
+// alert and counting them client-side.
+type AlertStats struct {
+	Total    int           `json:"total"`
+	Critical int           `json:"critical"`
+	ByTactic []AlertBucket `json:"by_tactic"`
+	ByAgent  []AlertBucket `json:"by_agent"`
+	Trend    []TrendBucket `json:"trend"`
+}
+
+// TrendBucket is one time bucket of the alert histogram, split by the severity
+// bands the dashboard plots as separate lines.
+type TrendBucket struct {
+	Key      string `json:"key"`
+	Count    int    `json:"count"`
+	Critical int    `json:"critical"`
+	High     int    `json:"high"`
+	Medium   int    `json:"medium"`
+	Low      int    `json:"low"`
+}
+
+type AlertBucket struct {
+	Key   string `json:"key"`
+	Count int    `json:"count"`
 }
 
 type TimestampRange struct {
@@ -208,11 +244,11 @@ type AgentActionResponse struct {
 type ActiveResponseCommandType string
 
 const (
-	CommandBlockIP       ActiveResponseCommandType = "block_ip"
-	CommandKillProcess   ActiveResponseCommandType = "kill_process"
+	CommandBlockIP        ActiveResponseCommandType = "block_ip"
+	CommandKillProcess    ActiveResponseCommandType = "kill_process"
 	CommandQuarantineFile ActiveResponseCommandType = "quarantine_file"
-	CommandDisableUser   ActiveResponseCommandType = "disable_user"
-	CommandCustomScript  ActiveResponseCommandType = "custom_script"
+	CommandDisableUser    ActiveResponseCommandType = "disable_user"
+	CommandCustomScript   ActiveResponseCommandType = "custom_script"
 )
 
 // Active Response Execution Types for agent execution
@@ -227,19 +263,19 @@ const (
 
 // Active Response Command Structure (Generic Execution Model)
 type ActiveResponseCommand struct {
-	ID          string                       `json:"id"`
-	Type        ActiveResponseExecutionType  `json:"type"`         // How to execute (shell, powershell, etc.)
-	AgentUUID   string                       `json:"agent_uuid"`
-	Command     string                       `json:"command"`      // Command to execute
-	Arguments   []string                     `json:"arguments"`    // Command arguments
-	WorkingDir  string                       `json:"working_dir"`  // Optional working directory
-	Environment map[string]string            `json:"environment"`  // Optional environment variables
-	Timestamp   time.Time                    `json:"timestamp"`
-	Timeout     int                          `json:"timeout"`      // Execution timeout in seconds
-	
+	ID          string                      `json:"id"`
+	Type        ActiveResponseExecutionType `json:"type"` // How to execute (shell, powershell, etc.)
+	AgentUUID   string                      `json:"agent_uuid"`
+	Command     string                      `json:"command"`     // Command to execute
+	Arguments   []string                    `json:"arguments"`   // Command arguments
+	WorkingDir  string                      `json:"working_dir"` // Optional working directory
+	Environment map[string]string           `json:"environment"` // Optional environment variables
+	Timestamp   time.Time                   `json:"timestamp"`
+	Timeout     int                         `json:"timeout"` // Execution timeout in seconds
+
 	// Metadata for tracking and auditing
 	OriginalCommandType ActiveResponseCommandType `json:"original_command_type"` // Original rule command type
-	Description         string                     `json:"description"`           // Human-readable description
+	Description         string                    `json:"description"`           // Human-readable description
 }
 
 // Command Response from Agent
@@ -256,16 +292,16 @@ type ActiveResponseResult struct {
 type WebSocketMessageType string
 
 const (
-	MessageTypeLog            WebSocketMessageType = "log"
-	MessageTypeCommand        WebSocketMessageType = "command"
-	MessageTypeCommandResult  WebSocketMessageType = "command_result"
-	MessageTypeHeartbeat      WebSocketMessageType = "heartbeat"
+	MessageTypeLog           WebSocketMessageType = "log"
+	MessageTypeCommand       WebSocketMessageType = "command"
+	MessageTypeCommandResult WebSocketMessageType = "command_result"
+	MessageTypeHeartbeat     WebSocketMessageType = "heartbeat"
 )
 
 // WebSocket Message Structure
 type WebSocketMessage struct {
 	Type    WebSocketMessageType `json:"type"`
-	Payload any          `json:"payload"`
+	Payload any                  `json:"payload"`
 }
 
 // Agent OS and Distro Information for Command Generation

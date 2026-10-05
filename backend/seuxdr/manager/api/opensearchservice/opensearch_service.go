@@ -22,6 +22,7 @@ import (
 
 type OpenSearchService interface {
 	Search(qry helpers.LogQuery) (helpers.OpenSearchData, error)
+	Stats(qry helpers.LogQuery) (helpers.AlertStats, error)
 	SearchWithoutOrgFilter(timestampRange helpers.TimestampRange) (helpers.OpenSearchData, error)
 	getByQuery(qry helpers.LogQuery) error
 	getAgentMap(orgID, groupID int64) ([]helpers.AgentDetails, error)
@@ -140,10 +141,18 @@ func (searchSvc *openSearchService) SearchWithoutOrgFilter(timestampRange helper
 				},
 			},
 		},
+		// _doc breaks ties: sorting on @timestamp alone makes search_after
+		// re-read every row sharing a timestamp, which is why this endpoint
+		// returned duplicates and the dashboard had to de-duplicate by _id.
 		"sort": []map[string]interface{}{
 			{
 				"@timestamp": map[string]string{
 					"order": "desc",
+				},
+			},
+			{
+				"_doc": map[string]string{
+					"order": "asc",
 				},
 			},
 		},
@@ -231,13 +240,29 @@ func (searchSvc *openSearchService) getByQuery(qry helpers.LogQuery) error {
 				},
 			},
 		},
+		// _doc breaks ties: sorting on @timestamp alone makes search_after
+		// re-read every row sharing a timestamp, which is why this endpoint
+		// returned duplicates and the dashboard had to de-duplicate by _id.
 		"sort": []map[string]interface{}{
 			{
 				"@timestamp": map[string]string{
 					"order": "desc",
 				},
 			},
+			{
+				"_doc": map[string]string{
+					"order": "asc",
+				},
+			},
 		},
+	}
+
+	// A caller that asked for a bounded page gets exactly that - no paging loop.
+	// The size has to go in the body, so drop the ?size=10000 the configured URL
+	// carries - OpenSearch rejects a request that sets size in both places.
+	if qry.Query.Size > 0 {
+		query["size"] = qry.Query.Size
+		url = searchSvc.searchBaseURL()
 	}
 
 	// Convert query to JSON
@@ -276,6 +301,11 @@ func (searchSvc *openSearchService) getByQuery(qry helpers.LogQuery) error {
 
 	// // get list of hits from subsequent requests into alerts list
 	// var alerts []helpers.Alert
+
+	// Bounded request: the single response above is the whole answer.
+	if qry.Query.Size > 0 {
+		return nil
+	}
 
 	var lastSort []interface{} // Stores last sort values
 	for {
@@ -394,4 +424,190 @@ func (searchSvc *openSearchService) getAgentMap(orgID int64, groupID int64) ([]h
 	}
 
 	return data, nil
+}
+
+// searchBaseURL is the configured search endpoint without its query string.
+// The configured value carries "?size=10000" for the unbounded alert listing;
+// callers that set size in the body (a bounded page, or size 0 for an
+// aggregation) must not also send it in the URL.
+func (searchSvc *openSearchService) searchBaseURL() string {
+	u := searchSvc.config.WAZUH.URL
+	if i := strings.Index(u, "?"); i >= 0 {
+		u = u[:i]
+	}
+	return strings.TrimSuffix(u, "/")
+}
+
+// Stats answers the dashboard's questions - how many alerts, how many critical,
+// the split by MITRE tactic and by agent, and the hourly trend - with a single
+// aggregation query.
+//
+// The dashboards used to fetch every alert in the range and count them in the
+// browser. On a live deployment that is tens of thousands of documents and tens
+// of megabytes per page load, to render six numbers and two charts. OpenSearch
+// does the counting here and returns a few kilobytes.
+func (searchSvc *openSearchService) Stats(qry helpers.LogQuery) (helpers.AlertStats, error) {
+	var stats helpers.AlertStats
+
+	orgMatch := fmt.Sprintf("org_id=%s", qry.Query.OrgID)
+	mustClauses := []map[string]interface{}{
+		{"match_phrase": map[string]interface{}{"full_log": orgMatch}},
+	}
+	if len(qry.Query.GroupID) > 0 {
+		mustClauses = append(mustClauses, map[string]interface{}{
+			"match_phrase": map[string]interface{}{"full_log": fmt.Sprintf("group_id=%s", qry.Query.GroupID)},
+		})
+	}
+
+	// Only a fixed set of bucket widths is accepted - the value goes straight
+	// into the OpenSearch query and an unknown one just fails the request.
+	interval := "1h"
+	switch qry.Query.Interval {
+	case "1h", "3h", "6h", "12h", "1d", "7d":
+		interval = qry.Query.Interval
+	}
+
+	query := map[string]interface{}{
+		// size 0: we want the counts, never the documents.
+		"size": 0,
+		"query": map[string]interface{}{
+			"bool": map[string]interface{}{
+				"must": mustClauses,
+				"filter": []map[string]interface{}{
+					{"range": map[string]interface{}{
+						"timestamp": map[string]interface{}{
+							"gte":    qry.Query.GTE,
+							"lte":    qry.Query.LTE,
+							"format": "strict_date_optional_time",
+						},
+					}},
+				},
+			},
+		},
+		"aggs": map[string]interface{}{
+			"by_tactic": map[string]interface{}{
+				"terms": map[string]interface{}{"field": "rule.mitre.tactic", "size": 20},
+			},
+			"by_agent": map[string]interface{}{
+				"terms": map[string]interface{}{"field": "agent.name", "size": 10},
+			},
+			"trend": map[string]interface{}{
+				"date_histogram": map[string]interface{}{
+					"field":          "timestamp",
+					"fixed_interval": interval,
+					"min_doc_count":  0,
+				},
+				// Severity bands per bucket - the trend chart plots one line each.
+				"aggs": map[string]interface{}{
+					"severity": map[string]interface{}{
+						"range": map[string]interface{}{
+							"field": "rule.level",
+							"ranges": []map[string]interface{}{
+								{"key": "low", "to": 4},
+								{"key": "medium", "from": 4, "to": 8},
+								{"key": "high", "from": 8, "to": 12},
+								{"key": "critical", "from": 12},
+							},
+						},
+					},
+				},
+			},
+			// Wazuh rule levels >= 12 are what the dashboard calls critical.
+			"critical": map[string]interface{}{
+				"filter": map[string]interface{}{
+					"range": map[string]interface{}{"rule.level": map[string]interface{}{"gte": 12}},
+				},
+			},
+		},
+	}
+
+	jsonData, err := json.Marshal(query)
+	if err != nil {
+		return stats, fmt.Errorf("error marshalling stats query: %v", err)
+	}
+
+	req, err := http.NewRequest("POST", searchSvc.searchBaseURL(), bytes.NewBuffer(jsonData))
+	if err != nil {
+		return stats, fmt.Errorf("error creating stats request: %v", err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+	req.SetBasicAuth(searchSvc.config.WAZUH.USERNAME, searchSvc.config.WAZUH.PASSWORD)
+
+	resp, err := searchSvc.client.Do(req)
+	if err != nil {
+		return stats, fmt.Errorf("failed to fetch alert stats: %v", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return stats, fmt.Errorf("error reading stats response: %v", err)
+	}
+
+	var parsed struct {
+		Hits struct {
+			Total struct {
+				Value int `json:"value"`
+			} `json:"total"`
+		} `json:"hits"`
+		Aggregations struct {
+			ByTactic struct {
+				Buckets []struct {
+					Key      string `json:"key"`
+					DocCount int    `json:"doc_count"`
+				} `json:"buckets"`
+			} `json:"by_tactic"`
+			ByAgent struct {
+				Buckets []struct {
+					Key      string `json:"key"`
+					DocCount int    `json:"doc_count"`
+				} `json:"buckets"`
+			} `json:"by_agent"`
+			Trend struct {
+				Buckets []struct {
+					KeyAsString string `json:"key_as_string"`
+					DocCount    int    `json:"doc_count"`
+					Severity    struct {
+						Buckets []struct {
+							Key      string `json:"key"`
+							DocCount int    `json:"doc_count"`
+						} `json:"buckets"`
+					} `json:"severity"`
+				} `json:"buckets"`
+			} `json:"trend"`
+			Critical struct {
+				DocCount int `json:"doc_count"`
+			} `json:"critical"`
+		} `json:"aggregations"`
+	}
+	if err := json.Unmarshal(body, &parsed); err != nil {
+		return stats, fmt.Errorf("error parsing stats response: %v", err)
+	}
+
+	stats.Total = parsed.Hits.Total.Value
+	stats.Critical = parsed.Aggregations.Critical.DocCount
+	for _, b := range parsed.Aggregations.ByTactic.Buckets {
+		stats.ByTactic = append(stats.ByTactic, helpers.AlertBucket{Key: b.Key, Count: b.DocCount})
+	}
+	for _, b := range parsed.Aggregations.ByAgent.Buckets {
+		stats.ByAgent = append(stats.ByAgent, helpers.AlertBucket{Key: b.Key, Count: b.DocCount})
+	}
+	for _, b := range parsed.Aggregations.Trend.Buckets {
+		bucket := helpers.TrendBucket{Key: b.KeyAsString, Count: b.DocCount}
+		for _, sev := range b.Severity.Buckets {
+			switch sev.Key {
+			case "critical":
+				bucket.Critical = sev.DocCount
+			case "high":
+				bucket.High = sev.DocCount
+			case "medium":
+				bucket.Medium = sev.DocCount
+			case "low":
+				bucket.Low = sev.DocCount
+			}
+		}
+		stats.Trend = append(stats.Trend, bucket)
+	}
+
+	return stats, nil
 }

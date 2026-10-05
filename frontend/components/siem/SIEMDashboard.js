@@ -770,54 +770,45 @@ const SIEMDashboard = () => {
     });
   };
 
-  // --- Compute charts from alerts ---
-  const computeChartData = (mappedAlerts) => {
-    // Alerts by tactic
-    const tacticCounts = {};
-    mappedAlerts.forEach((a) => {
-      const tactics = Array.isArray(a.tactic) ? a.tactic : [a.tactic || 'Unknown'];
-      tactics.forEach((t) => {
-        if (t) tacticCounts[t] = (tacticCounts[t] || 0) + 1;
-      });
-    });
-    // Tactics with no alerts are dropped: they carry no information, and a
-    // row (or slice) at zero only costs vertical space and label room.
+  // How many recent alerts the table shows. The range can hold tens of
+  // thousands; the table only ever renders a page of them.
+  const ALERT_PAGE_SIZE = 200;
+
+  // --- Chart data comes from the server ---
+  // These used to be computed here by downloading every alert in the range and
+  // counting them in the browser - tens of thousands of documents and tens of
+  // megabytes per page load, to render a handful of numbers. The manager now
+  // aggregates in OpenSearch (view/alerts/stats) and returns the counts.
+  const applyStats = (stats) => {
     setAlertsByTactic(
-      Object.entries(tacticCounts)
-        .map(([type, value]) => ({ type, value }))
-        .filter(({ value }) => value > 0)
+      (stats.by_tactic || [])
+        .filter((b) => b.count > 0)
+        .map((b) => ({ type: b.key, value: b.count }))
         .sort((a, b) => b.value - a.value)
     );
 
-    // Top agents
-    const agentCounts = {};
-    mappedAlerts.forEach((a) => {
-      agentCounts[a.agent] = (agentCounts[a.agent] || 0) + 1;
-    });
     setTopAgents(
-      Object.entries(agentCounts)
-        .map(([agent, count]) => ({ agent, count }))
-        .sort((a, b) => b.count - a.count)
+      (stats.by_agent || [])
+        .map((b) => ({ agent: b.key, count: b.count }))
         .slice(0, 5)
     );
 
-    // Alerts trend (group by hour with date)
-    const hourCounts = {};
-    mappedAlerts.forEach((a) => {
-      if (!a.timestamp) return;
-      const date = new Date(a.timestamp);
-      if (isNaN(date.getTime())) return;
-      const hourKey = `${date.getMonth() + 1}/${date.getDate()} ${date.getHours().toString().padStart(2, '0')}:00`;
-      if (!hourCounts[hourKey]) hourCounts[hourKey] = { critical: 0, high: 0, medium: 0, low: 0 };
-      if (a.level >= 12) hourCounts[hourKey].critical++;
-      else if (a.level >= 8) hourCounts[hourKey].high++;
-      else if (a.level >= 4) hourCounts[hourKey].medium++;
-      else hourCounts[hourKey].low++;
-    });
-    const trend = Object.entries(hourCounts)
-      .map(([time, counts]) => ({ time, ...counts }))
-      .sort((a, b) => a.time.localeCompare(b.time));
-    setAlertsTrend(trend);
+    // One bucket per hour, already split into severity bands by the aggregation.
+    setAlertsTrend(
+      (stats.trend || []).map((b) => {
+        const d = new Date(b.key);
+        const time = isNaN(d.getTime())
+          ? b.key
+          : `${d.getMonth() + 1}/${d.getDate()} ${d.getHours().toString().padStart(2, '0')}:00`;
+        return {
+          time,
+          critical: b.critical || 0,
+          high: b.high || 0,
+          medium: b.medium || 0,
+          low: b.low || 0,
+        };
+      })
+    );
   };
 
   // --- Fetch all data ---
@@ -840,59 +831,70 @@ const SIEMDashboard = () => {
         seuxdrPost('view/agents', {}).catch(() => []),
       ]);
 
-      // Fetch alerts (may fail if OpenSearch not running)
-      let alertsData = [];
-      try {
-        const orgs = Array.isArray(orgsData) ? orgsData : [];
-        const now = new Date();
-        const dayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-
-        // Fetch alerts for each org (backend requires a valid org_id)
-        for (const org of orgs) {
-          try {
-            const raw = await seuxdrPost('view/alerts', {
-              query: {
-                org_id: String(org.id),
-                group_id: '',
-                gte: dayAgo.toISOString(),
-                lte: now.toISOString(),
-              },
-            });
-            const batch = raw?.data || (Array.isArray(raw) ? raw : []);
-            alertsData = alertsData.concat(batch);
-          } catch {
-            // skip this org
-          }
-        }
-      } catch {
-        // OpenSearch may not be running — that's fine
-      }
-
       const orgs = Array.isArray(orgsData) ? orgsData : [];
       const agentsList = Array.isArray(agentsData) ? agentsData : [];
+      const now = new Date();
+      const dayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+      const range = { gte: dayAgo.toISOString(), lte: now.toISOString() };
 
-      // Deduplicate alerts by _id (backend pagination bug returns duplicates)
-      const seen = new Set();
-      const uniqueAlerts = alertsData.filter((hit) => {
-        const id = hit._id || '';
-        if (!id || seen.has(id)) return false;
-        seen.add(id);
-        return true;
-      });
-      const mappedAlerts = mapAlerts(uniqueAlerts);
+      // Counts and chart series: one aggregation per org, a few KB each.
+      const totals = { total: 0, critical: 0 };
+      const tactic = {};
+      const agentTotals = {};
+      const trend = {};
+
+      // Table rows: a bounded page of the most recent alerts, not the range.
+      let recent = [];
+
+      for (const org of orgs) {
+        const q = { org_id: String(org.id), group_id: '', ...range };
+
+        try {
+          const stats = await seuxdrPost('view/alerts/stats', { query: q });
+          totals.total += stats?.total || 0;
+          totals.critical += stats?.critical || 0;
+          (stats?.by_tactic || []).forEach((b) => { tactic[b.key] = (tactic[b.key] || 0) + b.count; });
+          (stats?.by_agent || []).forEach((b) => { agentTotals[b.key] = (agentTotals[b.key] || 0) + b.count; });
+          (stats?.trend || []).forEach((b) => {
+            const t = trend[b.key] || (trend[b.key] = { critical: 0, high: 0, medium: 0, low: 0 });
+            t.critical += b.critical || 0;
+            t.high += b.high || 0;
+            t.medium += b.medium || 0;
+            t.low += b.low || 0;
+          });
+        } catch {
+          // OpenSearch may not be running - leave the counts at zero
+        }
+
+        try {
+          const raw = await seuxdrPost('view/alerts', { query: { ...q, size: ALERT_PAGE_SIZE } });
+          const batch = raw?.data || (Array.isArray(raw) ? raw : []);
+          recent = recent.concat(batch);
+        } catch {
+          // skip this org
+        }
+      }
 
       setOrganizations(orgs);
       setAgents(agentsList);
-      setAlerts(mappedAlerts);
+      setAlerts(mapAlerts(recent));
 
       setStats({
-        totalAlerts: mappedAlerts.length,
-        criticalAlerts: mappedAlerts.filter((a) => a.level >= 12).length,
+        totalAlerts: totals.total,
+        criticalAlerts: totals.critical,
         activeAgents: agentsList.filter((a) => a.active).length,
         organizations: orgs.length,
       });
 
-      computeChartData(mappedAlerts);
+      applyStats({
+        by_tactic: Object.entries(tactic).map(([key, count]) => ({ key, count })),
+        by_agent: Object.entries(agentTotals)
+          .map(([key, count]) => ({ key, count }))
+          .sort((a, b) => b.count - a.count),
+        trend: Object.entries(trend)
+          .map(([key, bands]) => ({ key, ...bands }))
+          .sort((a, b) => a.key.localeCompare(b.key)),
+      });
     } catch (err) {
       setError('Failed to fetch data from SEUXDR backend');
       console.error('SIEM fetch error:', err);
