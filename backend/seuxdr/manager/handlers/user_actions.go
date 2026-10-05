@@ -238,6 +238,34 @@ func (h *Handlers) ViewAlerts(c *gin.Context) {
 	c.JSON(http.StatusBadRequest, "Invalid Payload")
 }
 
+// ViewAlertStats returns the aggregated counts the dashboards display, computed
+// by OpenSearch. ViewAlerts returns alert documents and is for the alert table;
+// anything that only needs totals or chart series should call this instead of
+// downloading the range and counting it in the browser.
+func (h *Handlers) ViewAlertStats(c *gin.Context) {
+	logger := helpers.GetLogger(c)
+	if logger == nil {
+		c.JSON(500, gin.H{"error": failedHandlerStartMsg})
+		return
+	}
+
+	var payload helpers.LogQuery
+	if c.BindJSON(&payload) != nil {
+		c.JSON(http.StatusBadRequest, "Invalid Payload")
+		return
+	}
+
+	searchSvc := opensearchservice.NewOpenSearchServiceFactory(h.db, logger)
+
+	stats, err := searchSvc.Stats(payload)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, stats)
+}
+
 func (h *Handlers) GetTLSCerts(c *gin.Context) {
 	cfg := conf.GetConfigFunc()()
 	c.FileAttachment(cfg.CERTS.TLS.SERVER_CA_CRT, "server-ca.crt")

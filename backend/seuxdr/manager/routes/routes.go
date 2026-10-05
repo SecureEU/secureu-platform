@@ -67,6 +67,7 @@ func InitializeTLSRoutes(h *handlers.Handlers, m *middlewares.Middleware, cfg co
 
 	mainRouter.POST("/create/agent", h.GenerateAgentClientWithVersion)
 	mainRouter.POST("/view/alerts", h.ViewAlerts)
+	mainRouter.POST("/view/alerts/stats", h.ViewAlertStats)
 	mainRouter.GET("/download/agent", h.DownloadAgentWithVersion)
 	mainRouter.GET("/download/raw/:agentUUID", h.DownloadExecutableByURL)
 	// mainRouter.GET("/getExecutables/:group_id", h.GetExecutables)

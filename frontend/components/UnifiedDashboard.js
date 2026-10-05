@@ -51,6 +51,8 @@ import {
 
 const PENTEST_API_URL = process.env.NEXT_PUBLIC_PENTEST_API_URL || 'http://localhost:3001'
 const SEUXDR_PROXY = '/api/seuxdr'
+// The activity feed shows at most 5 alerts, so one small page per org is plenty.
+const RECENT_ALERT_SIZE = 50
 
 async function seuxdrPost(endpoint, body = {}) {
   const res = await fetch(`${SEUXDR_PROXY}?endpoint=${encodeURIComponent(endpoint)}`, {
@@ -108,28 +110,36 @@ export default function UnifiedDashboard() {
       const agents = Array.isArray(agentsData) ? agentsData : []
       const orgs = Array.isArray(orgsData) ? orgsData : []
 
-      // Fetch SIEM alerts (last 24h, all orgs)
-      let siemAlerts = []
+      // SIEM alerts: counts come from the aggregation endpoint (size 0, a few KB)
+      // instead of downloading every alert in the window and counting in the
+      // browser - on a busy deployment that was tens of MB per refresh.
       const now = new Date()
       const dayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000)
-      for (const org of orgs) {
-        try {
-          const raw = await seuxdrPost('view/alerts', {
-            query: { org_id: String(org.id), group_id: '', gte: dayAgo.toISOString(), lte: now.toISOString() }
-          })
-          const batch = raw?.data || (Array.isArray(raw) ? raw : [])
-          siemAlerts = siemAlerts.concat(batch)
-        } catch { /* skip */ }
-      }
+      const weekAgo = new Date(now.getTime() - 7 * 86400000)
 
-      // Deduplicate alerts
-      const seen = new Set()
-      siemAlerts = siemAlerts.filter(h => {
-        const id = h._id || ''
-        if (!id || seen.has(id)) return false
-        seen.add(id)
-        return true
-      })
+      const perOrg = await Promise.all(orgs.map(async org => {
+        const range = { org_id: String(org.id), group_id: '' }
+        const [day, week, recent] = await Promise.all([
+          seuxdrPost('view/alerts/stats', {
+            query: { ...range, gte: dayAgo.toISOString(), lte: now.toISOString(), interval: '1h' }
+          }).catch(() => null),
+          seuxdrPost('view/alerts/stats', {
+            query: { ...range, gte: weekAgo.toISOString(), lte: now.toISOString(), interval: '1d' }
+          }).catch(() => null),
+          seuxdrPost('view/alerts', {
+            query: { ...range, gte: dayAgo.toISOString(), lte: now.toISOString(), size: RECENT_ALERT_SIZE }
+          }).catch(() => null),
+        ])
+        return {
+          day,
+          week,
+          recent: recent?.data || (Array.isArray(recent) ? recent : []),
+        }
+      }))
+
+      // The activity feed only ever shows a handful of alerts, so we pull the
+      // most recent page per org rather than the whole window.
+      const recentAlerts = perOrg.flatMap(o => Array.isArray(o.recent) ? o.recent : [])
 
       // --- Compute offensive stats from scans ---
       const activeScans = scans.filter(s => s.status === 'running').length
@@ -148,14 +158,19 @@ export default function UnifiedDashboard() {
       // --- Compute defensive stats from SIEM ---
       const activeAgents = agents.filter(a => a.active).length
       const offlineAgents = agents.length - activeAgents
+      // Severity bands come straight from the trend sub-aggregation; the bands
+      // match the SIEM page (critical >= 12, high >= 8, medium >= 4, rest low).
       const alertsBySeverity = { critical: 0, high: 0, medium: 0, low: 0, info: 0 }
-      siemAlerts.forEach(a => {
-        const level = (a._source || a).rule?.level || 0
-        if (level >= 12) alertsBySeverity.critical++
-        else if (level >= 8) alertsBySeverity.high++
-        else if (level >= 5) alertsBySeverity.medium++
-        else if (level >= 3) alertsBySeverity.low++
-        else alertsBySeverity.info++
+      let totalAlerts = 0
+      perOrg.forEach(({ day }) => {
+        if (!day) return
+        totalAlerts += day.total || 0
+        ;(day.trend || []).forEach(b => {
+          alertsBySeverity.critical += b.critical || 0
+          alertsBySeverity.high += b.high || 0
+          alertsBySeverity.medium += b.medium || 0
+          alertsBySeverity.low += b.low || 0
+        })
       })
 
       // --- Build stats object ---
@@ -166,7 +181,7 @@ export default function UnifiedDashboard() {
           vulnerabilities: vulnCounts,
         },
         defensive: {
-          totalAlerts: siemAlerts.length,
+          totalAlerts,
           activeAgents,
           offlineAgents,
           alertsBySeverity,
@@ -199,7 +214,7 @@ export default function UnifiedDashboard() {
         })
       })
       // Recent SIEM alerts (top 5 by severity)
-      const topAlerts = [...siemAlerts]
+      const topAlerts = recentAlerts
         .map(a => ({ ...(a._source || a), _id: a._id }))
         .sort((a, b) => (b.rule?.level || 0) - (a.rule?.level || 0))
         .slice(0, 5)
@@ -224,10 +239,9 @@ export default function UnifiedDashboard() {
         const d = new Date(now.getTime() - i * 86400000)
         const dayKey = d.toISOString().split('T')[0]
         const dayScans = scans.filter(s => (s.start_time || '').startsWith(dayKey.replace(/-/g, '-'))).length
-        const dayAlerts = siemAlerts.filter(a => {
-          const ts = (a._source || a)['@timestamp'] || ''
-          return ts.startsWith(dayKey)
-        }).length
+        const dayAlerts = perOrg.reduce((sum, { week }) => sum + (week?.trend || [])
+          .filter(b => (b.key || '').startsWith(dayKey))
+          .reduce((n, b) => n + (b.count || 0), 0), 0)
         trend.push({ name: dayNames[d.getDay()], scans: dayScans, alerts: dayAlerts })
       }
       setTrendData(trend)
