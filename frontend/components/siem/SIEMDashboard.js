@@ -764,9 +764,12 @@ const SIEMDashboard = () => {
         if (t) tacticCounts[t] = (tacticCounts[t] || 0) + 1;
       });
     });
+    // Tactics with no alerts are dropped: they carry no information, and a
+    // row (or slice) at zero only costs vertical space and label room.
     setAlertsByTactic(
       Object.entries(tacticCounts)
         .map(([type, value]) => ({ type, value }))
+        .filter(({ value }) => value > 0)
         .sort((a, b) => b.value - a.value)
     );
 
