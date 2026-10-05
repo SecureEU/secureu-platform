@@ -7,7 +7,9 @@ export default defineConfig({
   fullyParallel: false,
   retries: 0,
   use: {
-    baseURL: 'http://localhost:3000',
+    // Point at a deployed instance with PLAYWRIGHT_BASE_URL=https://host.
+    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000',
+    ignoreHTTPSErrors: true,
     screenshot: 'only-on-failure',
     trace: 'off',
     video: 'off',
