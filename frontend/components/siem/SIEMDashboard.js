@@ -22,6 +22,9 @@ import {
 import {
   BarChart,
   Bar,
+  PieChart,
+  Pie,
+  Cell,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -623,6 +626,15 @@ const OrganizationsView = ({ organizations, onRefresh }) => {
 // --- Dashboard Overview ---
 
 const DashboardOverview = ({ stats, alertsByTactic, alertsTrend, topAgents }) => {
+  const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4'];
+
+  // Tactics with no alerts are already filtered out of the data. This guards the
+  // remaining case: a slice small enough that its label would land on top of its
+  // neighbour's. Such slices keep their wedge and their legend entry - only the
+  // outside label is dropped, and the tooltip still gives the exact count.
+  const sliceLabel = ({ type, percent }) =>
+    percent >= 0.03 ? `${type}: ${(percent * 100).toFixed(0)}%` : null;
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -638,21 +650,25 @@ const DashboardOverview = ({ stats, alertsByTactic, alertsTrend, topAgents }) =>
           {alertsByTactic.length === 0 ? (
             <div className="h-64 flex items-center justify-center text-slate-500">No alert data available</div>
           ) : (
-            // A pie put an outside label on every slice, so the tactics that round
-            // to 0% all drew at nearly the same angle and their labels overlapped
-            // into unreadable text. MITRE tactic names are long and the
-            // distribution has a long tail, which is a horizontal bar's job: the
-            // reader is comparing magnitudes, every category keeps a legible
-            // label, and zero-count tactics stay visible instead of collapsing
-            // into a shared sliver.
             <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={alertsByTactic} layout="vertical" margin={{ top: 4, right: 24, bottom: 4, left: 8 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" horizontal={false} />
-                <XAxis type="number" tick={{ fill: '#64748B' }} allowDecimals={false} />
-                <YAxis dataKey="type" type="category" tick={{ fill: '#64748B' }} width={150} />
-                <Tooltip formatter={(value) => [value, 'Alerts']} />
-                <Bar dataKey="value" fill="#3B82F6" radius={[0, 4, 4, 0]} />
-              </BarChart>
+              <PieChart>
+                <Pie
+                  data={alertsByTactic}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  outerRadius={100}
+                  dataKey="value"
+                  nameKey="type"
+                  label={sliceLabel}
+                >
+                  {alertsByTactic.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip formatter={(value, name) => [value, name]} />
+                <Legend />
+              </PieChart>
             </ResponsiveContainer>
           )}
         </div>
