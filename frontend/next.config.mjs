@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // bcrypt is a native addon - it must be required at runtime, not bundled.
+  serverExternalPackages: ['bcrypt'],
   // Cosmetic ESLint errors (e.g. unescaped curly quotes in docs pages) should
   // not block production builds. Lint runs in dev and CI separately.
   eslint: {

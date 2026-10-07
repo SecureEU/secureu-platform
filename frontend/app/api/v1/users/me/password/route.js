@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
-import bcrypt from 'bcryptjs';
+import bcrypt from 'bcrypt';
 import { getDb } from '@/lib/mongodb';
 import { verifyAccessToken } from '@/lib/jwt';
 

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import bcrypt from 'bcryptjs';
+import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import { getDb } from '@/lib/mongodb';
 import { signAccessToken } from '@/lib/jwt';
