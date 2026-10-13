@@ -1,25 +1,34 @@
 import { MongoClient } from 'mongodb';
 
-const uri = process.env.MONGODB_URI;
-const dbName = process.env.MONGODB_DB;
-
-if (!uri) throw new Error('MONGODB_URI is not set');
-if (!dbName) throw new Error('MONGODB_DB is not set');
-
+// Everything here is deferred to the first getDb() call. Reading the config, and
+// opening the connection, used to happen while this module was being evaluated -
+// which Next.js does for every route during `next build`. A missing variable
+// therefore failed the build, reported against whichever route imported this
+// first, and a build on a machine with no database would try to connect to one.
 const options = {};
 
 let clientPromise;
 
-if (process.env.NODE_ENV === 'development') {
-  // Cache on globalThis to survive hot-reload
-  if (!globalThis._mongoClientPromise) {
-    const client = new MongoClient(uri, options);
-    globalThis._mongoClientPromise = client.connect();
+function config() {
+  const uri = process.env.MONGODB_URI;
+  const dbName = process.env.MONGODB_DB;
+  if (!uri) throw new Error('MONGODB_URI is not set');
+  if (!dbName) throw new Error('MONGODB_DB is not set');
+  return { uri, dbName };
+}
+
+function connect(uri) {
+  if (process.env.NODE_ENV === 'development') {
+    // Cache on globalThis to survive hot-reload
+    if (!globalThis._mongoClientPromise) {
+      globalThis._mongoClientPromise = new MongoClient(uri, options).connect();
+    }
+    return globalThis._mongoClientPromise;
   }
-  clientPromise = globalThis._mongoClientPromise;
-} else {
-  const client = new MongoClient(uri, options);
-  clientPromise = client.connect();
+  if (!clientPromise) {
+    clientPromise = new MongoClient(uri, options).connect();
+  }
+  return clientPromise;
 }
 
 let indexesCreated = false;
@@ -35,9 +44,9 @@ async function ensureIndexes(db) {
 }
 
 export async function getDb() {
-  const client = await clientPromise;
+  const { uri, dbName } = config();
+  const client = await connect(uri);
   const db = client.db(dbName);
   await ensureIndexes(db);
   return db;
 }
-
