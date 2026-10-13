@@ -412,10 +412,12 @@ Environment=RPATH=$BACKEND_DIR/pentest
 # manager domain / cert SANs use the operator-chosen address rather than the
 # first interface from `hostname -I` (which is often the NAT IP).
 Environment=SERVER_IP=$SERVER_IP
-# First-run pulls ~3GB of images and runs Wazuh initialization, which can
-# take 30-50 minutes on a fresh host with limited bandwidth. 60 min gives
-# generous headroom; subsequent starts are fast.
-TimeoutStartSec=3600
+# First-run pulls every image and builds the Python/Go services, then runs
+# Wazuh initialization. Measured on a VM wiped to zero images: still in step
+# 9/10 (SEUXDR) at the 60-minute mark, where systemd SIGTERMed it. The estimate
+# below was written from a host that already had most layers cached, which is
+# why it looked generous. Subsequent starts are minutes, not hours.
+TimeoutStartSec=10800
 # stop.sh tears down many docker-compose stacks; default 90s is too tight.
 TimeoutStopSec=300
 
