@@ -1,15 +1,18 @@
-cd /opt/
-git clone https://github.com/clonesec/darkweb-engine.git
-cd darkweb-engine/
-chmod +rwx /opt/darkweb-engine/OnionSearchParser.py
-chmod +rwx /opt/darkweb-engine/cgdarkwebsearch.py
-mv darkweb-credentials.nasl darkweb-infect.nasl darkwebsearcher.nasl darkweb-databases.nasl darkweb-email.nasl darkweb-leak.nasl /usr/local/var/lib/openvas/plugins/private/
-pwd
-# Add this path in $PATH variable. For this type in terminal
-cd ~
-sudo nano .bashrc
-# then write at the end (if PWD = /usr/local/var/lib/openvas/plugins/darkweb-engine):
-alias cgdarkwebsearch="/opt/darkweb-engine/cgdarkwebsearch.py"
-alias OnionSearchParser="/opt/darkweb-engine/OnionSearchParser.py"
-# save and close it and then:
-source ~/.bashrc
+The dark web tool needs no separate installation.
+
+It is a self-contained FastAPI service in this directory: main.py plus app/,
+built from backend/darkweb/Dockerfile and started by install.sh together with
+the rest of the stack:
+
+    docker compose -f backend/darkweb/docker-compose.yml up -d   # dark-web-backend
+
+Tor is installed inside the image; there is nothing to clone and nothing to put
+on the host.
+
+---
+The previous contents of this file described a legacy OpenVAS/NASL setup that
+told you to `git clone https://github.com/clonesec/darkweb-engine.git` and copy
+.nasl plugins into /usr/local/var/lib/openvas/plugins. That repository is not
+reachable, and nothing in this codebase refers to darkweb-engine,
+cgdarkwebsearch or OnionSearchParser any more. Following those steps was wasted
+effort; they are kept out of the way here rather than in the instructions.
