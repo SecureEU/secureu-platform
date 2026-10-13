@@ -408,6 +408,13 @@ TimeoutStopSec=300
 WantedBy=multi-user.target
 EOF
 
+# bcrypt runs on the libuv threadpool, so password hashing scales with its size
+# rather than blocking the single Node event loop. The default of 4 caps a burst
+# of simultaneous logins at 4 at a time; give it one slot per core (never fewer
+# than the default).
+UV_POOL=$(nproc)
+if [ "$UV_POOL" -lt 4 ]; then UV_POOL=4; fi
+
 cat > /etc/systemd/system/secureu-frontend.service <<EOF
 [Unit]
 Description=SECUR-EU Dashboard (Next.js)
@@ -422,6 +429,7 @@ ExecStart=$NPM_BIN start -- -p 3000
 Restart=on-failure
 RestartSec=10
 Environment=NODE_ENV=production
+Environment=UV_THREADPOOL_SIZE=$UV_POOL
 Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 [Install]

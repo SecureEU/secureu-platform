@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "bcryptjs": "^3.0.3",
+    "bcrypt": "^6.0.0",
     "date-fns": "^4.1.0",
     "jsonwebtoken": "^9.0.3",
     "lucide-react": "^0.511.0",
