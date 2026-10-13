@@ -326,6 +326,12 @@ fi
 # Pin RPATH in the pentest .env to this checkout (the committed value is
 # developer-specific and breaks nmap result import / ZAP volume mounting).
 PENTEST_ENV="$BACKEND_DIR/pentest/.env"
+# .env is gitignored, so a fresh clone has none. Seed it from the tracked
+# example instead of warning and carrying on with a broken pentest backend.
+if [ ! -f "$PENTEST_ENV" ] && [ -f "$PENTEST_ENV.example" ]; then
+    cp "$PENTEST_ENV.example" "$PENTEST_ENV"
+    info "Created $PENTEST_ENV from .env.example"
+fi
 if [ -f "$PENTEST_ENV" ]; then
     if grep -q '^RPATH=' "$PENTEST_ENV"; then
         sed -i "s|^RPATH=.*|RPATH=\"$BACKEND_DIR/pentest\"|" "$PENTEST_ENV"
@@ -333,11 +339,20 @@ if [ -f "$PENTEST_ENV" ]; then
         echo "RPATH=\"$BACKEND_DIR/pentest\"" >> "$PENTEST_ENV"
     fi
     sed -i "s|^MONGOURI=.*|MONGOURI=\"mongodb://admin:${MONGO_PASSWORD}@localhost:27017/?retryWrites=true\&w=majority\"|" "$PENTEST_ENV"
-    sed -i "s|^METAVAS_DB_URL=.*|METAVAS_DB_URL=\"postgresql://postgres:${MSF_DB_PASSWORD}@172.18.0.2/postgres\"|" "$PENTEST_ENV"
+    # Point scan output at this checkout; the example ships an absolute path.
+    if grep -q '^METAVAS_REPORT_PATH=' "$PENTEST_ENV"; then
+        sed -i "s|^METAVAS_REPORT_PATH=.*|METAVAS_REPORT_PATH=\"$BACKEND_DIR/pentest/results/\"|" "$PENTEST_ENV"
+    else
+        echo "METAVAS_REPORT_PATH=\"$BACKEND_DIR/pentest/results/\"" >> "$PENTEST_ENV"
+    fi
+    # METAVAS_DB_URL is deliberately NOT rewritten with $MSF_DB_PASSWORD. It
+    # addresses the metavas-postgres container, whose password the runner code
+    # hardcodes as 1234 when the pentest server runs on the host; overwriting it
+    # here produced a URL that could never authenticate.
     chmod 600 "$PENTEST_ENV"; chown "$REAL_USER":"$REAL_USER" "$PENTEST_ENV" 2>/dev/null || true
-    info "Pentest .env RPATH + generated DB credentials set"
+    info "Pentest .env RPATH + report path + Mongo credentials set"
 else
-    warn "Pentest .env not found at $PENTEST_ENV; nmap result import may not work"
+    warn "Pentest .env not found at $PENTEST_ENV and no .env.example to seed it from"
 fi
 
 # ──────────────────────────────────────────────

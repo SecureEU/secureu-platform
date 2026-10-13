@@ -126,6 +126,24 @@ echo ""
 echo "[5/10] Starting Pentest databases..."
 docker compose -f "$BACKEND_DIR/pentest/docker_compose.yaml" up -d
 
+# meta-vas exploitation database. Nothing used to create this, so a fresh
+# install had no metavas-postgres to connect to and every exploitation scan
+# failed; it only worked where someone had started it by hand. It lives here
+# rather than in the compose file because compose refuses to adopt a container
+# or network it did not create, which would break every host that already has
+# one. The password is the literal the runner falls back to when the pentest
+# server runs on the host (metavas/metasploit/metasploitScanner.go).
+docker network inspect pentest-lab >/dev/null 2>&1 || docker network create pentest-lab
+if ! docker ps --format '{{.Names}}' | grep -q '^metavas-postgres$'; then
+  docker start metavas-postgres 2>/dev/null || \
+  docker run -d --name metavas-postgres \
+    --restart unless-stopped \
+    --network pentest-lab \
+    -e POSTGRES_PASSWORD=1234 \
+    postgres:15-alpine
+  echo "  meta-vas Postgres started"
+fi
+
 echo "[5/10] Building/pulling pentest scan images..."
 # Build nmap-bash image if not present
 if ! docker image inspect nmap-bash:latest > /dev/null 2>&1; then

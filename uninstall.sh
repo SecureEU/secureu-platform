@@ -113,7 +113,7 @@ done
 # 4. Infrastructure containers (started via docker run)
 # ─────────────────────────────────────────────
 step "Removing infrastructure containers..."
-for container in kafka-dtm zookeeper-dtm sphinx-postgres; do
+for container in kafka-dtm zookeeper-dtm sphinx-postgres metavas-postgres; do
     docker stop "$container" 2>/dev/null || true
     docker rm -v "$container" 2>/dev/null && info "Removed $container" || true
 done
