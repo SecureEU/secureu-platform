@@ -3,4 +3,4 @@ flask-cors==6.0.0
 cryptography==48.0.1
 certifi==2025.4.26
 flask-session==0.8.0
-openai==1.68.0
+requests==2.32.5

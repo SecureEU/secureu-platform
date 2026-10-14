@@ -41,75 +41,46 @@ const AskAIExplanation = ({ host, isOpen, onClose }) => {
 
   if (!isOpen) return null;
 
+  // This used to fake an answer: a 1.5s setTimeout followed by canned strings
+  // chosen by keyword-matching the question. It never contacted the backend, so
+  // the reply had nothing to do with the host that was actually scanned. It now
+  // asks the SSL checker, which puts the scan data to the local Ollama model.
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!question.trim()) return;
 
-    const newConversation = [
-      ...conversation,
-      { role: 'user', content: question }
-    ];
+    const asked = question;
+    const newConversation = [...conversation, { role: 'user', content: asked }];
     setConversation(newConversation);
+    setQuestion('');
     setIsLoading(true);
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      const aiResponse = generateAIResponse(host, question);
+      if (!HAS_BACKEND) throw new Error('SSL checker backend is not configured (NEXT_PUBLIC_SSL_API_URL).');
+      if (!host?.id) throw new Error('This host has no stored scan to reason about yet.');
+
+      const res = await fetch(`${API_URL}/api/ask`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question: asked, scan_id: String(host.id) }),
+      });
+      if (!res.ok) throw new Error(`Backend returned ${res.status}`);
+
+      const data = await res.json();
+      // The backend reports model/connection problems as success:false with the
+      // reason in `response`, so show that rather than a blank bubble.
       setConversation([
         ...newConversation,
-        { role: 'assistant', content: aiResponse }
+        { role: 'assistant', content: data.response || 'The model returned an empty answer.' },
       ]);
-      setQuestion('');
     } catch (error) {
-      console.error('Failed to get AI response:', error);
+      setConversation([
+        ...newConversation,
+        { role: 'assistant', content: `Could not get an answer: ${error.message}` },
+      ]);
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const generateAIResponse = (host, question) => {
-    const lowerQuestion = question.toLowerCase();
-
-    if (lowerQuestion.includes('ssl') || lowerQuestion.includes('tls') || lowerQuestion.includes('version')) {
-      return `The host ${host.host} is using ${host.sslVersion}. ${
-        host.sslVersion?.includes('TLS 1.2') || host.sslVersion?.includes('TLS 1.3')
-          ? 'This is a modern and secure protocol version that is recommended for secure communications.'
-          : 'This version may have some security vulnerabilities and upgrading to TLS 1.2 or TLS 1.3 is recommended.'
-      }`;
-    }
-
-    if (lowerQuestion.includes('certificate') || lowerQuestion.includes('trusted')) {
-      return `The certificate for ${host.host} is ${
-        host.trusted ? 'trusted and properly validated. This means it has been issued by a recognized Certificate Authority and browsers will trust this connection.'
-        : 'not trusted. This could mean the certificate is self-signed, expired, or not issued by a recognized Certificate Authority. Users visiting this site may see security warnings.'
-      }`;
-    }
-
-    if (lowerQuestion.includes('cipher') || lowerQuestion.includes('encryption')) {
-      return `This host is using ${host.cipher} cipher. ${
-        host.rc4Supported
-          ? 'Unfortunately, RC4 cipher is supported which is considered weak and vulnerable to attacks. It is recommended to disable RC4 support.'
-          : 'The configuration appears to be using modern ciphers which is good for security.'
-      }`;
-    }
-
-    if (lowerQuestion.includes('vulnerable') || lowerQuestion.includes('secure') || lowerQuestion.includes('risk')) {
-      if (!host.trusted || host.rc4Supported) {
-        return `There are some security concerns with this host. ${
-          !host.trusted ? 'The certificate is not trusted which may cause browser warnings. ' : ''
-        }${
-          host.rc4Supported ? 'The server supports RC4 ciphers which are vulnerable to cryptographic attacks. ' : ''
-        }I recommend addressing these issues to improve the security posture.`;
-      } else {
-        return `Based on the scan results, ${host.host} appears to have a good security configuration. The certificate is trusted and no obvious vulnerabilities were detected in this basic scan.`;
-      }
-    }
-
-    return `The scan for ${host.host} was performed on ${host.scanDate}. The server is running ${host.serverInfo} with ${host.sslVersion}. ${
-      host.trusted ? 'The certificate is trusted by browsers.' : 'The certificate is not trusted by browsers, which may cause security warnings.'
-    } ${
-      host.rc4Supported ? 'The server supports RC4 ciphers which are considered insecure.' : 'The server uses secure cipher configurations.'
-    }`;
   };
 
   return (

@@ -5,7 +5,7 @@ from .db import insert_scan_result, get_scans, get_scan, get_latest_scans
 from app.services.certificate import get_certificate
 from app.services.headers import get_header
 from app.services.protocols import get_protocols_nmap
-from app.services.ai_overview import get_deepseek_overview, analyze_with_deepseek
+from app.services.ai_overview import get_ai_overview, analyze_with_ai
 from app.services.heartbleed import check_heartbleed
 from flask import session
 
@@ -38,12 +38,11 @@ def check_ssl():
             else:
                 return f"{headers_resp}, {cert_resp}", 500
 
-        ai_analysis_text = "No AI analysis was generated. Please make sure to set up your API key and have the checkbox in the scanner tab checked"
+        ai_analysis_text = "No AI analysis was generated. Tick the AI checkbox in the scanner tab to request one."
         if generate_ai:
-            api_key = session.get("api_key")
-            if api_key:
-                ai_analysis_response = analyze_with_deepseek(headers,  cert_details, cipher_details, heartbleed, api_key)
-                ai_analysis_text = ai_analysis_response.get("response")
+            # The local model needs no API key; a failure comes back as text.
+            ai_analysis_response = analyze_with_ai(headers, cert_details, cipher_details, heartbleed)
+            ai_analysis_text = ai_analysis_response.get("response")
 
         insert_scan_result(
             hostname,
@@ -185,15 +184,8 @@ def get_ai_response():
         }), 500
 
     host_data = get_scan(int(scan_id))
-    api_key = session.get("api_key")
-    if api_key:
-        response = get_deepseek_overview(question, host_data, api_key)
-        return response
-    else:
-        return {
-            "success": False,
-            "response": "You haven't set your API key",
-        }
+    # Answered by the local Ollama model, so there is no API key to set.
+    return get_ai_overview(question, host_data)
 
 
 @main_blueprint.route("/api/set", methods=["POST"])

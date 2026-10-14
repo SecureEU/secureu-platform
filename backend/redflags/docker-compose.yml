@@ -49,6 +49,11 @@ services:
   ollama:
     image: ollama/ollama:latest
     container_name: redflags-ollama
+    ports:
+      # Loopback only - this is an unauthenticated API, so it must not be
+      # reachable from the network. Containers cannot use a loopback-published
+      # port, so they reach it over redflags_network by name instead.
+      - "127.0.0.1:11434:11434"
     volumes:
       - redflags_ollama_data:/root/.ollama
     healthcheck:
