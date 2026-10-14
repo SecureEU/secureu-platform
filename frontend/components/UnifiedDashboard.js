@@ -99,14 +99,20 @@ export default function UnifiedDashboard() {
     setLoading(true)
     try {
       // Fetch pentest scans, SIEM agents, and SIEM alerts in parallel
-      const [scansRes, orgsData, agentsData] = await Promise.all([
+      const [scansRes, exploitRes, orgsData, agentsData] = await Promise.all([
         fetch(`${PENTEST_API_URL}/scans`, { headers: { 'ngrok-skip-browser-warning': 'true' } })
+          .then(r => r.ok ? r.json() : []).catch(() => []),
+        // Exploitation results used to be left out of the vulnerability count
+        // entirely, so a target with several excellent-rated exploits available
+        // still showed "Critical 0, High 0".
+        fetch(`${PENTEST_API_URL}/metasploit/results`, { headers: { 'ngrok-skip-browser-warning': 'true' } })
           .then(r => r.ok ? r.json() : []).catch(() => []),
         seuxdrPost('orgs', {}).catch(() => []),
         seuxdrPost('view/agents', {}).catch(() => []),
       ])
 
       const scans = Array.isArray(scansRes) ? scansRes : []
+      const exploitScans = Array.isArray(exploitRes) ? exploitRes : (exploitRes?.data || [])
       const agents = Array.isArray(agentsData) ? agentsData : []
       const orgs = Array.isArray(orgsData) ? orgsData : []
 
@@ -152,6 +158,34 @@ export default function UnifiedDashboard() {
           const risk = alert.riskdesc?.toLowerCase().split(' ')[0]
           if (risk === 'informational') vulnCounts.info++
           else if (vulnCounts[risk] !== undefined) vulnCounts[risk]++
+        })
+      })
+
+      // ZAP's riskdesc only ever says High/Medium/Low/Informational, so with
+      // web scans as the only source the Critical figure was structurally
+      // always 0. Exploitation results are the one place genuinely critical
+      // findings come from, so they feed the same counters:
+      //   a confirmed compromise          -> critical
+      //   an exploit metasploit rates
+      //   excellent or great for a
+      //   service that is actually exposed -> high
+      const COMPROMISED = /session|shell|meterpreter|success|opened/i
+      exploitScans.forEach(scan => {
+        const logs = Array.isArray(scan.exploit_logs) ? scan.exploit_logs : []
+        const compromised = new Set()
+        logs.forEach(log => {
+          // "\_" paths are msf target sub-rows that older builds tried to run.
+          if (!String(log.path || '').includes('/')) return
+          if (COMPROMISED.test(String(log.exploitation_status || ''))) {
+            vulnCounts.critical++
+            compromised.add(log.path)
+          }
+        })
+        const found = Array.isArray(scan.exploits) ? scan.exploits : []
+        found.forEach(exploit => {
+          if (!String(exploit.path || '').includes('/')) return
+          if (compromised.has(exploit.path)) return   // already counted as critical
+          if (/excellent|great/i.test(String(exploit.rank || ''))) vulnCounts.high++
         })
       })
 

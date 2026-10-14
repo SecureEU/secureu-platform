@@ -7,7 +7,6 @@ from app.services.headers import get_header
 from app.services.protocols import get_protocols_nmap
 from app.services.ai_overview import get_ai_overview, analyze_with_ai
 from app.services.heartbleed import check_heartbleed
-from flask import session
 
 main_blueprint = Blueprint('main', __name__)
 
@@ -188,24 +187,6 @@ def get_ai_response():
     return get_ai_overview(question, host_data)
 
 
-@main_blueprint.route("/api/set", methods=["POST"])
-def set_api_key():
-    data = request.get_json()
-    api_key = data.get("api_key")
-    if api_key:
-        session["api_key"] = api_key
-        return "The API key is set", 204
-    return "API key is required", 400
-
-
-@main_blueprint.route("/api/get", methods=["GET"])
-def get_api_key():
-    api_key = session.get('api_key')
-    if api_key:
-        return jsonify({"api_key_set": True})
-    else:
-        return jsonify({"api_key_set": False})
-
 
 @main_blueprint.route('/')
 def home():
@@ -215,7 +196,6 @@ def home():
             "/api/check": "POST - Check SSL/TLS configuration",
             "/api/scans": "GET - Get all scans",
             "/api/ask": "POST - Ask AI",
-            "/api/set": "POST - Set API Key",
             "/api/latest": "GET = Get latest scans for each host"
         }
     })

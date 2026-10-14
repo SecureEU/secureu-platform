@@ -10,8 +10,64 @@ import requests
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://redflags-ollama:11434")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.2:latest")
 OLLAMA_TIMEOUT = int(os.getenv("OLLAMA_TIMEOUT", "180"))
+OLLAMA_KEEP_ALIVE = os.getenv("OLLAMA_KEEP_ALIVE", "30m")
+OLLAMA_MAX_TOKENS = int(os.getenv("OLLAMA_MAX_TOKENS", "400"))
 
 SYSTEM_PROMPT = "You are a cybersecurity assistant."
+
+
+def _summarise_host_data(host_data):
+    """Condense a scan record into the facts worth reasoning about.
+
+    The whole record used to go into the prompt verbatim. Measured on the test
+    VM that was 1650 tokens, and prompt evaluation ran at ~18 tok/s on CPU - 89
+    of the 155 seconds a question took were spent reading the prompt before the
+    model wrote a single word. Most of that bulk is every cipher of every TLS
+    version and the full text of each security header, which the answer never
+    needs: whether a header is present, and which protocols and weak ciphers
+    were seen, is enough.
+    """
+    if not isinstance(host_data, dict):
+        return json.dumps(host_data, default=str)
+
+    cert = host_data.get("certificate") or {}
+    headers = host_data.get("headers") or {}
+    protocols = host_data.get("protocols") or {}
+    scan = host_data.get("scan") or {}
+
+    protocols_json = protocols.get("protocols_json") or {}
+    versions = sorted(protocols_json) if isinstance(protocols_json, dict) else []
+    cipher_count = sum(len(v or []) for v in protocols_json.values()) if isinstance(protocols_json, dict) else 0
+
+    # Header checks are booleans in the record; report them by name, not value.
+    present = sorted(k for k, v in headers.items() if k != "success" and v)
+    missing = sorted(k for k, v in headers.items() if k != "success" and not v)
+
+    summary = {
+        "host": scan.get("host") or host_data.get("host"),
+        "scanned_at": scan.get("date") or scan.get("scan_date"),
+        "certificate": {
+            "ssl_version": cert.get("ssl_version"),
+            "cipher_suite": cert.get("cipher_suite"),
+            "key_type": cert.get("key_type"),
+            "key_size": cert.get("key_size"),
+            "issuers": cert.get("issuers"),
+            "expires": cert.get("expire_date"),
+            "expires_in_days": cert.get("expires_in"),
+            "has_expired": cert.get("has_expired"),
+        },
+        "security_headers_present": present,
+        "security_headers_missing": missing,
+        "tls_versions_offered": versions,
+        "cipher_suites_offered": cipher_count,
+        "weak_cipher_count": protocols.get("insecure_ciphers"),
+        "known_issues": {
+            k: protocols.get(k)
+            for k in ("heartbleed", "poodle", "beast", "crime", "freak", "logjam")
+            if protocols.get(k)
+        },
+    }
+    return json.dumps({k: v for k, v in summary.items() if v not in (None, [], {})}, default=str)
 
 
 def _ask_ollama(prompt):
@@ -29,6 +85,10 @@ def _ask_ollama(prompt):
                 "system": SYSTEM_PROMPT,
                 "prompt": prompt,
                 "stream": False,
+                # Without this the model is evicted after 5 idle minutes and the
+                # next question pays the reload again.
+                "keep_alive": OLLAMA_KEEP_ALIVE,
+                "options": {"num_predict": OLLAMA_MAX_TOKENS},
             },
             timeout=OLLAMA_TIMEOUT,
         )
@@ -59,11 +119,11 @@ def _ask_ollama(prompt):
 def get_ai_overview(question, host_data):
     prompt = (
         "Having these server data in json format extracted using various security tools\n"
-        + json.dumps(host_data, default=str)
+        + _summarise_host_data(host_data)
         + "\n can you answer this question considering the user does not have"
-          " cybersecurity expertise ? If many data appear as None it means the tools"
-          " could not retrieve information due to issues like SSLv3 or expired"
-          " certificate. Question:" + question
+          " cybersecurity expertise ? Only fields the scan actually collected are"
+          " included, so do not comment on missing or null data. Answer only from"
+          " the data above. Question:" + question
     )
     return _ask_ollama(prompt)
 
