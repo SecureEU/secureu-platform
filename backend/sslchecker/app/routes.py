@@ -183,6 +183,12 @@ def get_ai_response():
         }), 500
 
     host_data = get_scan(int(scan_id))
+    if host_data is None:
+        # Without this the model was handed "null" and duly answered that the
+        # data was all empty, which reads as a scan result rather than a missing
+        # record. /api/host already 404s for the same case.
+        return jsonify({"success": False, "response": "Scan not found"}), 404
+
     # Answered by the local Ollama model, so there is no API key to set.
     return get_ai_overview(question, host_data)
 

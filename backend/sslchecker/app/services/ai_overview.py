@@ -17,57 +17,88 @@ SYSTEM_PROMPT = "You are a cybersecurity assistant."
 
 
 def _summarise_host_data(host_data):
-    """Condense a scan record into the facts worth reasoning about.
+    """Condense a scan row into the facts worth reasoning about.
 
-    The whole record used to go into the prompt verbatim. Measured on the test
-    VM that was 1650 tokens, and prompt evaluation ran at ~18 tok/s on CPU - 89
+    The whole row used to go into the prompt verbatim. Measured on the test VM
+    that was 1650 tokens, and prompt evaluation runs at ~18 tok/s on CPU, so 89
     of the 155 seconds a question took were spent reading the prompt before the
-    model wrote a single word. Most of that bulk is every cipher of every TLS
-    version and the full text of each security header, which the answer never
-    needs: whether a header is present, and which protocols and weak ciphers
-    were seen, is enough.
+    model wrote a word. The bulk is header_values and protocols - every cipher
+    of every TLS version, and the full text of each security header - which the
+    answer never needs. Which protocols, which headers, and the weak-cipher and
+    known-issue flags are enough.
+
+    get_scan() returns a flat sqlite row; a couple of its columns hold JSON as
+    text. Anything unexpected falls back to dumping the row as before, so a
+    schema change degrades to the old behaviour rather than an empty prompt.
     """
-    if not isinstance(host_data, dict):
+    try:
+        row = dict(host_data)
+    except (TypeError, ValueError):
         return json.dumps(host_data, default=str)
 
-    cert = host_data.get("certificate") or {}
-    headers = host_data.get("headers") or {}
-    protocols = host_data.get("protocols") or {}
-    scan = host_data.get("scan") or {}
+    if "host" not in row and "ssl_version" not in row:
+        return json.dumps(host_data, default=str)
 
-    protocols_json = protocols.get("protocols_json") or {}
-    versions = sorted(protocols_json) if isinstance(protocols_json, dict) else []
-    cipher_count = sum(len(v or []) for v in protocols_json.values()) if isinstance(protocols_json, dict) else 0
+    def as_json(value):
+        if isinstance(value, str):
+            try:
+                return json.loads(value)
+            except (ValueError, TypeError):
+                return {}
+        return value if isinstance(value, (dict, list)) else {}
 
-    # Header checks are booleans in the record; report them by name, not value.
-    present = sorted(k for k, v in headers.items() if k != "success" and v)
-    missing = sorted(k for k, v in headers.items() if k != "success" and not v)
+    headers = as_json(row.get("header_values"))
+    protocols = as_json(row.get("protocols"))
+
+    versions, cipher_count = [], 0
+    if isinstance(protocols, dict):
+        versions = sorted(k for k, v in protocols.items() if v)
+        cipher_count = sum(len(v) for v in protocols.values() if isinstance(v, list))
+
+    present, missing = [], []
+    if isinstance(headers, dict):
+        for name, value in headers.items():
+            (present if value else missing).append(name)
 
     summary = {
-        "host": scan.get("host") or host_data.get("host"),
-        "scanned_at": scan.get("date") or scan.get("scan_date"),
-        "certificate": {
-            "ssl_version": cert.get("ssl_version"),
-            "cipher_suite": cert.get("cipher_suite"),
-            "key_type": cert.get("key_type"),
-            "key_size": cert.get("key_size"),
-            "issuers": cert.get("issuers"),
-            "expires": cert.get("expire_date"),
-            "expires_in_days": cert.get("expires_in"),
-            "has_expired": cert.get("has_expired"),
+        "host": row.get("host"),
+        "scanned_at": row.get("scan_date"),
+        "server": row.get("server_type"),
+        "negotiated": {
+            "ssl_version": row.get("ssl_version"),
+            "cipher": row.get("cipher"),
         },
-        "security_headers_present": present,
-        "security_headers_missing": missing,
+        "certificate": {
+            "issuer": row.get("issuer"),
+            "subject": row.get("subject"),
+            "key_type": row.get("key_type"),
+            "key_size": row.get("key_size"),
+            "valid_until": row.get("valid_until"),
+            "expires_in_days": row.get("expires_in"),
+            "has_expired": bool(row.get("has_expired")),
+        },
         "tls_versions_offered": versions,
         "cipher_suites_offered": cipher_count,
-        "weak_cipher_count": protocols.get("insecure_ciphers"),
-        "known_issues": {
-            k: protocols.get(k)
-            for k in ("heartbleed", "poodle", "beast", "crime", "freak", "logjam")
-            if protocols.get(k)
-        },
+        "weak_cipher_count": row.get("weak_ciphers"),
+        "legacy_protocols_enabled": sorted(
+            name for name, flag in (
+                ("SSLv3", row.get("sslv3_supported")),
+                ("TLSv1.0", row.get("tls1_supported")),
+                ("TLSv1.1", row.get("tls1_1_supported")),
+            ) if flag
+        ),
+        "heartbleed_vulnerable": bool(row.get("heartbleed")),
+        "security_headers_present": sorted(present),
+        "security_headers_missing": sorted(missing),
     }
-    return json.dumps({k: v for k, v in summary.items() if v not in (None, [], {})}, default=str)
+
+    def prune(value):
+        if isinstance(value, dict):
+            cleaned = {k: prune(v) for k, v in value.items()}
+            return {k: v for k, v in cleaned.items() if v not in (None, "", [], {})}
+        return value
+
+    return json.dumps(prune(summary), default=str)
 
 
 def _ask_ollama(prompt):
