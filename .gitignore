@@ -44,3 +44,6 @@ backend/.secrets.env
 !*.example
 printscreens/
 backend/pentest/.env
+C:/*
+CLAUDE.md
+PLAYWRIGHT.md
