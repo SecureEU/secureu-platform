@@ -147,8 +147,8 @@ def _ask_ollama(prompt):
     return {"success": True, "response": reply.json().get("response", "").strip()}
 
 
-def get_ai_overview(question, host_data):
-    prompt = (
+def _ask_prompt(question, host_data):
+    return (
         "Having these server data in json format extracted using various security tools\n"
         + _summarise_host_data(host_data)
         + "\n can you answer this question considering the user does not have"
@@ -156,7 +156,10 @@ def get_ai_overview(question, host_data):
           " included, so do not comment on missing or null data. Answer only from"
           " the data above. Question:" + question
     )
-    return _ask_ollama(prompt)
+
+
+def get_ai_overview(question, host_data):
+    return _ask_ollama(_ask_prompt(question, host_data))
 
 
 def analyze_with_ai(headers, cert, cipher, heartbleed):
@@ -191,3 +194,60 @@ def analyze_with_ai(headers, cert, cipher, heartbleed):
                     Provide only the objective security report based on the given data and do not include conversational phrases.
                     """
     return _ask_ollama(prompt)
+
+
+def _stream_ollama(prompt):
+    """Yield the answer as the model writes it.
+
+    Ollama emits one JSON object per line when stream is true. The caller turns
+    each yielded piece into a line of its own, so a browser can render tokens as
+    they arrive instead of staring at a spinner for a minute. Errors are yielded
+    as text rather than raised: the HTTP status is already sent by then.
+    """
+    try:
+        reply = requests.post(
+            f"{OLLAMA_URL}/api/generate",
+            json={
+                "model": OLLAMA_MODEL,
+                "system": SYSTEM_PROMPT,
+                "prompt": prompt,
+                "stream": True,
+                "keep_alive": OLLAMA_KEEP_ALIVE,
+                "options": {"num_predict": OLLAMA_MAX_TOKENS},
+            },
+            timeout=OLLAMA_TIMEOUT,
+            stream=True,
+        )
+    except requests.exceptions.ConnectionError:
+        yield False, f"Cannot reach the local AI model at {OLLAMA_URL}. Check that the redflags-ollama container is running."
+        return
+    except requests.exceptions.Timeout:
+        yield False, f"The local AI model did not answer within {OLLAMA_TIMEOUT}s."
+        return
+    except Exception as exc:  # noqa: BLE001 - surfaced to the caller as text
+        yield False, str(exc)
+        return
+
+    if reply.status_code != 200:
+        yield False, f"The local AI model returned HTTP {reply.status_code}: {reply.text[:200]}"
+        return
+
+    try:
+        for line in reply.iter_lines(decode_unicode=True):
+            if not line:
+                continue
+            try:
+                chunk = json.loads(line)
+            except ValueError:
+                continue
+            piece = chunk.get("response") or ""
+            if piece:
+                yield True, piece
+            if chunk.get("done"):
+                return
+    except requests.exceptions.RequestException as exc:
+        yield False, f"The answer was cut short: {exc}"
+
+
+def stream_ai_overview(question, host_data):
+    return _stream_ollama(_ask_prompt(question, host_data))

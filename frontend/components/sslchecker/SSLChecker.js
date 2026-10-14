@@ -59,20 +59,57 @@ const AskAIExplanation = ({ host, isOpen, onClose }) => {
       if (!HAS_BACKEND) throw new Error('SSL checker backend is not configured (NEXT_PUBLIC_SSL_API_URL).');
       if (!host?.id) throw new Error('This host has no stored scan to reason about yet.');
 
-      const res = await fetch(`${API_URL}/api/ask`, {
+      const res = await fetch(`${API_URL}/api/ask/stream`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question: asked, scan_id: String(host.id) }),
       });
-      if (!res.ok) throw new Error(`Backend returned ${res.status}`);
+      if (!res.ok) {
+        // Errors before the stream opens are ordinary JSON (404 for an unknown
+        // scan, 400 for a bad request).
+        const problem = await res.json().catch(() => null);
+        throw new Error(problem?.response || `Backend returned ${res.status}`);
+      }
 
-      const data = await res.json();
-      // The backend reports model/connection problems as success:false with the
-      // reason in `response`, so show that rather than a blank bubble.
-      setConversation([
-        ...newConversation,
-        { role: 'assistant', content: data.response || 'The model returned an empty answer.' },
-      ]);
+      // The model takes tens of seconds on CPU, so render each token as it
+      // arrives rather than leaving a spinner up for the whole answer. The
+      // backend sends newline-delimited JSON; a chunk can split a line, so keep
+      // the remainder in `buffer` until its newline shows up.
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let answer = '';
+      let buffer = '';
+      let failed = null;
+
+      setConversation([...newConversation, { role: 'assistant', content: '' }]);
+
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+
+        const lines = buffer.split('\n');
+        buffer = lines.pop() ?? '';
+        for (const line of lines) {
+          if (!line.trim()) continue;
+          let event;
+          try { event = JSON.parse(line); } catch { continue; }
+          if (event.error) { failed = event.error; break; }
+          if (event.token) {
+            answer += event.token;
+            setConversation([...newConversation, { role: 'assistant', content: answer }]);
+          }
+        }
+        if (failed) break;
+      }
+
+      if (failed) throw new Error(failed);
+      if (!answer) {
+        setConversation([
+          ...newConversation,
+          { role: 'assistant', content: 'The model returned an empty answer.' },
+        ]);
+      }
     } catch (error) {
       setConversation([
         ...newConversation,
