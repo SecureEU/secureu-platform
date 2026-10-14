@@ -19,6 +19,14 @@
     <properties>
         <scala.version>2.12.11</scala.version>
         <hbase.version>2.1.4</hbase.version>
+        <!-- Spring Boot 2.3.0 manages netty at 4.1.49, but Spark was moved to
+             3.5.7 in the Dependabot sweep and its network layer calls a
+             PooledByteBufAllocator constructor that 4.1.49 does not have, so
+             the app died at startup with "APPLICATION FAILED TO START ... an
+             attempt was made to call a method that does not exist".
+             4.1.96 is what Spark 3.5.7 itself pulls in for the artifacts
+             Spring Boot does not manage, so this aligns the whole tree on it. -->
+        <netty.version>4.1.96.Final</netty.version>
     </properties>
 
     <dependencies>

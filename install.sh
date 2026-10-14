@@ -296,6 +296,13 @@ DTM_API_URL=http://localhost:8087
 AD_API_URL=http://localhost:5001
 EOF
 
+# The build runs as $REAL_USER (sudo -u ... npm run build), so it has to be able
+# to read this file. Left root-owned, JWT_SECRET is invisible to the build and
+# lib/jwt.js throws at module scope, which Next.js reports only as the opaque
+# "Failed to collect page data for /api/upload/logo".
+chmod 600 "$FRONTEND_DIR/.env"
+chown "$REAL_USER":"$REAL_USER" "$FRONTEND_DIR/.env" 2>/dev/null || true
+
 info "Frontend .env created with server IP: $SERVER_IP"
 
 cd "$FRONTEND_DIR"
@@ -304,7 +311,15 @@ info "Installing frontend dependencies (npm ci)..."
 set -o pipefail
 sudo -u "$REAL_USER" "$NPM_BIN" ci --silent 2>&1 | tail -1
 info "Building frontend (npm run build)..."
-sudo -u "$REAL_USER" "$NPM_BIN" run build 2>&1 | tail -10
+# Keep the full build output. `| tail -10` used to truncate failures to their
+# stack frames and drop the actual message, so a build that died on a missing
+# env var reported only "Failed to collect page data for <route>".
+BUILD_LOG="$FRONTEND_DIR/.next-build.log"
+if ! sudo -u "$REAL_USER" "$NPM_BIN" run build > "$BUILD_LOG" 2>&1; then
+    tail -40 "$BUILD_LOG"
+    error "Frontend build failed — full output in $BUILD_LOG"
+fi
+tail -10 "$BUILD_LOG"
 # Verify the production build actually produced a BUILD_ID; otherwise next start fails.
 if [ ! -f "$FRONTEND_DIR/.next/BUILD_ID" ]; then
     error "Frontend build did not produce $FRONTEND_DIR/.next/BUILD_ID — see output above."
@@ -397,10 +412,12 @@ Environment=RPATH=$BACKEND_DIR/pentest
 # manager domain / cert SANs use the operator-chosen address rather than the
 # first interface from `hostname -I` (which is often the NAT IP).
 Environment=SERVER_IP=$SERVER_IP
-# First-run pulls ~3GB of images and runs Wazuh initialization, which can
-# take 30-50 minutes on a fresh host with limited bandwidth. 60 min gives
-# generous headroom; subsequent starts are fast.
-TimeoutStartSec=3600
+# First-run pulls every image and builds the Python/Go services, then runs
+# Wazuh initialization. Measured on a VM wiped to zero images: still in step
+# 9/10 (SEUXDR) at the 60-minute mark, where systemd SIGTERMed it. The estimate
+# below was written from a host that already had most layers cached, which is
+# why it looked generous. Subsequent starts are minutes, not hours.
+TimeoutStartSec=10800
 # stop.sh tears down many docker-compose stacks; default 90s is too tight.
 TimeoutStopSec=300
 
