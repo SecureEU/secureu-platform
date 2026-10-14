@@ -1,13 +1,12 @@
 import json
 from flask import Blueprint
-from flask import jsonify, request
+from flask import Response, jsonify, request, stream_with_context
 from .db import insert_scan_result, get_scans, get_scan, get_latest_scans
 from app.services.certificate import get_certificate
 from app.services.headers import get_header
 from app.services.protocols import get_protocols_nmap
-from app.services.ai_overview import get_deepseek_overview, analyze_with_deepseek
+from app.services.ai_overview import get_ai_overview, analyze_with_ai, stream_ai_overview
 from app.services.heartbleed import check_heartbleed
-from flask import session
 
 main_blueprint = Blueprint('main', __name__)
 
@@ -38,12 +37,11 @@ def check_ssl():
             else:
                 return f"{headers_resp}, {cert_resp}", 500
 
-        ai_analysis_text = "No AI analysis was generated. Please make sure to set up your API key and have the checkbox in the scanner tab checked"
+        ai_analysis_text = "No AI analysis was generated. Tick the AI checkbox in the scanner tab to request one."
         if generate_ai:
-            api_key = session.get("api_key")
-            if api_key:
-                ai_analysis_response = analyze_with_deepseek(headers,  cert_details, cipher_details, heartbleed, api_key)
-                ai_analysis_text = ai_analysis_response.get("response")
+            # The local model needs no API key; a failure comes back as text.
+            ai_analysis_response = analyze_with_ai(headers, cert_details, cipher_details, heartbleed)
+            ai_analysis_text = ai_analysis_response.get("response")
 
         insert_scan_result(
             hostname,
@@ -185,34 +183,54 @@ def get_ai_response():
         }), 500
 
     host_data = get_scan(int(scan_id))
-    api_key = session.get("api_key")
-    if api_key:
-        response = get_deepseek_overview(question, host_data, api_key)
-        return response
-    else:
-        return {
-            "success": False,
-            "response": "You haven't set your API key",
-        }
+    if host_data is None:
+        # Without this the model was handed "null" and duly answered that the
+        # data was all empty, which reads as a scan result rather than a missing
+        # record. /api/host already 404s for the same case.
+        return jsonify({"success": False, "response": "Scan not found"}), 404
+
+    # Answered by the local Ollama model, so there is no API key to set.
+    return get_ai_overview(question, host_data)
 
 
-@main_blueprint.route("/api/set", methods=["POST"])
-def set_api_key():
-    data = request.get_json()
-    api_key = data.get("api_key")
-    if api_key:
-        session["api_key"] = api_key
-        return "The API key is set", 204
-    return "API key is required", 400
+@main_blueprint.route("/api/ask/stream", methods=["POST"])
+def get_ai_response_stream():
+    """Same answer as /api/ask, delivered as it is written.
 
+    The model takes tens of seconds on CPU, so waiting for the whole reply means
+    a spinner and nothing else. This sends newline-delimited JSON - one
+    {"token": "..."} per piece, a final {"done": true} - which the browser reads
+    incrementally. /api/ask stays for callers that just want the finished text.
+    """
+    data = request.get_json(silent=True) or {}
+    question = data.get("question")
+    scan_id = data.get("scan_id")
+    if not question or scan_id is None:
+        return jsonify({"success": False, "response": "question and scan_id are required"}), 400
 
-@main_blueprint.route("/api/get", methods=["GET"])
-def get_api_key():
-    api_key = session.get('api_key')
-    if api_key:
-        return jsonify({"api_key_set": True})
-    else:
-        return jsonify({"api_key_set": False})
+    try:
+        host_data = get_scan(int(scan_id))
+    except (TypeError, ValueError):
+        return jsonify({"success": False, "response": "scan_id must be a number"}), 400
+    if host_data is None:
+        return jsonify({"success": False, "response": "Scan not found"}), 404
+
+    def generate():
+        # Errors reach the client as a token, because the 200 is already sent.
+        for ok, piece in stream_ai_overview(question, host_data):
+            yield json.dumps({"token": piece} if ok else {"error": piece}) + "\n"
+            if not ok:
+                return
+        yield json.dumps({"done": True}) + "\n"
+
+    return Response(
+        stream_with_context(generate()),
+        mimetype="application/x-ndjson",
+        # Without this a reverse proxy may buffer the whole response and undo
+        # the point of streaming.
+        headers={"X-Accel-Buffering": "no", "Cache-Control": "no-cache"},
+    )
+
 
 
 @main_blueprint.route('/')
@@ -223,7 +241,7 @@ def home():
             "/api/check": "POST - Check SSL/TLS configuration",
             "/api/scans": "GET - Get all scans",
             "/api/ask": "POST - Ask AI",
-            "/api/set": "POST - Set API Key",
+            "/api/ask/stream": "POST - Ask AI, streamed",
             "/api/latest": "GET = Get latest scans for each host"
         }
     })

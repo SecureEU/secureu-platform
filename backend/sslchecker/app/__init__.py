@@ -1,20 +1,22 @@
+import os
+
 from flask import Flask
 from flask_cors import CORS
 from .routes import main_blueprint
-from flask_session import Session
-import os
-from datetime import timedelta
+
 
 def create_app():
     app = Flask(__name__)
-    app.config["DATABASE"] = 'scans.db'
-    app.config["SECRET_KEY"] = os.urandom(24)
-    app.config['SESSION_TYPE'] = 'filesystem'
-    app.config['SESSION_FILE_DIR'] = 'flask_session'
-    app.config["SESSION_PERMANENT"] = False
+    # Default to a path the compose file mounts a volume on. It used to be a
+    # bare relative filename inside the image, so every container rebuild threw
+    # away the entire scan history.
+    db_path = os.getenv("SSLCHECKER_DB", "/data/scans.db")
+    parent = os.path.dirname(db_path)
+    if parent:
+        os.makedirs(parent, exist_ok=True)
+    app.config["DATABASE"] = db_path
     CORS(app, supports_credentials=True)
     app.register_blueprint(main_blueprint)
-    Session(app)
 
     from . import db
     db.init_app(app)

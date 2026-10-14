@@ -5,3 +5,26 @@ services:
     ports:
       - "5000:5000"
     restart: unless-stopped
+    environment:
+      # "Ask AI" answers come from the Ollama instance the RedFlags detector
+      # runs, so there is no API key and no data leaves the host.
+      - OLLAMA_URL=http://redflags-ollama:11434
+      - OLLAMA_MODEL=llama3.2:latest
+      - SSLCHECKER_DB=/data/scans.db
+    volumes:
+      # Scan history used to live inside the container, so rebuilding the image
+      # silently deleted every stored scan.
+      - sslchecker-data:/data
+    networks:
+      - default
+      - redflags
+
+volumes:
+  sslchecker-data:
+
+networks:
+  # Created by backend/redflags/docker-compose.yml. External because this stack
+  # must join the existing network rather than try to own it.
+  redflags:
+    name: redflags_redflags_network
+    external: true
