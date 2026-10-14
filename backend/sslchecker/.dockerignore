@@ -1,0 +1,10 @@
+# The scan database belongs on a volume, not baked into the image - a stale
+# copy here would shadow the volume's and resurrect old scans on every build.
+scans.db
+*.db
+# Windows path artefact left by a checkout on another machine.
+C:/
+__pycache__/
+*.pyc
+.venv/
+venv/
